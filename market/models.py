@@ -21,7 +21,7 @@ class GoodsClassify(models.Model):
 
     class Meta:
         verbose_name = u'商品类别'
-        erbose_name_plural = verbose_name
+        verbose_name_plural = verbose_name
 
 
 class GroupBuy(models.Model):
@@ -31,14 +31,7 @@ class GroupBuy(models.Model):
 
     class Meta:
         verbose_name = u'团购'
-        erbose_name_plural = verbose_name
-
-
-class GroupBuyGoods(models.Model):
-    group_buy = models.ForeignKey(GroupBuy, verbose_name='团购')
-    goods = models.ForeignKey(Goods, verbose_name='商品')
-    price = models.FloatField(max)
-
+        verbose_name_plural = verbose_name
 
 
 class Goods(models.Model):
@@ -46,7 +39,17 @@ class Goods(models.Model):
 
     class Meta:
         verbose_name = u'商品'
-        erbose_name_plural = verbose_name
+        verbose_name_plural = verbose_name
+
+
+class GroupBuyGoods(models.Model):
+    group_buy = models.ForeignKey(GroupBuy, verbose_name='团购')
+    goods = models.ForeignKey(Goods, verbose_name='商品')
+    price = models.FloatField(max)
+
+    class Meta:
+        verbose_name = u'团购商品'
+        verbose_name_plural = verbose_name
 
 
 class GoodsGallery(models.Model):
@@ -57,4 +60,4 @@ class GoodsGallery(models.Model):
 
     class Meta:
         verbose_name = u'商品图集'
-        erbose_name_plural = verbose_name
+        verbose_name_plural = verbose_name
