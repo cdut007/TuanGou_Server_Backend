@@ -7,21 +7,27 @@ from django.db import models
 # Create your models here.
 
 class Banner(models.Model):
-    image = models.ImageField(upload_to='images/%Y/%m', default='image/default.png', max_length=100, verbose_name=u'轮播图')
-    add_time = models.DateTimeField(default=datetime.now, verbose_name=u'添加时间')
-    is_show = models.BooleanField(default=True,verbose_name='是否显示')
+    image = models.ImageField(upload_to='images/%Y/%m', default='image/default.png', max_length=100, verbose_name=u'Banner')
+    add_time = models.DateTimeField(default=datetime.now, verbose_name=u'add time')
+    is_show = models.BooleanField(default=True,verbose_name='is show')
 
     class Meta:
-        verbose_name = u'轮播图'
+        verbose_name = u'Banner'
         verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.image
 
 
 class GoodsClassify(models.Model):
-    name = models.CharField(max_length=24, verbose_name=u'名称')
+    name = models.CharField(max_length=24, verbose_name=u'name')
 
     class Meta:
         verbose_name = u'商品类别'
         verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.name
 
 
 class GroupBuy(models.Model):
@@ -33,6 +39,9 @@ class GroupBuy(models.Model):
         verbose_name = u'团购'
         verbose_name_plural = verbose_name
 
+    def __unicode__(self):
+        return self.goods_classify
+
 
 class Goods(models.Model):
     name = models.CharField(max_length=32, verbose_name=u'名称')
@@ -40,6 +49,9 @@ class Goods(models.Model):
     class Meta:
         verbose_name = u'商品'
         verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.name
 
 
 class GroupBuyGoods(models.Model):
@@ -51,6 +63,9 @@ class GroupBuyGoods(models.Model):
         verbose_name = u'团购商品'
         verbose_name_plural = verbose_name
 
+    def __unicode__(self):
+        return self.group_buy
+
 
 class GoodsGallery(models.Model):
     goods = models.ForeignKey(Goods, verbose_name='商品')
@@ -61,3 +76,6 @@ class GoodsGallery(models.Model):
     class Meta:
         verbose_name = u'商品图集'
         verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.goods

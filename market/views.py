@@ -5,8 +5,8 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import status
 
-from models import Banner
-from serializers import BannerSerializer
+from models import Banner, GoodsClassify, GroupBuy
+from serializers import BannerSerializer,GoodsClassifySerializer, GroupBuySerializer
 # Create your views here.
 
 # @api_view(['GET'])
@@ -19,3 +19,13 @@ from serializers import BannerSerializer
 class BannerList(generics.ListAPIView):
     queryset = Banner.objects.filter(is_show=1)
     serializer_class = BannerSerializer
+
+
+class GoodsClassifyList(generics.ListAPIView):
+    queryset = GoodsClassify.objects.all()
+    serializer_class = GoodsClassifySerializer
+
+
+class GroupBuyClassifyList(generics.ListAPIView):
+    queryset = GroupBuy.objects.filter()
+    serializer_class = GroupBuySerializer
