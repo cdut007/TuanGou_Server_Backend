@@ -5,8 +5,12 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import status
 
+
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
-from serializers import BannerSerializer,GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, GoodsGallerySerializer
+from serializers import BannerSerializer,GoodsClassifySerializer, GroupBuySerializer,\
+    GroupBuyGoodsSerializer, GoodsGallerySerializer
+from ilinkgo.dbConfig import image_path
+
 # Create your views here.
 
 # @api_view(['GET'])
@@ -52,7 +56,7 @@ class HomePage(APIView):
                     image =  GoodsGallery.objects.filter(goods=goods.goods_id, is_primary=1).first()
                     goods_info.append({
                         'goods_id': goods.id,
-                        'image':image.image.url
+                        'image':image_path() + image.image.url
                     })
 
             res.append({'classify': classify_info, 'goods': goods_info})
