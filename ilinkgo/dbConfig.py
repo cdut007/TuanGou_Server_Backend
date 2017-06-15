@@ -33,9 +33,9 @@ def image_path():
     if mode == 'PRODUCTION':
         path = ''
     elif mode == 'TESTING':
-        path = 'http://47.88.139.113:3000'
+        path = 'http://47.88.139.113:3000/'
     else:
-        path = 'http://192.168.222.128:3000'
+        path = 'http://192.168.222.128:3000/'
 
     return path
 
