@@ -87,7 +87,7 @@ class GroupBuyGoodsDetail(APIView):
         for image_itme in serializer.data['goods']['images']:
             image_itme['image'] = path + image_itme['image']
 
-        return Response(serializer.data)
+        return Response(format_body(1, 'success', serializer.data))
 
 
 class GroupBuyGoodsList(generics.RetrieveAPIView):
