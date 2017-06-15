@@ -46,7 +46,8 @@ class HomePage(APIView):
             goods_info = []
             classify_info = {
                 'id': classify.id,
-                'name': classify.name
+                'name': classify.name,
+                'desc': classify.desc
             }
             group_buy = GroupBuy.objects.filter(goods_classify=classify.id).order_by('-add_time').first()
 
