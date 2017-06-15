@@ -61,7 +61,9 @@ class HomePageList(APIView):
                         'goods_id': goods.id,
                         'image':image_path() + image.image.url
                     })
-
+            else:
+                continue
+                
             res.append({'classify': classify_info, 'goods': goods_info})
 
         return Response(format_body(1, 'success', res))
