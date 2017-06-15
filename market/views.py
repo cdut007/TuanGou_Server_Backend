@@ -81,10 +81,14 @@ class GoodsList(APIView):
         group_buy = GroupBuy.objects.filter(pk=pk).first()
         group_buy_serializer = GroupBuySerializer(group_buy)
 
+        classify = GoodsClassify.objects.filter(id=group_buy.goods_classify_id).first()
+        class_serializer = GoodsClassifySerializer(classify)
+
         goods = GroupBuyGoods.objects.filter(group_buy=group_buy.id)
         goods_serializer = GroupBuyGoodsSerializer(goods, many=True)
 
         res = group_buy_serializer.data
+        res['classify'] = class_serializer.data
         res['group_buy_goods'] = goods_serializer.data
 
         return Response(format_body(1, 'success', res))
