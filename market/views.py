@@ -29,16 +29,18 @@ class BannerList(APIView):
         return Response(format_body(1, 'success', {'images': res}))
 
 
-class GoodsClassifyList(generics.ListAPIView):
-    queryset = GoodsClassify.objects.all()
-    serializer_class = GoodsClassifySerializer
-
-
 class GroupBuyList(APIView):
-    def get(self, request, format=None):
-        group_buy = GroupBuy.objects.all()
-        serializer = GroupBuySerializer(group_buy, many=True)
-        return Response(serializer.data)
+    def get(self, request, pk, format=None):
+        classify = GoodsClassify.objects.filter(pk=pk).first()
+        classify_serializer = GoodsClassifySerializer(classify)
+
+        group_buy = GroupBuy.objects.filter(goods_classify=pk)
+        group_buy_serializer = GroupBuySerializer(group_buy, many=True)
+
+        res = classify_serializer.data
+        res['group_buy'] = group_buy_serializer.data
+
+        return Response(format_body(1, 'success', res))
 
 
 class HomePageList(APIView):
@@ -52,7 +54,7 @@ class HomePageList(APIView):
 
             if(group_buy):
                 goods_info = []
-                group_buy_goods = GroupBuyGoods.objects.filter(group_buy=group_buy.id)
+                group_buy_goods = GroupBuyGoods.objects.filter(group_buy=group_buy.id)[:6]
                 for goods in group_buy_goods:
                     image =  GoodsGallery.objects.filter(goods=goods.goods_id, is_primary=1).first()
                     goods_info.append({
@@ -74,6 +76,20 @@ class HomePageList(APIView):
         return Response(format_body(1, 'success', res))
 
 
+class GoodsList(APIView):
+    def get(self, request, pk):
+        group_buy = GroupBuy.objects.filter(pk=pk).first()
+        group_buy_serializer = GroupBuySerializer(group_buy)
+
+        goods = GroupBuyGoods.objects.filter(group_buy=group_buy.id)
+        goods_serializer = GroupBuyGoodsSerializer(goods, many=True)
+
+        res = group_buy_serializer.data
+        res['group_buy_goods'] = goods_serializer.data
+
+        return Response(format_body(1, 'success', res))
+
+
 class GroupBuyGoodsDetail(APIView):
     def get(self, request, pk, format=None):
         try:
@@ -88,11 +104,6 @@ class GroupBuyGoodsDetail(APIView):
             image_itme['image'] = path + image_itme['image']
 
         return Response(format_body(1, 'success', serializer.data))
-
-
-class GroupBuyGoodsList(generics.RetrieveAPIView):
-    queryset = GroupBuy.objects.all()
-    serializer_class = GroupBuySerializer
 
 
 def format_body(code, message, data):

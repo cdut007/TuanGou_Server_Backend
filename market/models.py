@@ -24,6 +24,8 @@ class GoodsClassify(models.Model):
     name = models.CharField(max_length=24, verbose_name=u'名称')
     desc = models.CharField(max_length=256, verbose_name='描述',default='')
     icon = models.ImageField(upload_to='images/%Y/%m', verbose_name='图标', default='')
+    image = models.ImageField(upload_to='images/%Y/%m', verbose_name='图片', default='')
+
     class Meta:
         verbose_name = u'商品类别'
         verbose_name_plural = verbose_name

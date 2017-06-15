@@ -7,6 +7,10 @@ from ilinkgo.dbConfig import image_path
 class GoodsGallerySerializer(serializers.Serializer):
    image = serializers.ImageField()
 
+   # def get_fields(self):
+   #     self.image = '123' + self.image
+   #     super(GoodsClassifySerializer,  self).get_fields()
+
 
 class GoodsSerializer(serializers.ModelSerializer):
     images = GoodsGallerySerializer(many=True, read_only=True)
@@ -18,10 +22,11 @@ class GoodsSerializer(serializers.ModelSerializer):
 class GoodsClassifySerializer(serializers.ModelSerializer):
     class Meta:
         model = GoodsClassify
-        fields = ('name',)
+        fields = ('name', 'desc', 'icon', 'image')
 
 
 class GroupBuyGoodsSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
     goods = GoodsSerializer(read_only=True)
     price = serializers.FloatField()
     stock = serializers.IntegerField()
@@ -31,8 +36,6 @@ class GroupBuyGoodsSerializer(serializers.Serializer):
 class GroupBuySerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     title =  serializers.CharField(required=True, max_length=64)
-    goods_classify = serializers.ReadOnlyField(source='goods_classify.name')
     start_time = serializers.DateTimeField()
     end_time = serializers.DateTimeField()
-    group_buy_goods = GroupBuyGoodsSerializer(many=True, read_only=True)
 
