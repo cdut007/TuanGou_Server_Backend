@@ -20,9 +20,11 @@ from ilinkgo.dbConfig import image_path
 #     })
 
 
-class BannerList(generics.ListAPIView):
-    queryset = Banner.objects.filter(is_show=1)
-    serializer_class = BannerSerializer
+class BannerList(APIView):
+    def get(self,request, format=None):
+        banners = Banner.objects.filter(is_show=1)
+        serializer = BannerSerializer(banners,many=True)
+        return Response(format_body(1, 'success', serializer.data))
 
 
 class GoodsClassifyList(generics.ListAPIView):
@@ -37,7 +39,7 @@ class GroupBuyList(APIView):
         return Response(serializer.data)
 
 
-class HomePage(APIView):
+class HomePageList(APIView):
     def get(self, request, format=None):
         res = []
         goods_classify = GoodsClassify.objects.all()
