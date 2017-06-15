@@ -9,5 +9,5 @@ urlpatterns = format_suffix_patterns([
     url(r'^banner/$', BannerList.as_view(), name='banner'),
     url(r'^classify/$', GoodsClassifyList.as_view(), name='classify'),
     url(r'^group_buy/', GroupBuyList.as_view(), name='group_buy'),
-    url(r'^home_page/', HomePage.as_view(), name='home_page')
+    url(r'^home_page_list/', HomePage.as_view(), name='home_page')
 ])
