@@ -7,8 +7,7 @@ from rest_framework import status
 
 
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
-from serializers import BannerSerializer,GoodsClassifySerializer, GroupBuySerializer,\
-    GroupBuyGoodsSerializer, GoodsGallerySerializer
+from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer
 from ilinkgo.dbConfig import image_path
 
 # Create your views here.
@@ -76,8 +75,19 @@ class HomePageList(APIView):
 
 
 class GroupBuyGoodsDetail(APIView):
-    def get(self, request, pk):
-        pass
+    def get(self, request, pk, format=None):
+        try:
+            goods = GroupBuyGoods.objects.get(pk=pk)
+        except GroupBuyGoods.DoesNotExist:
+            return Response(format_body(0,'Object does not exist',''))
+
+        serializer = GroupBuyGoodsSerializer(goods)
+        path = image_path()
+
+        for image_itme in serializer.data['goods']['images']:
+            image_itme['image'] = path + image_itme['image']
+
+        return Response(serializer.data)
 
 
 class GroupBuyGoodsList(generics.RetrieveAPIView):

@@ -3,14 +3,9 @@ from  rest_framework import serializers
 from models import Banner, GoodsClassify, GroupBuy, Goods, GroupBuyGoods, GoodsGallery
 from ilinkgo.dbConfig import image_path
 
-class BannerSerializer(serializers.Serializer):
-    image = serializers.ImageField(read_only=True)
 
-
-class GoodsGallerySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GoodsGallery
-        fields = ('image',)
+class GoodsGallerySerializer(serializers.Serializer):
+   image = serializers.ImageField()
 
 
 class GoodsSerializer(serializers.ModelSerializer):
@@ -29,6 +24,8 @@ class GoodsClassifySerializer(serializers.ModelSerializer):
 class GroupBuyGoodsSerializer(serializers.Serializer):
     goods = GoodsSerializer(read_only=True)
     price = serializers.FloatField()
+    stock = serializers.IntegerField()
+    brief_dec = serializers.CharField()
 
 
 class GroupBuySerializer(serializers.Serializer):

@@ -63,6 +63,8 @@ class GroupBuyGoods(models.Model):
     group_buy = models.ForeignKey(GroupBuy,  related_name='group_buy_goods', verbose_name='团购')
     goods = models.ForeignKey(Goods,verbose_name='商品')
     price = models.FloatField(verbose_name='价格')
+    stock = models.PositiveIntegerField(verbose_name='库存', default=0)
+    brief_dec = models.CharField(max_length=64, verbose_name='什么', default='')
 
     class Meta:
         verbose_name = u'团购商品'
