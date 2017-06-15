@@ -2,12 +2,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
-from rest_framework import generics
-from rest_framework import status
 
 
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
-from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer
+from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
 from ilinkgo.dbConfig import image_path
 
 # Create your views here.
@@ -16,31 +14,18 @@ from ilinkgo.dbConfig import image_path
 # def api_root(request, format=None):
 #     return Response({
 #         'banner': reverse('banner', request=request, format=format),
+#         'home_page_list': reverse('home_page_list', request=request, format=format),
+#         'group_buy_list': reverse('group_buy_list', request=request, format=format),
+#         'group_buy_detail': reverse('group_buy_detail', request=request, format=format),
+#         'goods_detail': reverse('goods_detail', request=request, format=format)
 #     })
 
 
 class BannerList(APIView):
     def get(self,request, format=None):
-        res = []
-        path = image_path()
         banners = Banner.objects.filter(is_show=1)
-        for image in banners:
-            res.append({'image': path + image.image.url})
-        return Response(format_body(1, 'success', {'images': res}))
-
-
-class GroupBuyList(APIView):
-    def get(self, request, pk, format=None):
-        classify = GoodsClassify.objects.filter(pk=pk).first()
-        classify_serializer = GoodsClassifySerializer(classify)
-
-        group_buy = GroupBuy.objects.filter(goods_classify=pk)
-        group_buy_serializer = GroupBuySerializer(group_buy, many=True)
-
-        res = classify_serializer.data
-        res['group_buy'] = group_buy_serializer.data
-
-        return Response(format_body(1, 'success', res))
+        banner_serializer =  BannerSerializer(banners, many=True)
+        return Response(format_body(1, 'success', {'images': banner_serializer.data}))
 
 
 class HomePageList(APIView):
@@ -76,8 +61,28 @@ class HomePageList(APIView):
         return Response(format_body(1, 'success', res))
 
 
+class GroupBuyList(APIView):
+    def post(self, request, pk, format=None):
+        """
+        group_buy_list/<classify_id>
+        """
+        classify = GoodsClassify.objects.filter(pk=pk).first()
+        classify_serializer = GoodsClassifySerializer(classify)
+
+        group_buy = GroupBuy.objects.filter(goods_classify=pk)
+        group_buy_serializer = GroupBuySerializer(group_buy, many=True)
+
+        data = classify_serializer.data
+        data['group_buy'] = group_buy_serializer.data
+
+        return Response(format_body(1, 'success', data))
+
+
 class GoodsList(APIView):
     def get(self, request, pk):
+        """
+        group_buy_detail/<group_buy_id>
+        """
         group_buy = GroupBuy.objects.filter(pk=pk).first()
         group_buy_serializer = GroupBuySerializer(group_buy)
 
@@ -96,6 +101,9 @@ class GoodsList(APIView):
 
 class GroupBuyGoodsDetail(APIView):
     def get(self, request, pk, format=None):
+        """
+        goods_detail/<goods_lid>
+        """
         try:
             goods = GroupBuyGoods.objects.get(pk=pk)
         except GroupBuyGoods.DoesNotExist:

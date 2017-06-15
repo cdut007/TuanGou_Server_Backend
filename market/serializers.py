@@ -4,19 +4,48 @@ from models import Banner, GoodsClassify, GroupBuy, Goods, GroupBuyGoods, GoodsG
 from ilinkgo.dbConfig import image_path
 
 
-class GoodsGallerySerializer(serializers.Serializer):
-   image = serializers.ImageField()
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = ('image',)
 
-   # def get_fields(self):
-   #     self.image = '123' + self.image
-   #     super(GoodsClassifySerializer,  self).get_fields()
+    def to_representation(self, instance):
+        data = super(BannerSerializer, self).to_representation(instance)
+        data['image'] =  image_path() + data['image']
+        return data
+
+
+class GoodsGallerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GoodsGallery
+        fields = ('image',)
+
+    def to_representation(self, instance):
+       data = super(GoodsGallerySerializer, self).to_representation(instance)
+       data['image'] = image_path() + data['image']
+       return data
 
 
 class GoodsSerializer(serializers.ModelSerializer):
     images = GoodsGallerySerializer(many=True, read_only=True)
+
     class Meta:
         model = Goods
         fields = ('name','images')
+
+
+class GroupBuyGoodsSerializer(serializers.ModelSerializer):
+    goods = GoodsSerializer(read_only=True)
+
+    class Meta:
+        model = GroupBuyGoods
+        fields = ('id', 'goods', 'price', 'stock', 'brief_dec')
+
+
+class GroupBuySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GroupBuy
+        fields = ('id', 'title', 'start_time', 'end_time')
 
 
 class GoodsClassifySerializer(serializers.ModelSerializer):
@@ -24,18 +53,10 @@ class GoodsClassifySerializer(serializers.ModelSerializer):
         model = GoodsClassify
         fields = ('name', 'desc', 'icon', 'image')
 
-
-class GroupBuyGoodsSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    goods = GoodsSerializer(read_only=True)
-    price = serializers.FloatField()
-    stock = serializers.IntegerField()
-    brief_dec = serializers.CharField()
-
-
-class GroupBuySerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    title =  serializers.CharField(required=True, max_length=64)
-    start_time = serializers.DateTimeField()
-    end_time = serializers.DateTimeField()
+    def to_representation(self, instance):
+        path = image_path()
+        data = super(GoodsClassifySerializer, self).to_representation(instance)
+        data['image'] =  path + data['image']
+        data['icon'] = path + data['icon']
+        return data
 
