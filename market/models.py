@@ -7,6 +7,7 @@ from django.db import models
 # Create your models here.
 
 class Banner(models.Model):
+    name = models.CharField(max_length=24, verbose_name=u'名称', default='')
     image = models.ImageField(upload_to='images/%Y/%m', default='image/default.png', max_length=100, verbose_name=u'Banner')
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u'add time')
     is_show = models.BooleanField(default=True,verbose_name='is show')
@@ -16,12 +17,12 @@ class Banner(models.Model):
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
-        return self.image
+        return self.name
 
 
 class GoodsClassify(models.Model):
-    name = models.CharField(max_length=24, verbose_name=u'name')
-
+    name = models.CharField(max_length=24, verbose_name=u'名称')
+    desc = models.CharField(max_length=256, verbose_name='描述',default='')
     class Meta:
         verbose_name = u'商品类别'
         verbose_name_plural = verbose_name
@@ -31,16 +32,19 @@ class GoodsClassify(models.Model):
 
 
 class GroupBuy(models.Model):
-    goods_classify = models.ForeignKey(GoodsClassify, verbose_name=u'商品类别')
+    title = models.CharField(max_length=64, verbose_name='标题', default='')
+    goods_classify = models.ForeignKey(GoodsClassify, related_name='groupBuy',
+                                       on_delete=models.CASCADE, verbose_name=u'商品类别')
     start_time = models.DateTimeField(default=datetime.now, verbose_name='开团时间')
     end_time = models.DateTimeField(default=datetime.now, verbose_name='结束时间')
+    add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
 
     class Meta:
         verbose_name = u'团购'
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
-        return self.goods_classify
+        return self.title
 
 
 class Goods(models.Model):
@@ -55,20 +59,20 @@ class Goods(models.Model):
 
 
 class GroupBuyGoods(models.Model):
-    group_buy = models.ForeignKey(GroupBuy, verbose_name='团购')
-    goods = models.ForeignKey(Goods, verbose_name='商品')
-    price = models.FloatField(max)
+    group_buy = models.ForeignKey(GroupBuy,  related_name='group_buy_goods', verbose_name='团购')
+    goods = models.ForeignKey(Goods,verbose_name='商品')
+    price = models.FloatField(verbose_name='价格')
 
     class Meta:
         verbose_name = u'团购商品'
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
-        return self.group_buy
+        return self.group_buy.title + '-' + self.goods.name
 
 
 class GoodsGallery(models.Model):
-    goods = models.ForeignKey(Goods, verbose_name='商品')
+    goods = models.ForeignKey(Goods, related_name='images',verbose_name='商品')
     image = models.ImageField(upload_to='images/%Y/%m',default='image/default.png', max_length=100, verbose_name=u'商品图片')
     is_primary = models.BooleanField(default=False, verbose_name='是否显示在列表页')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
@@ -78,4 +82,4 @@ class GoodsGallery(models.Model):
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
-        return self.goods
+        return self.goods.name
