@@ -25,7 +25,7 @@ class BannerList(APIView):
         path = image_path()
         banners = Banner.objects.filter(is_show=1)
         for image in banners:
-            res.append(path + image.image.url)
+            res.append({'image': path + image.image.url})
         return Response(format_body(1, 'success', {'images': res}))
 
 
