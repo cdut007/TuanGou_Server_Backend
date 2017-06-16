@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.views.static import serve
 
 from ilinkgo.settings import IMAGES_ROOT
+
 urlpatterns = [
     url(r'images/(?P<path>.*)', serve, {'document_root': IMAGES_ROOT}),
     url(r'^api/v1/', include('market.urls')),
+    url(r'^api/v1/', include('iuser.urls')),
     url(r'^admin/', admin.site.urls),
 ]

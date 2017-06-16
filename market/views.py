@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
-
+from utils.common import format_body
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
 from ilinkgo.dbConfig import image_path
@@ -118,10 +118,4 @@ class GroupBuyGoodsDetail(APIView):
         return Response(format_body(1, 'success', serializer.data))
 
 
-def format_body(code, message, data):
-    res = {
-        'code': code,
-        'message': message,
-        'data': data
-    }
-    return res
+

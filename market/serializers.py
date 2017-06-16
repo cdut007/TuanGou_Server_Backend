@@ -2,7 +2,7 @@ from  rest_framework import serializers
 
 from models import Banner, GoodsClassify, GroupBuy, Goods, GroupBuyGoods, GoodsGallery
 from ilinkgo.dbConfig import image_path
-
+from utils.common import utc_time_to_local_time
 
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,6 +46,12 @@ class GroupBuySerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupBuy
         fields = ('id', 'title', 'start_time', 'end_time')
+
+    def to_representation(self, instance):
+        data = super(GroupBuySerializer, self).to_representation(instance)
+        data['start_time'] = utc_time_to_local_time(data['start_time'])
+        data['end_time'] = utc_time_to_local_time(data['end_time'])
+        return data
 
 
 class GoodsClassifySerializer(serializers.ModelSerializer):
