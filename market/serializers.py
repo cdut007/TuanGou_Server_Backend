@@ -39,7 +39,7 @@ class GroupBuyGoodsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GroupBuyGoods
-        fields = ('id', 'goods', 'price', 'stock', 'brief_dec')
+        fields = ('id', 'goods', 'price', 'stock', 'brief_dec', 'group_buy')
 
 
 class GroupBuySerializer(serializers.ModelSerializer):
