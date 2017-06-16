@@ -24,10 +24,18 @@ class UserDetail(APIView):
 
     def post(self, request, format=None):
         serializer = UserProfileSerializer(data=request.data)
+
         if serializer.is_valid():
-            user = serializer.save()
-            token = Authentication.generate_auth_token(user.id)
+            user = UserProfile.objects.filter(openid=serializer.data['openid'])
+            if(user):
+                token = Authentication.generate_auth_token(user.id)
+                return Response(format_body(1, 'success', {'token': token}))
+
+            new_user = serializer.save()
+            token = Authentication.generate_auth_token(new_user.id)
+
             return Response(format_body(1, 'success', {'token': token}), status=status.HTTP_201_CREATED)
+
         return Response(format_body(2, serializer.errors, ''), status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
