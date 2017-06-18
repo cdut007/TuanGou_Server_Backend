@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from utils.common import format_body
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
-from ilinkgo.dbConfig import image_path
+from ilinkgo.config import image_path
 
 # Create your views here.
 
