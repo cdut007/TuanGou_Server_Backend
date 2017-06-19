@@ -45,9 +45,9 @@ class UserView(APIView):
 class UserAddressView(APIView):
     @Authentication.token_required
     def get(self, request):
-        user = UserProfile.objects.get(user=self.get.user_id)
+        user = UserProfile.objects.get(pk=self.get.user_id)
         serializer = UserAddressSerializer(user)
-        return Response(format_body(1, 'Success', serializer.data))
+        return Response(format_body(1, 'Success', {'user_address': serializer.data}))
 
     @Authentication.token_required
     def post(self, request):
