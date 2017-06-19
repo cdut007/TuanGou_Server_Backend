@@ -4,7 +4,7 @@ from rest_framework import status
 
 from utils.common import format_body
 from models import UserProfile, AgentOrder
-from serializers import UserProfileSerializer, UserAddressSerializer,AgentOrderSerializer
+from serializers import UserProfileSerializer, UserAddressSerializer, AgentOrderSerializer, AgentApplySerializer
 
 from Authentication import Authentication
 # Create your views here.
@@ -61,10 +61,24 @@ class UserAddressView(APIView):
         return Response(format_body(2, serializer.errors, ''))
 
 
+class AgentApplyView(APIView):
+    @Authentication.token_required
+    def post(self, request):
+        user = UserProfile.objects.get(pk=self.post.user_id)
+        request.data['user'] = self.post.user_id
+        serializer1 = AgentApplySerializer(data=request.data)
+        serializer2 = UserAddressSerializer(data=request.data, instance=user)
+        if not serializer1.is_valid() :
+            return Response(format_body(2, serializer1.errors, ''))
+        if not serializer2.is_valid():
+            return Response(format_body(2, serializer2.errors, ''))
+        serializer1.save()
+        serializer2.save()
+        return Response(format_body(1, 'Success', ''))
+
+
 class AgentOrderView(APIView):
     # def get(self, request):
-
-
     @Authentication.token_required
     def post(self, request):
         user = UserProfile.objects.get(pk=self.post.user_id)

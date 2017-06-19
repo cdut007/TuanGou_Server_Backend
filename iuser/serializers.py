@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 from  rest_framework import serializers
 
-from  models import UserProfile, AgentOrder
+from  models import UserProfile, AgentOrder, AgentApply
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -17,6 +17,12 @@ class UserAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ( 'phone_num', 'address')
+
+
+class AgentApplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AgentApply
+        fields = ('name', 'user')
 
 
 class AgentOrderSerializer(serializers.ModelSerializer):

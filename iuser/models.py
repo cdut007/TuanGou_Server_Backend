@@ -18,9 +18,9 @@ class UserProfile(models.Model):
     country = models.CharField(max_length=32, verbose_name='国家')
     headimgurl = models.CharField(max_length=512, verbose_name='头像地址')
     privilege = models.CharField(max_length=64, verbose_name='权限')
-    is_agent = models.BooleanField(default=False, verbose_name='代理商')
     address = models.CharField(max_length=64, verbose_name='地址', default='')
     phone_num = models.CharField(max_length=15, verbose_name='联系电话', default='')
+    is_agent = models.BooleanField(default=False, verbose_name='代理商')
     join_time = models.DateTimeField(default=datetime.now, verbose_name='加入时间')
 
     class Meta:
@@ -29,6 +29,20 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return self.nickname
+
+
+class AgentApply(models.Model):
+    name = models.CharField(max_length=16, verbose_name='姓名')
+    user = models.ForeignKey(UserProfile, verbose_name='用户', on_delete=models.CASCADE)
+    is_handled = models.BooleanField(default=False,verbose_name='是否已处理')
+    add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
+
+    class Meta:
+        verbose_name = '申请成为团长'
+        verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.name
 
 
 class AgentOrder(models.Model):
