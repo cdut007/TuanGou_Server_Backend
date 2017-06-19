@@ -5,6 +5,7 @@ from  models import UserProfile, AgentOrder, AgentApply
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    privilege = serializers.ListField()
     class Meta:
         model = UserProfile
         fields = ('id','nickname', 'openid', 'sex', 'province', 'city', 'country', 'headimgurl', 'privilege', 'unionid')
