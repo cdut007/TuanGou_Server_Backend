@@ -103,7 +103,7 @@ class AgentOrderView(APIView):
                 single_goods['purchased'] =  generic_orders.aggregate(Sum('quantity'))['quantity__sum']
             agent_order['goods'] = goods_serializer.data
 
-        return Response(format_body(1, 'Success', {'statuc': orders_serializer.data}))
+        return Response(format_body(1, 'Success', {'order': orders_serializer.data}))
 
     @Authentication.token_required
     def post(self, request):
