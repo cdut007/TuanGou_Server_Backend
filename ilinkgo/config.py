@@ -7,6 +7,7 @@ class StatusCode():
     Success = 1
     ErrorParams = 2
     IsNotAgent = 3
+    ObjectDoesNotExist = 4
 
 
 def mysql_config():
