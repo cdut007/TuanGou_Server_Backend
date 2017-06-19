@@ -1,7 +1,7 @@
 from  rest_framework import serializers
 
 from models import Banner, GoodsClassify, GroupBuy, Goods, GroupBuyGoods, GoodsGallery
-from ilinkgo.dbConfig import image_path
+from ilinkgo.config import image_path
 from utils.common import utc_time_to_local_time
 
 class BannerSerializer(serializers.ModelSerializer):
