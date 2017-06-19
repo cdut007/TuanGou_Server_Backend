@@ -29,4 +29,4 @@ class AgentApplySerializer(serializers.ModelSerializer):
 class AgentOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgentOrder
-        fields = ('id', 'group_buy', 'user', 'goods_ids', 'add_time')
+        fields = ('id', 'group_buy', 'user', 'goods_ids')
