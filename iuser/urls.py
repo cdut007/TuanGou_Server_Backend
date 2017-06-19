@@ -7,6 +7,6 @@ urlpatterns = [
     url(r'^user$', UserView.as_view(), name='user'),
     url(r'user_address', UserAddressView.as_view(), name='user_address'),
     url(r'agent_order', AgentOrderView.as_view(), name='agent_order'),
-    url(r'agent_apply', AgentApplyView.as_view(), name='agent_apply')
+    url(r'agent_apply', AgentApplyView.as_view(), name='agent_apply'),
 ]
 

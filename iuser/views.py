@@ -1,9 +1,13 @@
+from datetime import datetime
+from django.db.models import Sum
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
 from utils.common import format_body
-from models import UserProfile, AgentOrder
+from market.models import GroupBuyGoods
+from market.serializers import GroupBuyGoodsSerializer
+from models import UserProfile, AgentOrder, GenericOrder
 from serializers import UserProfileSerializer, UserAddressSerializer, AgentOrderSerializer, AgentApplySerializer
 
 from Authentication import Authentication
@@ -78,7 +82,29 @@ class AgentApplyView(APIView):
 
 
 class AgentOrderView(APIView):
-    # def get(self, request):
+    """
+    status: 0: going, 1:done
+    """
+    @Authentication.token_required
+    def get(self, request):
+        status = request.GET.get('status', '1')
+        agent_orders = AgentOrder.objects.filter(user=self.get.user_id)
+        if status == '1':
+            agent_orders = agent_orders.filter(group_buy__end_time__lt=datetime.now())
+        elif status == '0':
+            agent_orders = agent_orders.filter(group_buy__end_time__gte=datetime.now())
+
+        orders_serializer = AgentOrderSerializer(agent_orders, many=True)
+        for agent_order in orders_serializer.data:
+            all_goods = GroupBuyGoods.objects.filter(id__in=str(agent_order['goods_ids']).split(','))
+            goods_serializer = GroupBuyGoodsSerializer(all_goods, many=True)
+            for single_goods in  goods_serializer.data:
+                generic_orders = GenericOrder.objects.filter(agent_code=self.get.user_id, goods=single_goods['id'])
+                single_goods['purchased'] =  generic_orders.aggregate(Sum('quantity'))['quantity__sum']
+            agent_order['goods'] = goods_serializer.data
+
+        return Response(format_body(1, 'Success', {'statuc': orders_serializer.data}))
+
     @Authentication.token_required
     def post(self, request):
         user = UserProfile.objects.get(pk=self.post.user_id)
