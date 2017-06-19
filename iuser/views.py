@@ -47,7 +47,7 @@ class UserAddressView(APIView):
     def get(self, request):
         user = UserProfile.objects.get(pk=self.get.user_id)
         if user.phone_num == '' or user.address == '':
-            return Response(format_body(4, 'Object does not exist', ''))
+            return Response(format_body(5, 'Object does not exist', ''))
         serializer = UserAddressSerializer(user)
         return Response(format_body(1, 'Success', {'user_address': serializer.data}))
 
