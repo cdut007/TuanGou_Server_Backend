@@ -57,7 +57,7 @@ class UserAddressView(APIView):
         serializer = UserAddressSerializer(data=request.data, instance=user)
         if serializer.is_valid():
             serializer.save()
-            return Response(format_body(1, 'Success', {'status': 'update address success'}))
+            return Response(format_body(1, 'Success', ''))
         return Response(format_body(2, serializer.errors, ''))
 
 
