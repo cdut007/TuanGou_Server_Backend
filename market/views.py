@@ -3,12 +3,13 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
+from django.db.models import Sum
 from datetime import datetime
 from utils.common import format_body
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
 from ilinkgo.config import image_path
-from iuser.models import AgentOrder, UserProfile
+from iuser.models import AgentOrder, UserProfile, GenericOrder
 
 # Create your views here.
 
@@ -93,14 +94,19 @@ class AgentHomePageList(APIView):
 
 
 class GroupBuyList(APIView):
-    def post(self, request, pk, format=None):
-        """
-        group_buy_list/<classify_id>
-        """
-        classify = GoodsClassify.objects.filter(pk=pk).first()
-        classify_serializer = GoodsClassifySerializer(classify)
+    def get(self, request, format=None):
+        """group_buy_list"""
+        classify_id = request.GET.get('classify', '1')
+        agent_code = request.GET.get('agent_code' ,'')
 
-        group_buy = GroupBuy.objects.filter(goods_classify=pk)
+        classify = GoodsClassify.objects.filter(pk=classify_id).first()
+        classify_serializer = GoodsClassifySerializer(classify)
+        if agent_code:
+            user = UserProfile.objects.get(openid=agent_code)
+            group_buy = GroupBuy.objects.filter(goods_classify=classify_id, agentorder__user=user.id)
+        else:
+            group_buy = GroupBuy.objects.filter(goods_classify=classify_id)
+
         group_buy_serializer = GroupBuySerializer(group_buy, many=True)
 
         data = classify_serializer.data
@@ -110,17 +116,22 @@ class GroupBuyList(APIView):
 
 
 class GoodsList(APIView):
-    def get(self, request, pk):
-        """
-        group_buy_detail/<group_buy_id>
-        """
-        group_buy = GroupBuy.objects.filter(pk=pk).first()
+    def get(self, request):
+        """group_buy_detail"""
+        group_buy_id = request.GET.get('group_buy', '1')
+        agent_code = request.GET.get('agent_code' ,'')
+
+        group_buy = GroupBuy.objects.filter(pk=group_buy_id).first()
         group_buy_serializer = GroupBuySerializer(group_buy)
 
-        classify = GoodsClassify.objects.filter(id=group_buy.goods_classify_id).first()
-        class_serializer = GoodsClassifySerializer(classify)
+        class_serializer = GoodsClassifySerializer(group_buy.goods_classify)
+        if agent_code:
+            agent_user = UserProfile.objects.get(openid=agent_code)
+            agent_order = AgentOrder.objects.get(group_buy=group_buy.id, user=agent_user.id)
+            goods = GroupBuyGoods.objects.filter(id__in=str(agent_order.goods_ids).split(','))
+        else:
+            goods = GroupBuyGoods.objects.filter(group_buy=group_buy.id)
 
-        goods = GroupBuyGoods.objects.filter(group_buy=group_buy.id)
         goods_serializer = GroupBuyGoodsSerializer(goods, many=True)
 
         res = group_buy_serializer.data
@@ -131,12 +142,13 @@ class GoodsList(APIView):
 
 
 class GroupBuyGoodsDetail(APIView):
-    def get(self, request, pk, format=None):
-        """
-        goods_detail/<goods_lid>
-        """
+    def get(self, request, format=None):
+        """goods_detail """
+        goods_id = request.GET.get('goods', '1')
+        agent_code = request.GET.get('agent_code' ,'')
+
         try:
-            goods = GroupBuyGoods.objects.get(pk=pk)
+            goods = GroupBuyGoods.objects.get(pk=goods_id)
         except GroupBuyGoods.DoesNotExist:
             return Response(format_body(0,'Object does not exist',''))
 
@@ -146,7 +158,13 @@ class GroupBuyGoodsDetail(APIView):
         for image_itme in serializer.data['goods']['images']:
             image_itme['image'] = path + image_itme['image']
 
-        return Response(format_body(1, 'success', serializer.data))
+        res = serializer.data
+        if agent_code:
+            generic_orders = GenericOrder.objects.filter(agent_code=agent_code, goods=goods_id)
+            purchased = generic_orders.aggregate(Sum('quantity'))['quantity__sum']
+            res['stock'] -=  purchased
+
+        return Response(format_body(1, 'success', res))
 
 
 
