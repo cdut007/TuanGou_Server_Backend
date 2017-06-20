@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
+from datetime import datetime
 from utils.common import format_body
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
 from ilinkgo.config import image_path
+from iuser.models import AgentOrder, UserProfile
 
 # Create your views here.
 
@@ -59,6 +61,35 @@ class HomePageList(APIView):
             res.append({'classify': classify_info, 'goods': goods_info})
 
         return Response(format_body(1, 'success', res))
+
+
+class AgentHomePageList(APIView):
+    def get(self, request):
+        agent_code = request.GET.get('agent_code')
+        agent_user = UserProfile.objects.get(openid=agent_code)
+        res = []
+        classifies = GroupBuy.objects.filter(agentorder__user=agent_user.id, end_time__gt=datetime.now()).values('goods_classify').distinct()
+        path = image_path()
+        for classify in classifies:
+            classify = GoodsClassify.objects.get(pk=classify['goods_classify'])
+            classify_serializer = GoodsClassifySerializer(classify)
+            group_buy = GroupBuy.objects.filter(agentorder__user=agent_user.id,
+                                                end_time__gt=datetime.now(),goods_classify=classify.id).order_by('-add_time').first()
+            agent_order = AgentOrder.objects.get(group_buy=group_buy.id, user=agent_user.id)
+            group_buy_goods = GroupBuyGoods.objects.filter(id__in=str(agent_order.goods_ids).split(','))
+            goods_info = []
+            for goods in group_buy_goods:
+                image = GoodsGallery.objects.filter(goods=goods.goods_id, is_primary=1).first()
+                goods_info.append({
+                    'goods_id': goods.id,
+                    'image': path + image.image.url
+                })
+            res.append({
+                'classify': classify_serializer.data,
+                'goods': goods_info
+            })
+
+        return Response(format_body(1, 'Success', res))
 
 
 class GroupBuyList(APIView):
