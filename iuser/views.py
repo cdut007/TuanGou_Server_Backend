@@ -115,6 +115,7 @@ class AgentOrderView(APIView):
             return Response(format_body(3, 'The user is not agent', ''))
 
         request.data['user'] = self.post.user_id
+        request.data['goods_ids'] = ','.join(map(str, request.data['goods_ids']))
         serializer = AgentOrderSerializer(data=request.data)
         if serializer.is_valid():
             order_record = AgentOrder.objects.filter(user=user.id, group_buy=serializer.validated_data['group_buy'])
