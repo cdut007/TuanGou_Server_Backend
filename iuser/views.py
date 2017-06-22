@@ -89,9 +89,9 @@ class AgentOrderView(APIView):
     def get(self, request):
         status = request.GET.get('status', '1')
         agent_orders = AgentOrder.objects.filter(user=self.get.user_id)
-        if status == '1':
+        if status == '0':
             agent_orders = agent_orders.filter(group_buy__end_time__lt=datetime.now())
-        elif status == '0':
+        elif status == '1':
             agent_orders = agent_orders.filter(group_buy__end_time__gte=datetime.now())
 
         orders_serializer = AgentOrderSerializer(agent_orders, many=True)
