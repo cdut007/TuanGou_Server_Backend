@@ -101,7 +101,7 @@ class AgentOrderView(APIView):
             goods_serializer = GroupBuyGoodsSerializer(all_goods, many=True)
             for single_goods in  goods_serializer.data:
                 generic_orders = GenericOrder.objects.filter(agent_code=self.get.user_id, goods=single_goods['id'])
-                single_goods['purchased'] =  generic_orders.aggregate(Sum('quantity'))['quantity__sum']
+                single_goods['purchased'] =  generic_orders.aggregate(Sum('quantity'))['quantity__sum'] if generic_orders.aggregate(Sum('quantity'))['quantity__sum'] else 0
             agent_order['classify'] = GoodsClassifySerializer(group_buy.goods_classify).data
             agent_order['group_buy'] =GroupBuySerializer(group_buy).data
             agent_order['goods'] = goods_serializer.data
