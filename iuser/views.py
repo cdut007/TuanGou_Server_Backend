@@ -139,12 +139,12 @@ class ShoppingCartView(APIView):
         for group_buy in group_buys_serializer.data:
             classify_serializer = GoodsClassifySerializer(GoodsClassify.objects.get(group_buy=group_buy['id']))
             group_buy['classify'] = classify_serializer.data
-            goods = GroupBuyGoods.objects.filter(
-                group_buy=group_buy['id'],
-                genericorder__user=self.get.user_id,
-                genericorder__agent_code=agent_code
-            )
-            group_buy['goods'] = GroupBuyGoodsSerializer(goods, many=True).data
+            cart_goods = GenericOrder.objects.filter(user=self.get.user_id, agent_code=agent_code)
+            cart_goods_serializer = ShoppingCartSerializer(cart_goods, many=True)
+            for item in cart_goods_serializer.data:
+                goods_info = GroupBuyGoodsSerializer(GroupBuyGoods.objects.get(pk=item['goods']))
+                item['goods'] = goods_info.data
+            group_buy['cart_goods'] = cart_goods_serializer.data
         return Response(format_body(1, 'Success', {'group_buy': group_buys_serializer.data}))
 
     @Authentication.token_required

@@ -37,3 +37,12 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = GenericOrder
         fields = ('id', 'user', 'goods', 'quantity','agent_code', 'type')
+
+    def to_representation(self, instance):
+        data = super(ShoppingCartSerializer, self).to_representation(instance)
+        data['cart_id'] = data['id']
+        data.pop('id')
+        data.pop('type')
+        data.pop('agent_code')
+        data.pop('user')
+        return data
