@@ -34,7 +34,6 @@ class AgentOrderSerializer(serializers.ModelSerializer):
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
-    goods = GroupBuyGoodsSerializer()
     class Meta:
         model = GenericOrder
         fields = ('id', 'user', 'goods', 'quantity','agent_code', 'type')
