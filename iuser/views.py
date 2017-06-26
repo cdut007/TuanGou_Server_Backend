@@ -5,10 +5,10 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from utils.common import format_body
-from market.models import GroupBuyGoods, GroupBuy
+from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
 from market.serializers import GroupBuyGoodsSerializer, GoodsClassifySerializer, GroupBuySerializer
 from models import UserProfile, AgentOrder, GenericOrder
-from serializers import UserProfileSerializer, UserAddressSerializer, AgentOrderSerializer, AgentApplySerializer
+from serializers import UserProfileSerializer, UserAddressSerializer, AgentOrderSerializer, AgentApplySerializer, ShoppingCartSerializer
 
 from Authentication import Authentication
 # Create your views here.
@@ -124,3 +124,62 @@ class AgentOrderView(APIView):
             serializer.save()
             return Response(format_body(1, 'Success', {'agent_url': user.openid}))
         return Response(format_body(2, serializer.errors, ''))
+
+
+class ShoppingCartView(APIView):
+    @Authentication.token_required
+    def get(self, request):
+        agent_code = request.GET.get('agent_code', '')
+        group_buys = GroupBuy.objects.filter(
+            group_buy_goods__genericorder__user=self.get.user_id,
+            group_buy_goods__genericorder__agent_code=agent_code
+        ).distinct()
+
+        group_buys_serializer = GroupBuySerializer(group_buys, many=True)
+        for group_buy in group_buys_serializer.data:
+            classify_serializer = GoodsClassifySerializer(GoodsClassify.objects.get(group_buy=group_buy['id']))
+            group_buy['classify'] = classify_serializer.data
+            goods = GroupBuyGoods.objects.filter(
+                group_buy=group_buy['id'],
+                genericorder__user=self.get.user_id,
+                genericorder__agent_code=agent_code
+            )
+            group_buy['goods'] = GroupBuyGoodsSerializer(goods, many=True).data
+        return Response(format_body(1, 'Success', {'group_buy': group_buys_serializer.data}))
+
+    @Authentication.token_required
+    def post(self, request):
+        request.data['user'] = self.post.user_id
+        request.data['type'] = 'cart'
+        serializer = ShoppingCartSerializer(data=request.data)
+        if serializer.is_valid():
+            record = GenericOrder.objects.filter(
+                user=self.post.user_id,
+                agent_code=request.data['agent_code'],
+                goods=request.data['goods']).first()
+            if record:
+                record.quantity += request.data['quantity']
+                record.save()
+            else:
+                serializer.save()
+            return Response(format_body(1, 'Success', ''))
+        return Response(format_body(2, serializer.errors, ''))
+
+    @Authentication.token_required
+    def put(self, request):
+        try:
+            cart = GenericOrder.objects.get(pk=request.data['cart_id'])
+            cart.quantity = request.data['quantity']
+            cart.save()
+        except GenericOrder.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
+        return Response(format_body(1, 'Success', ''))
+
+    @Authentication.token_required
+    def delete(self, request):
+        try:
+            cart = GenericOrder.objects.get(pk=request.data['cart_id'])
+            cart.delete()
+        except GenericOrder.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
+        return Response(format_body(1, 'Success', ''))

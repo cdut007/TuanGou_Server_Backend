@@ -1,7 +1,8 @@
 # _*_ coding: utf-8 _*_
 from  rest_framework import serializers
 
-from  models import UserProfile, AgentOrder, AgentApply
+from  models import UserProfile, AgentOrder, AgentApply, GenericOrder
+from market.serializers import GroupBuyGoodsSerializer
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -30,3 +31,10 @@ class AgentOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgentOrder
         fields = ('id', 'group_buy', 'user', 'goods_ids')
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    goods = GroupBuyGoodsSerializer()
+    class Meta:
+        model = GenericOrder
+        fields = ('id', 'user', 'goods', 'quantity','agent_code', 'type')
