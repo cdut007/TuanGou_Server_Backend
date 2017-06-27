@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 from  rest_framework import serializers
 
-from  models import UserProfile, AgentOrder, AgentApply, GenericOrder
+from  models import UserProfile, AgentOrder, AgentApply, ShoppingCart
 from market.serializers import GroupBuyGoodsSerializer
 
 
@@ -35,14 +35,20 @@ class AgentOrderSerializer(serializers.ModelSerializer):
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
-        model = GenericOrder
-        fields = ('id', 'user', 'goods', 'quantity','agent_code', 'type')
+        model = ShoppingCart
+        fields = ('id', 'user', 'goods', 'quantity','agent_code')
 
     def to_representation(self, instance):
         data = super(ShoppingCartSerializer, self).to_representation(instance)
         data['cart_id'] = data['id']
         data.pop('id')
-        data.pop('type')
         data.pop('agent_code')
         data.pop('user')
         return data
+
+
+# class GenericOrderSerializer(serializers.ModelSerializer):
+#     goods = serializers.ListField(child=serializers.JSONField())
+#     class Meta:
+#         model = ShoppingCartSerializer
+#         fields = ('id', 'user', 'goods', 'quantity', 'agent_code', 'type')

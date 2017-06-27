@@ -59,17 +59,15 @@ class AgentOrder(models.Model):
         return self.id
 
 
-class GenericOrder(models.Model):
+class ShoppingCart(models.Model):
     user = models.ForeignKey(UserProfile, verbose_name='购买人')
     goods = models.ForeignKey(GroupBuyGoods, verbose_name='商品')
     agent_code = models.CharField(max_length=256, verbose_name='代理人code')
     quantity = models.PositiveIntegerField(default=1, verbose_name='数量')
-    type = models.CharField(max_length=10, choices=(('cart', u'购物车'), ('purchase', u'购买')), default='cart', verbose_name='类型')
-    status = models.SmallIntegerField(verbose_name='状态', default=1)
     add_time = models.DateTimeField(default=datetime.now, verbose_name='购买时间')
 
     class Meta:
-        verbose_name = '用户订单'
+        verbose_name = '购物车'
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
