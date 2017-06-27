@@ -73,3 +73,19 @@ class ShoppingCart(models.Model):
     def __unicode__(self):
         return self.user.nickname + self.goods.goods.name
 
+
+class GenericOrder(models.Model):
+    user = models.ForeignKey(UserProfile, verbose_name='购买人')
+    agent_code = models.CharField(max_length=256, verbose_name='代理人code')
+    goods = models.ForeignKey(GroupBuyGoods, verbose_name='商品', default=1)
+    quantity = models.PositiveIntegerField(default=1, verbose_name='数量')
+    add_time = models.DateTimeField(default=datetime.now, verbose_name='购买时间')
+    status = models.BooleanField(default=True, verbose_name='取消状态')
+
+    class Meta:
+        verbose_name = '普通订单'
+        verbose_name_plural = verbose_name
+
+    def __unicode__(self):
+        return self.id
+
