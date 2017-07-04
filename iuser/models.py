@@ -12,7 +12,7 @@ class UserProfile(models.Model):
     nickname = models.CharField(max_length=64, verbose_name=u'昵称')
     openid = models.CharField(max_length=256, verbose_name='openId')
     unionid = models.CharField(max_length=256, verbose_name='unionid')
-    sex = models.CharField(max_length=2, choices=(('1', u'男'), ('2', u'女')), default='1', verbose_name='性别')
+    sex = models.CharField(max_length=2, choices=(('0', u'无'), ('1', u'男'), ('2', u'女')), default='1', verbose_name='性别')
     province = models.CharField(max_length=32, verbose_name='省份', blank=True)
     city = models.CharField(max_length=32, verbose_name='城市',  blank=True)
     country = models.CharField(max_length=32, verbose_name='国家',  blank=True)
