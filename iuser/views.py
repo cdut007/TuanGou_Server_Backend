@@ -52,7 +52,10 @@ class WebUserView(APIView):
     def get(self,request):
         code = request.GET.get('code', '')
         data = code_to_access_token(code)
-        user_info = access_token_to_user_info(data['access_token'], data['openid'])
+        try:
+            user_info = access_token_to_user_info(data['access_token'], data['openid'])
+        except KeyError:
+            return Response(format_body(6, 'code error', ''))
         serializer = UserProfileSerializer(data=user_info)
         if not serializer.is_valid():
             return Response(format_body(2, 'ErrorParams, UserInfo', serializer.errors))

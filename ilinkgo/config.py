@@ -9,6 +9,7 @@ class StatusCode():
     IsNotAgent = 3
     hasRecord = 4
     ObjectDoesNotExist = 5
+    KeyError = 6
 
 
 
