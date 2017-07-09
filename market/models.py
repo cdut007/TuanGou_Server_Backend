@@ -52,6 +52,7 @@ class GroupBuy(models.Model):
 
 class Goods(models.Model):
     name = models.CharField(max_length=32, verbose_name=u'名称')
+    desc = models.TextField(verbose_name='描述', default='')
 
     class Meta:
         verbose_name = u'商品'

@@ -25,9 +25,19 @@ class GroupBuyAdmin(admin.ModelAdmin):
     inlines = [GroupBuyGoodsInline]
 
 
+class GoodsAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    class Media:
+        js = (
+            '/static/js/kindeditor/kindeditor-all.js',
+            '/static/js/kindeditor/lang/zh_CN.js',
+            '/static/js/kindeditor/config.js'
+        )
+
+
 admin.site.register(Banner)
 admin.site.register(GoodsClassify)
 admin.site.register(GroupBuy, GroupBuyAdmin)
-admin.site.register(Goods)
+admin.site.register(Goods, GoodsAdmin)
 admin.site.register(GroupBuyGoods)
 admin.site.register(GoodsGallery)

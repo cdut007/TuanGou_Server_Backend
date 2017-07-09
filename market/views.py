@@ -8,6 +8,7 @@ from datetime import datetime
 from utils.common import format_body
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
+from serializers import UploadImageSerializer
 from ilinkgo.config import image_path
 from iuser.models import AgentOrder, UserProfile
 
@@ -167,4 +168,13 @@ class GroupBuyGoodsDetail(APIView):
         return Response(format_body(1, 'success', res))
 
 
-
+class UploadImageVIew(APIView):
+    def post(self, request):
+        if request.data.has_key('imgFile'):
+            image = request.data['imgFile']
+            destination = open('images/' + image.name, 'wb+')
+            for chunk in image.chunks():
+                destination.write(chunk)
+                destination.close()
+            return Response({'error': 0, 'url': 'http://192.168.239.129:8000/images/'+image.name})
+        return Response({'error':1, 'message': 'file error'})

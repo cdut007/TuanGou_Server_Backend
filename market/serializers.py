@@ -66,3 +66,8 @@ class GoodsClassifySerializer(serializers.ModelSerializer):
         data['icon'] = path + data['icon']
         return data
 
+
+class UploadImageSerializer(serializers.Serializer):
+    image = serializers.ImageField(use_url='images/%Y/%m')
+
+
