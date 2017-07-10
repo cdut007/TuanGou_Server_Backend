@@ -4,9 +4,16 @@ from django import forms
 from models import Banner,GoodsClassify,GroupBuy,Goods, GroupBuyGoods, GoodsGallery
 # Register your models here.
 
+
+class GoodsGalleryInline(admin.TabularInline):
+    model = GoodsGallery
+    extra = 0
+
+
 class GroupBuyGoodsInline(admin.TabularInline):
     model = GroupBuyGoods
     extra = 0
+
 
 class GroupBuyGoodsForm(forms.ModelForm):
     class Meta:
@@ -27,6 +34,7 @@ class GroupBuyAdmin(admin.ModelAdmin):
 
 class GoodsAdmin(admin.ModelAdmin):
     list_display = ('name',)
+    inlines = [GoodsGalleryInline]
     class Media:
         js = (
             '/static/js/kindeditor/kindeditor-all.js',

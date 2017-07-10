@@ -31,7 +31,7 @@ class GoodsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Goods
-        fields = ('name','images')
+        fields = ('name', 'desc', 'images')
 
 
 class GroupBuyGoodsSerializer(serializers.ModelSerializer):

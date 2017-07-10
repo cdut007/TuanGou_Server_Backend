@@ -176,5 +176,5 @@ class UploadImageVIew(APIView):
             for chunk in image.chunks():
                 destination.write(chunk)
                 destination.close()
-            return Response({'error': 0, 'url': 'http://192.168.239.129:8000/images/'+image.name})
+            return Response({'error': 0, 'url':  image_path() + 'images/'+image.name})
         return Response({'error':1, 'message': 'file error'})
