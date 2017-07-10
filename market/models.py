@@ -84,7 +84,7 @@ class GoodsGallery(models.Model):
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
 
     class Meta:
-        verbose_name = u'商品图集'
+        verbose_name = u'商品图片'
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
