@@ -4,11 +4,11 @@ class StatusCode():
     TokenNeeded = -1
     TokenExpired = -2
     TokenInvalid = -3
+    ObjectDoesNotExist = 0
     Success = 1
     ErrorParams = 2
     IsNotAgent = 3
     hasRecord = 4
-    ObjectDoesNotExist = 5
     KeyError = 6
 
 
