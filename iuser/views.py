@@ -19,7 +19,10 @@ from Authentication import Authentication
 class UserView(APIView):
     @Authentication.token_required
     def get(self, request):
-        user_profile = UserProfile.objects.get(pk=self.get.user_id)
+        try:
+            user_profile = UserProfile.objects.get(pk=self.get.user_id)
+        except UserProfile.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
         serializer = UserProfileSerializer(user_profile)
         return Response(format_body(1, 'Success', {'user_profile': serializer.data}))
 
