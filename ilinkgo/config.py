@@ -12,7 +12,6 @@ class StatusCode():
     KeyError = 6
 
 
-
 def mysql_config():
     """load configuration"""
     mode = os.environ.get('MODE', '')
