@@ -3,6 +3,7 @@ from  rest_framework import serializers
 
 from  models import UserProfile, AgentOrder, AgentApply, ShoppingCart, GenericOrder
 from market.serializers import GroupBuyGoodsSerializer
+from ilinkgo.config import web_link
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -10,6 +11,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ('id','nickname', 'openid', 'sex', 'province', 'city', 'country', 'headimgurl', 'privilege', 'unionid')
+
+    def to_representation(self, instance):
+        data = super(UserProfileSerializer, self).to_representation(instance)
+        data['agent_url'] = web_link() + '?' + data['openid'] if instance.is_agent else ''
+        data.pop('openid')
+        data.pop('unionid')
+        data.pop('privilege')
+        return data
 
 
 class UserAddressSerializer(serializers.ModelSerializer):

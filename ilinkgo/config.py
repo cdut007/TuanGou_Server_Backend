@@ -59,4 +59,7 @@ def image_path():
 
     return path
 
+def web_link():
+    return 'http://www.ailinkgo.com/'
+
 
