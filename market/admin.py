@@ -6,12 +6,16 @@ from models import Banner,GoodsClassify,GroupBuy,Goods, GroupBuyGoods, GoodsGall
 
 
 class GoodsGalleryInline(admin.TabularInline):
+    verbose_name = ''
+    verbose_name_plural = ''
     model = GoodsGallery
     extra = 0
     suit_classes = 'suit-tab suit-tab-gallery'
 
 
 class GroupBuyGoodsInline(admin.TabularInline):
+    verbose_name = ''
+    verbose_name_plural = ''
     model = GroupBuyGoods
     extra = 0
     suit_classes = 'suit-tab suit-tab-goods'
