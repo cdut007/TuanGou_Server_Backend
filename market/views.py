@@ -29,7 +29,7 @@ class BannerList(APIView):
     def get(self,request, format=None):
         banners = Banner.objects.filter(is_show=1)
         banner_serializer =  BannerSerializer(banners, many=True)
-        return Response(format_body(1, 'success', {'images': banner_serializer.data}))
+        return Response(format_body(1, 'Success', {'images': banner_serializer.data}))
 
 
 class HomePageList(APIView):
@@ -62,7 +62,7 @@ class HomePageList(APIView):
 
             res.append({'classify': classify_info, 'goods': goods_info})
 
-        return Response(format_body(1, 'success', res))
+        return Response(format_body(1, 'Success', res))
 
 
 class AgentHomePageList(APIView):
@@ -113,7 +113,7 @@ class GroupBuyList(APIView):
         data = classify_serializer.data
         data['group_buy'] = group_buy_serializer.data
 
-        return Response(format_body(1, 'success', data))
+        return Response(format_body(1, 'Success', data))
 
 
 class GoodsList(APIView):
@@ -139,7 +139,7 @@ class GoodsList(APIView):
         res['classify'] = class_serializer.data
         res['group_buy_goods'] = goods_serializer.data
 
-        return Response(format_body(1, 'success', res))
+        return Response(format_body(1, 'Success', res))
 
 
 class GroupBuyGoodsDetail(APIView):
@@ -165,7 +165,7 @@ class GroupBuyGoodsDetail(APIView):
         #     purchased = generic_orders.aggregate(Sum('quantity'))['quantity__sum']
         #     res['stock'] -=  purchased
 
-        return Response(format_body(1, 'success', res))
+        return Response(format_body(1, 'Success', res))
 
 
 class UploadImageVIew(APIView):

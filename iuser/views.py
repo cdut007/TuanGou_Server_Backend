@@ -41,7 +41,7 @@ class UserView(APIView):
         serializer = UserProfileSerializer(data=request.data, instance=user)
         if serializer.is_valid():
             serializer.save()
-            return Response(format_body(1, 'success',''))
+            return Response(format_body(1, 'Success',''))
         return Response(format_body(2, serializer.errors, ''))
 
     def delete(self, request, pk):
