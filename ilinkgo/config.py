@@ -20,14 +20,14 @@ def mysql_config():
     if mode == 'PRODUCTION':
         mysql_config = {
             'name': 'ilinkgo',
-            'user': 'root',
-            'password': 'pPt87G6c9FCG2117',
+            'user': 'ilinkusr',
+            'password': 'I1InkUsr%710',
         }
     elif mode == 'TESTING':
        mysql_config = {
             'name': 'ilinkgo',
-            'user': 'root',
-            'password': 'pPt87G6c9FCG2117',
+            'user': 'ilinkusr',
+            'password': 'I1InkUsr%710',
        }
     else:
         mysql_config = {
@@ -45,7 +45,7 @@ def image_path():
     if mode == 'PRODUCTION':
         path = ''
     elif mode == 'TESTING':
-        path = 'http://47.88.139.113:3000/'
+        path = 'http://47.90.86.229:3000/'
     else:
         path = 'http://192.168.222.128:3000/'
 
