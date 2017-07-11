@@ -29,6 +29,12 @@ def mysql_config():
             'user': 'ilinkusr',
             'password': 'I1InkUsr%710',
        }
+    elif mode == 'OLD_TESTING':
+        mysql_config = {
+            'name': 'ilinkgo',
+            'user': 'root',
+            'password': 'pPt87G6c9FCG2117',
+        }
     else:
         mysql_config = {
             'name': 'ilinkgo',
@@ -46,6 +52,8 @@ def image_path():
         path = ''
     elif mode == 'TESTING':
         path = 'http://47.90.86.229:3000/'
+    elif mode == 'OLD_TESTING':
+        path = 'http://47.88.139.113:3000/'
     else:
         path = 'http://192.168.222.128:3000/'
 

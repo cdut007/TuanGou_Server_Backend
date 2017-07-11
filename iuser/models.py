@@ -38,7 +38,7 @@ class AgentApply(models.Model):
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
 
     class Meta:
-        verbose_name = '申请成为团长'
+        verbose_name = u'申请成为团长'
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
@@ -52,7 +52,7 @@ class AgentOrder(models.Model):
     add_time = models.DateTimeField(default=datetime.now, verbose_name='申请时间')
 
     class Meta:
-        verbose_name = '团长订单'
+        verbose_name = u'团长订单'
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
@@ -67,7 +67,7 @@ class ShoppingCart(models.Model):
     add_time = models.DateTimeField(default=datetime.now, verbose_name='购买时间')
 
     class Meta:
-        verbose_name = '购物车'
+        verbose_name = u'购物车'
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
@@ -83,7 +83,7 @@ class GenericOrder(models.Model):
     status = models.BooleanField(default=True, verbose_name='取消状态')
 
     class Meta:
-        verbose_name = '普通订单'
+        verbose_name = u'普通订单'
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
