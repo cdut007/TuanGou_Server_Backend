@@ -4,6 +4,6 @@ KindEditor.ready(function(K) {
         width: '800px',
         height: '450px',
         themeType: 'simple',
-        uploadJson: 'http://192.168.222.128:3000/api/v1/upload_image?format=json'
+        uploadJson: 'api/v1/upload_image?format=json'
     });
 });

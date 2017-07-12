@@ -1,7 +1,7 @@
 from datetime import datetime
 from django import forms
 from models import GroupBuy
-from suit.widgets import SuitSplitDateTimeWidget, HTML5Input
+from suit.widgets import SuitSplitDateTimeWidget
 
 class GroupBuyForm(forms.ModelForm):
     class Meta:

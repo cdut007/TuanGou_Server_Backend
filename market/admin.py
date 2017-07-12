@@ -10,6 +10,7 @@ class GoodsGalleryInline(admin.TabularInline):
     verbose_name_plural = ''
     model = GoodsGallery
     extra = 0
+    fields = ['image', 'is_primary']
     suit_classes = 'suit-tab suit-tab-gallery'
 
 
@@ -33,6 +34,15 @@ class GroupBuyAdmin(admin.ModelAdmin):
         }),
     )
     suit_form_tabs = (('general', 'General'), ('goods', 'Goods'))
+
+    class Media:
+        css = {
+            "all": ('/static/js/chosen.jquery/chosen.css',)
+        }
+        js = (
+            '/static/js/chosen.jquery/chosen.jquery.js',
+            '/static/js/chosen.jquery/config.js'
+        )
 
 
 class GoodsAdmin(admin.ModelAdmin):
