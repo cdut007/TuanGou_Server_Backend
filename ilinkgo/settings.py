@@ -1,3 +1,4 @@
+# _*_ coding:utf-8 _*_
 """
 Django settings for ilinkgo project.
 
@@ -130,15 +131,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Singapore'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -181,3 +182,31 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
     'Pragma',
 )
+
+SUIT_CONFIG = {
+    'ADMIN_NAME': u'Ilinkgo',
+    'CONFIRM_UNSAVED_CHANGES': False,
+    'SEARCH_URL': '',
+    # 'MENU_EXCLUDE': ('sites'),
+    'MENU': (
+        {
+            'app': 'iuser',
+            'label': u'用户',
+            'icon': 'icon-briefcase',
+            'models': (
+                {'model': 'UserProfile', 'label': u'用户'},
+            )
+        },
+        {
+            'app': 'market',
+            'label': u'团购',
+            'icon': 'icon-briefcase',
+            'models': (
+                {'model': 'Banner', 'label': u'轮播图'},
+                {'model': 'Goods', 'label': u'仓库'},
+                {'model': 'GroupBuy', 'label': u'发布团购'}
+            )
+        },
+        # {'app': '456', 'label': '456', 'icon': 'icon-briefcase', 'models': ('market.', 'market.Goods')},
+    )
+}
