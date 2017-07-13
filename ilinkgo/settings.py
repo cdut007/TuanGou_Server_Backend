@@ -139,7 +139,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -191,7 +191,7 @@ SUIT_CONFIG = {
     'MENU': (
         {
             'app': 'iuser',
-            'label': u'用户',
+            'label': u'用户管理',
             'icon': 'icon-briefcase',
             'models': (
                 {'model': 'UserProfile', 'label': u'用户'},
@@ -199,7 +199,7 @@ SUIT_CONFIG = {
         },
         {
             'app': 'market',
-            'label': u'团购',
+            'label': u'团购管理',
             'icon': 'icon-briefcase',
             'models': (
                 {'model': 'Banner', 'label': u'轮播图'},
