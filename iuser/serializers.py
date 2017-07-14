@@ -14,7 +14,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
-        data['agent_url'] = web_link() + '?agent_code' + data['openid'] if instance.is_agent else ''
+        data['agent_url'] = web_link() + '?agent_code=' + data['openid'] if instance.is_agent else ''
         data.pop('openid')
         data.pop('unionid')
         data.pop('privilege')
