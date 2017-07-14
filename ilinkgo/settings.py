@@ -187,7 +187,6 @@ SUIT_CONFIG = {
     'ADMIN_NAME': u'Ilinkgo',
     'CONFIRM_UNSAVED_CHANGES': False,
     'SEARCH_URL': '',
-    # 'MENU_EXCLUDE': ('sites'),
     'MENU': (
         {
             'app': 'iuser',
@@ -206,7 +205,6 @@ SUIT_CONFIG = {
                 {'model': 'Goods', 'label': u'仓库'},
                 {'model': 'GroupBuy', 'label': u'发布团购'}
             )
-        },
-        # {'app': '456', 'label': '456', 'icon': 'icon-briefcase', 'models': ('market.', 'market.Goods')},
+        }
     )
 }
