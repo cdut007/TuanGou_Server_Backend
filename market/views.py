@@ -45,10 +45,10 @@ class HomePageList(APIView):
                 goods_info = []
                 group_buy_goods = GroupBuyGoods.objects.filter(group_buy=group_buy.id)[:6]
                 for goods in group_buy_goods:
-                    image =  GoodsGallery.objects.filter(goods=goods.goods_id, is_primary=1).first()
+                    gallery =  GoodsGallery.objects.filter(goods=goods.goods_id, is_primary=1).first()
                     goods_info.append({
                         'goods_id': goods.id,
-                        'image': path + image.image.url
+                        'image': path + gallery.image.url if gallery else ''
                     })
             else:
                 continue
