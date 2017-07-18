@@ -57,6 +57,7 @@ class HomePageList(APIView):
                 'id': classify.id,
                 'name': classify.name,
                 'desc': classify.desc,
+                'image': classify.image,
                 'icon': image_path() + classify.icon.url
             }
 

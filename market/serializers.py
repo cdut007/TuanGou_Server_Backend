@@ -63,7 +63,7 @@ class GroupBuySerializer(serializers.ModelSerializer):
 class GoodsClassifySerializer(serializers.ModelSerializer):
     class Meta:
         model = GoodsClassify
-        fields = ('name', 'desc', 'icon', 'image')
+        fields = ('id', 'name', 'desc', 'icon', 'image')
 
     def to_representation(self, instance):
         path = image_path()
