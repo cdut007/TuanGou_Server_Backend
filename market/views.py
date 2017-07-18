@@ -116,13 +116,15 @@ class GroupBuyList(APIView):
         return Response(format_body(1, 'Success', data))
 
 
-class GoodsList(APIView):
+class GroupBuyDetailView(APIView):
     def get(self, request):
         """group_buy_detail"""
         group_buy_id = request.GET.get('group_buy', '1')
         agent_code = request.GET.get('agent_code' ,'')
-
-        group_buy = GroupBuy.objects.filter(pk=group_buy_id).first()
+        try:
+            group_buy = GroupBuy.objects.filter(pk=group_buy_id).first()
+        except GroupBuy.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
         group_buy_serializer = GroupBuySerializer(group_buy)
 
         class_serializer = GoodsClassifySerializer(group_buy.goods_classify)

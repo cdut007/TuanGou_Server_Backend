@@ -33,6 +33,12 @@ class GoodsSerializer(serializers.ModelSerializer):
         model = Goods
         fields = ('name', 'desc', 'images')
 
+    def to_representation(self, instance):
+       data = super(GoodsSerializer, self).to_representation(instance)
+       if not data['images']:
+           data['images'] = [{'image': ''}]
+       return data
+
 
 class GroupBuyGoodsSerializer(serializers.ModelSerializer):
     goods = GoodsSerializer(read_only=True)
