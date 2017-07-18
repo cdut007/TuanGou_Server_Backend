@@ -50,7 +50,7 @@ def image_path():
     if mode == 'PRODUCTION':
         path = ''
     elif mode == 'TESTING':
-        path = 'http://47.90.86.229:3000/'
+        path = 'http://www.ailinkgo.com:3000/'
     elif mode == 'OLD_TESTING':
         path = 'http://47.88.139.113:3000/'
     else:
