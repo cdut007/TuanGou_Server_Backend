@@ -10,7 +10,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     privilege = serializers.ListField()
     class Meta:
         model = UserProfile
-        fields = ('id','nickname', 'openid', 'sex', 'province', 'city', 'country', 'headimgurl', 'privilege', 'unionid')
+        fields = ('id','nickname', 'openid', 'sex', 'province', 'city', 'country',
+                  'headimgurl', 'privilege', 'unionid', 'address')
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
