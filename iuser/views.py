@@ -71,6 +71,17 @@ class WebUserView(APIView):
         return Response(format_body(1, 'Success', {'token': token}))
 
 
+class AgentInfoView(APIView):
+    def get(self, request):
+        code = request.GET.get('agent_code', '')
+        try:
+            user_profile = UserProfile.objects.get(openid=code)
+        except UserProfile.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
+        serializer = UserProfileSerializer(user_profile)
+        return Response(format_body(1, 'Success', {'user_profile': serializer.data}))
+
+
 class UserAddressView(APIView):
     @Authentication.token_required
     def get(self, request):

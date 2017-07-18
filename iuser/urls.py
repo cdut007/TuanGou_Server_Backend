@@ -2,9 +2,10 @@
 from django.conf.urls import url
 
 from views import UserView, UserAddressView, AgentOrderView, AgentApplyView, ShoppingCartView, GenericOrderView
-from views import WebUserView
+from views import WebUserView, AgentInfoView
 urlpatterns = [
     url(r'^user$', UserView.as_view(), name='user'),
+    url(r'^agent_info', AgentInfoView.as_view(), name='agent_view'),
     url(r'^web_user', WebUserView.as_view(), name='web_user'),
     url(r'user_address', UserAddressView.as_view(), name='user_address'),
     url(r'agent_order', AgentOrderView.as_view(), name='agent_order'),
