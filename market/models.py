@@ -89,7 +89,3 @@ class GoodsGallery(models.Model):
 
     def __unicode__(self):
         return self.goods.name
-
-
-class Order(models.Model):
-    pass

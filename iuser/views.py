@@ -223,11 +223,21 @@ class ShoppingCartView(APIView):
 class GenericOrderView(APIView):
     @Authentication.token_required
     def get(self, request):
-        agent_code = request.GET.get('agent_code', '')
+        """
+        status: 0: going, 1:done
+        """
+        agent_code = request.GET.get('agent_code', '1')
+        status = request.GET.get('status', '')
+
         group_buys = GroupBuy.objects.filter(
             group_buy_goods__genericorder__user=self.get.user_id,
             group_buy_goods__genericorder__agent_code=agent_code
         ).distinct()
+
+        if status == '0':
+            group_buys = group_buys.filter(group_buy__end_time__lt=datetime.now())
+        elif status == '1':
+            group_buys = group_buys.filter(group_buy__end_time__gte=datetime.now())
 
         group_buys_serializer = GroupBuySerializer(group_buys, many=True)
         for group_buy in group_buys_serializer.data:
