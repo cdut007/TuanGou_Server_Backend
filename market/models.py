@@ -46,6 +46,11 @@ class GroupBuy(models.Model):
         verbose_name = u'团购'
         verbose_name_plural = verbose_name
 
+    def is_end(self):
+        return datetime.now() >= self.end_time
+    is_end.boolean = True
+    is_end.short_description = u'是否截团'
+
     def __unicode__(self):
         return self.title
 

@@ -1,8 +1,29 @@
 # _*_ coding:utf-8 _*_
 from django.contrib import admin
+from django.forms import widgets
+from django.db import models
 from forms import GroupBuyForm
 from models import Banner,GoodsClassify,GroupBuy,Goods, GroupBuyGoods, GoodsGallery
 # Register your models here.
+
+
+class MyClearableFileInput(widgets.ClearableFileInput):
+    def __init__(self):
+        super(MyClearableFileInput, self).__init__()
+        self.template_with_initial = (
+            '%(initial_text)s: <a href="%(initial_url)s">%(initial)s</a> '
+            '%(clear_template)s<br />%(input_text)s: %(input)s'
+        )
+
+    def render(self, name, value, attrs=None):
+        html = super(MyClearableFileInput, self).render(name, value, attrs)
+        return html
+
+
+class GoodsGalleryAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.ImageField: {'widget': MyClearableFileInput}
+    }
 
 
 class GoodsGalleryInline(admin.TabularInline):
@@ -24,7 +45,7 @@ class GroupBuyGoodsInline(admin.TabularInline):
 
 class GroupBuyAdmin(admin.ModelAdmin):
     form = GroupBuyForm
-    list_display = ('title', 'goods_classify', 'start_time', 'end_time', 'add_time')
+    list_display = ('title', 'goods_classify', 'is_end')
     inlines = [GroupBuyGoodsInline]
 
     fieldsets = (
@@ -67,7 +88,7 @@ admin.site.register(GroupBuy, GroupBuyAdmin)
 admin.site.register(Banner)
 admin.site.register(GoodsClassify)
 admin.site.register(Goods, GoodsAdmin)
-admin.site.register(GoodsGallery)
+admin.site.register(GoodsGallery, GoodsGalleryAdmin)
 admin.site.register(GroupBuyGoods)
 
 

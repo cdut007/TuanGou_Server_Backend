@@ -3,7 +3,7 @@ from django.forms import widgets
 from django.contrib import admin
 from suit.widgets import SuitSplitDateTimeWidget
 
-from models import UserProfile
+from models import UserProfile, AgentOrder, GroupBuyGoods
 # Register your models here.
 
 
@@ -32,5 +32,32 @@ class UserProfileAdmin(admin.ModelAdmin):
             "all": ('/static/css/switch.css',)
         }
 
+
+class AgentOrderAdmin(admin.ModelAdmin):
+    readonly_fields = ('user', 'group_buy', 'goods_ids', 'add_time')
+    list_display = ('id','user', 'group_buy', 'add_time')
+    search_fields = ('user',)
+    actions_selection_counter = True
+    date_hierarchy = 'add_time'
+    actions = None
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        render_change_form = super(AgentOrderAdmin, self).changeform_view(request, object_id, form_url, extra_context)
+        if object_id:
+            goods_ids = render_change_form.context_data['original'].goods_ids
+            goods_names = ''
+            for goods_id in goods_ids.split(','):
+                goods = GroupBuyGoods.objects.get(pk=goods_id)
+                goods_names += goods.goods.name + u', '
+            render_change_form.context_data['original'].goods_ids = goods_names
+        return render_change_form
+
+    # class Media:
+    #     js = (
+    #         '\js\iuser.admin.generic_order.js',
+    #     )
+
+
 admin.site.register(UserProfile, UserProfileAdmin)
+admin.site.register(AgentOrder, AgentOrderAdmin)
 

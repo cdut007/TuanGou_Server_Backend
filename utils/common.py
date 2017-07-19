@@ -10,5 +10,5 @@ def format_body(code, message, data):
     return res
 
 def utc_time_to_local_time(utc_time):
-    time = datetime.strptime(utc_time, '%Y-%m-%dT%H:%M:%SZ')
+    time = datetime.strptime(utc_time, '%Y-%m-%dT%H:%M:%S')
     return time.strftime('%Y-%m-%d %H:%M:%S')

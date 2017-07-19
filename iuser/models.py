@@ -46,9 +46,9 @@ class AgentApply(models.Model):
 
 
 class AgentOrder(models.Model):
-    group_buy = models.ForeignKey(GroupBuy, verbose_name='代理订单', on_delete=models.CASCADE)
-    user = models.ForeignKey(UserProfile, verbose_name='代理人')
-    goods_ids = models.CharField(max_length=64, verbose_name='选中的商品')
+    group_buy = models.ForeignKey(GroupBuy, verbose_name='团购', on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, verbose_name='团长')
+    goods_ids = models.CharField(max_length=64, verbose_name='商品')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='申请时间')
 
     class Meta:
@@ -56,7 +56,7 @@ class AgentOrder(models.Model):
         verbose_name_plural = verbose_name
 
     def __unicode__(self):
-        return self.id
+        return self.user.nickname
 
 
 class ShoppingCart(models.Model):
