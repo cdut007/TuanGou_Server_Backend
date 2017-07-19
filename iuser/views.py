@@ -235,9 +235,9 @@ class GenericOrderView(APIView):
         ).distinct()
 
         if status == '0':
-            group_buys = group_buys.filter(group_buy__end_time__lt=datetime.now())
+            group_buys = group_buys.filter(end_time__lt=datetime.now())
         elif status == '1':
-            group_buys = group_buys.filter(group_buy__end_time__gte=datetime.now())
+            group_buys = group_buys.filter(end_time__gte=datetime.now())
 
         group_buys_serializer = GroupBuySerializer(group_buys, many=True)
         for group_buy in group_buys_serializer.data:
