@@ -10,7 +10,7 @@ from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
 from serializers import UploadImageSerializer
 from ilinkgo.config import image_path
-from iuser.models import AgentOrder, UserProfile
+from iuser.models import AgentOrder, UserProfile, GenericOrder
 
 # Create your views here.
 
@@ -163,10 +163,10 @@ class GroupBuyGoodsDetail(APIView):
             image_itme['image'] = path + image_itme['image']
 
         res = serializer.data
-        # if agent_code:
-        #     generic_orders = GenericOrder.objects.filter(agent_code=agent_code, goods=goods_id)
-        #     purchased = generic_orders.aggregate(Sum('quantity'))['quantity__sum']
-        #     res['stock'] -=  purchased
+        if agent_code:
+            generic_orders = GenericOrder.objects.filter(agent_code=agent_code, goods=goods_id)
+            purchased = generic_orders.aggregate(Sum('quantity'))['quantity__sum']
+            res['stock'] -=  purchased
 
         return Response(format_body(1, 'Success', res))
 
