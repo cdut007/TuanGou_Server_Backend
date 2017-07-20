@@ -149,7 +149,7 @@ class GroupBuyGoodsDetail(APIView):
     def get(self, request, format=None):
         """goods_detail """
         goods_id = request.GET.get('goods', '1')
-        agent_code = request.GET.get('agent_code' ,'')
+        # agent_code = request.GET.get('agent_code' ,'')
 
         try:
             goods = GroupBuyGoods.objects.get(pk=goods_id)
@@ -163,10 +163,10 @@ class GroupBuyGoodsDetail(APIView):
             image_itme['image'] = path + image_itme['image']
 
         res = serializer.data
-        if agent_code:
-            generic_orders = GenericOrder.objects.filter(agent_code=agent_code, goods=goods_id)
-            purchased = generic_orders.aggregate(Sum('quantity'))['quantity__sum']
-            res['stock'] -=  purchased
+
+        generic_orders = GenericOrder.objects.filter(goods=goods_id)
+        purchased = generic_orders.aggregate(Sum('quantity'))['quantity__sum']
+        res['stock'] -=  purchased
 
         return Response(format_body(1, 'Success', res))
 
