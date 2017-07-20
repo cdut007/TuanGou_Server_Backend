@@ -8,7 +8,7 @@ class GroupBuyForm(forms.ModelForm):
         model = GroupBuy
         exclude = ['add_time']
         widgets = {
-            'start_time': SuitSplitDateTimeWidget,
+            'ship_time': SuitSplitDateTimeWidget,
             'end_time': SuitSplitDateTimeWidget
         }
 

@@ -51,7 +51,7 @@ class GroupBuyAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
             'classes': ('suit-tab', 'suit-tab-general'),
-            'fields': ('title', 'goods_classify','start_time', 'end_time')
+            'fields': ('title', 'goods_classify', 'end_time','ship_time')
         }),
     )
     suit_form_tabs = (('general', 'General'), ('goods', 'Goods'))

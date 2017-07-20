@@ -51,11 +51,11 @@ class GroupBuyGoodsSerializer(serializers.ModelSerializer):
 class GroupBuySerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupBuy
-        fields = ('id', 'title', 'start_time', 'end_time')
+        fields = ('id', 'title', 'ship_time', 'end_time')
 
     def to_representation(self, instance):
         data = super(GroupBuySerializer, self).to_representation(instance)
-        data['start_time'] = utc_time_to_local_time(data['start_time'])
+        data['ship_time'] = utc_time_to_local_time(data['ship_time'])
         data['end_time'] = utc_time_to_local_time(data['end_time'])
         return data
 

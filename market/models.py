@@ -38,8 +38,8 @@ class GroupBuy(models.Model):
     title = models.CharField(max_length=64, verbose_name='标题', default='')
     goods_classify = models.ForeignKey(GoodsClassify, related_name='group_buy',
                                        on_delete=models.CASCADE, verbose_name=u'商品类别')
-    start_time = models.DateTimeField(default=datetime.now, verbose_name='开团时间')
     end_time = models.DateTimeField(default=datetime.now, verbose_name='结束时间')
+    ship_time = models.DateTimeField(default=datetime.now, verbose_name='发货时间')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
 
     class Meta:
