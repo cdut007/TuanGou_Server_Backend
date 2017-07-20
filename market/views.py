@@ -138,6 +138,9 @@ class GroupBuyDetailView(APIView):
 
         goods_serializer = GroupBuyGoodsSerializer(goods, many=True)
 
+        for goods in goods_serializer.data:
+            goods['stock'] -=  GroupBuyGoodsDetail.purchased_amount(goods['id'])
+
         res = group_buy_serializer.data
         res['classify'] = class_serializer.data
         res['group_buy_goods'] = goods_serializer.data
@@ -164,11 +167,15 @@ class GroupBuyGoodsDetail(APIView):
 
         res = serializer.data
 
-        generic_orders = GenericOrder.objects.filter(goods=goods_id)
-        purchased = generic_orders.aggregate(Sum('quantity'))['quantity__sum']
-        res['stock'] -=  purchased
+        res['stock'] -= self.purchased_amount(goods_id)
 
         return Response(format_body(1, 'Success', res))
+
+    @staticmethod
+    def purchased_amount(goods_id):
+        generic_orders = GenericOrder.objects.filter(goods=goods_id)
+        purchased = generic_orders.aggregate(Sum('quantity'))['quantity__sum']
+        return purchased or 0
 
 
 class UploadImageVIew(APIView):
