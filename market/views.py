@@ -85,7 +85,7 @@ class AgentHomePageList(APIView):
                 image = GoodsGallery.objects.filter(goods=goods.goods_id, is_primary=1).first()
                 goods_info.append({
                     'goods_id': goods.id,
-                    'image': path + image.image.url
+                    'image': path + image.image.url if image else ''
                 })
             res.append({
                 'classify': classify_serializer.data,
