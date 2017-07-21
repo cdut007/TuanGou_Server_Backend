@@ -104,7 +104,10 @@ class UserAddressView(APIView):
 class AgentApplyView(APIView):
     @Authentication.token_required
     def post(self, request):
-        user = UserProfile.objects.get(pk=self.post.user_id)
+        try:
+            user = UserProfile.objects.get(pk=self.post.user_id)
+        except UserProfile.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
         request.data['user'] = self.post.user_id
         serializer1 = AgentApplySerializer(data=request.data)
         serializer2 = UserAddressSerializer(data=request.data, instance=user)
