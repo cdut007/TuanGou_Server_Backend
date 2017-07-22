@@ -11,13 +11,13 @@ class MyClearableFileInput(widgets.ClearableFileInput):
     def __init__(self):
         super(MyClearableFileInput, self).__init__()
         self.template_with_initial = (
-            '%(initial_text)s: <a href="%(initial_url)s">%(initial)s</a> '
-            '%(clear_template)s<br />%(input_text)s: %(input)s'
+            u'%(initial_text)s: <a href="%(initial_url)s"><img src="%(initial_url)s" width="100" height="100"/></a> '
+            u'%(clear_template)s<br />%(input_text)s: %(input)s'
         )
 
-    def render(self, name, value, attrs=None):
-        html = super(MyClearableFileInput, self).render(name, value, attrs)
-        return html
+    # def render(self, name, value, attrs=None):
+    #     super(MyClearableFileInput, self).render(name, value, attrs)
+
 
 
 class GoodsGalleryAdmin(admin.ModelAdmin):
@@ -33,6 +33,9 @@ class GoodsGalleryInline(admin.TabularInline):
     extra = 0
     fields = ['image', 'is_primary']
     suit_classes = 'suit-tab suit-tab-gallery'
+    formfield_overrides = {
+        models.ImageField: {'widget': MyClearableFileInput}
+    }
 
 
 class GroupBuyGoodsInline(admin.TabularInline):
