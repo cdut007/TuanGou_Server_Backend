@@ -53,6 +53,8 @@ def image_path():
         path = 'http://www.ailinkgo.com:3000/'
     elif mode == 'OLD_TESTING':
         path = 'http://47.88.139.113:3000/'
+    elif mode == 'HOME':
+        path = 'http://192.168.239.129:8000/'
     else:
         path = 'http://192.168.222.128:3000/'
 

@@ -15,9 +15,10 @@ class MyClearableFileInput(widgets.ClearableFileInput):
             u'%(clear_template)s<br />%(input_text)s: %(input)s'
         )
 
-    # def render(self, name, value, attrs=None):
-    #     super(MyClearableFileInput, self).render(name, value, attrs)
-
+class BannerAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.ImageField: {'widget': MyClearableFileInput}
+    }
 
 
 class GoodsGalleryAdmin(admin.ModelAdmin):
@@ -88,7 +89,7 @@ class GoodsAdmin(admin.ModelAdmin):
 
 
 admin.site.register(GroupBuy, GroupBuyAdmin)
-admin.site.register(Banner)
+admin.site.register(Banner, BannerAdmin)
 admin.site.register(GoodsClassify)
 admin.site.register(Goods, GoodsAdmin)
 admin.site.register(GoodsGallery, GoodsGalleryAdmin)
