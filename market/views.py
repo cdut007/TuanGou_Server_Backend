@@ -226,7 +226,7 @@ class FileManagerView(APIView):
             "moveup_dir_path": moveup_dir_path ,
             "current_dir_path": req_path,
             "total_count": 23,
-            "current_url": "http://192.168.239.129:8000/images/" + req_path,
+            "current_url": image_path() +'images/' + req_path,
             'file_list': file_list
         }
         return Response(data)
