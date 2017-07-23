@@ -178,7 +178,7 @@ class GroupBuyGoodsDetail(APIView):
         return purchased or 0
 
 
-class UploadImageVIew(APIView):
+class UploadImageView(APIView):
     def post(self, request):
         if request.data.has_key('imgFile'):
             image = request.data['imgFile']
@@ -188,3 +188,45 @@ class UploadImageVIew(APIView):
                 destination.close()
             return Response({'error': 0, 'url':  image_path() + 'images/'+image.name})
         return Response({'error':1, 'message': 'file error'})
+
+
+class FileManagerView(APIView):
+    def get(self, request):
+        import os
+        from ilinkgo.settings import BASE_DIR
+        req_path = request.GET.get('path')
+        file_list = list()
+        path = BASE_DIR + '/images/' + req_path
+
+        for filename in os.listdir(path):
+            item = dict()
+            _file = path + filename
+            if os.path.isdir(_file):
+                item['has_file'] = True
+                item['is_dir'] = True
+                item['is_photo'] = False
+            elif os.path.splitext(_file)[1] in ['.png', '.jpg', '.gif']:
+                item['is_photo'] = True
+                item['is_dir'] = False
+            else:
+                continue
+
+            item['filename'] = filename
+            item['filesize'] = os.path.getsize(_file)
+            item['datetime'] = datetime.fromtimestamp(os.path.getmtime(_file)).strftime('%Y-%m-%d %H:%M:%S')
+
+            file_list.append(item)
+
+        temp_req_path = req_path.split('/')
+        if len(temp_req_path) > 1:
+            temp_req_path.pop(-2)
+        moveup_dir_path = '/'.join(temp_req_path)
+
+        data = {
+            "moveup_dir_path": moveup_dir_path ,
+            "current_dir_path": req_path,
+            "total_count": 23,
+            "current_url": "http://192.168.239.129:8000/images/" + req_path,
+            'file_list': file_list
+        }
+        return Response(data)
