@@ -162,8 +162,8 @@ class GroupBuyGoodsDetail(APIView):
         serializer = GroupBuyGoodsSerializer(goods)
         path = image_path()
 
-        for image_itme in serializer.data['goods']['images']:
-            image_itme['image'] = path + image_itme['image']
+        # for image_itme in serializer.data['goods']['images']:
+        #     image_itme['image'] = path + image_itme['image']
 
         res = serializer.data
 
