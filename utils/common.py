@@ -1,4 +1,4 @@
-from rest_framework.response import Response
+import os
 from datetime import datetime
 
 def format_body(code, message, data):
@@ -8,6 +8,9 @@ def format_body(code, message, data):
         'data': data
     }
     return res
+
+def thumbnail(image_url):
+    return os.path.splitext(image_url)[0] + '_thumbnail' + os.path.splitext(image_url)[1]
 
 def utc_time_to_local_time(utc_time):
     time = datetime.strptime(utc_time, '%Y-%m-%dT%H:%M:%S')

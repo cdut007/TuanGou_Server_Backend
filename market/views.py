@@ -1,3 +1,5 @@
+import os
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -5,7 +7,7 @@ from rest_framework.views import APIView
 
 from django.db.models import Sum
 from datetime import datetime
-from utils.common import format_body
+from utils.common import format_body, thumbnail
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
 from serializers import UploadImageSerializer
@@ -48,7 +50,7 @@ class HomePageList(APIView):
                     gallery =  GoodsGallery.objects.filter(goods=goods.goods_id, is_primary=1).first()
                     goods_info.append({
                         'goods_id': goods.id,
-                        'image': path + gallery.image.url if gallery else ''
+                        'image': path + thumbnail(gallery.image.url) if gallery else ''
                     })
             else:
                 continue
@@ -57,8 +59,8 @@ class HomePageList(APIView):
                 'id': classify.id,
                 'name': classify.name,
                 'desc':  classify.desc,
-                'image': image_path() + classify.image.url,
-                'icon': image_path() + classify.icon.url
+                'image': path + classify.image.url,
+                'icon': path + classify.icon.url
             }
 
             res.append({'classify': classify_info, 'goods': goods_info})
@@ -85,7 +87,7 @@ class AgentHomePageList(APIView):
                 image = GoodsGallery.objects.filter(goods=goods.goods_id, is_primary=1).first()
                 goods_info.append({
                     'goods_id': goods.id,
-                    'image': path + image.image.url if image else ''
+                    'image': path + thumbnail(image.image.url) if image else ''
                 })
             res.append({
                 'classify': classify_serializer.data,

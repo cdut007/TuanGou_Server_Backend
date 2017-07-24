@@ -18,6 +18,7 @@ class MyClearableFileInput(widgets.ClearableFileInput):
             u'%(clear_template)s<br />%(input_text)s: %(input)s'
         )
 
+
 class BannerAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ImageField: {'widget': MyClearableFileInput}
