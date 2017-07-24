@@ -85,7 +85,10 @@ class AgentInfoView(APIView):
 class UserAddressView(APIView):
     @Authentication.token_required
     def get(self, request):
-        user = UserProfile.objects.get(pk=self.get.user_id)
+        try:
+            user = UserProfile.objects.get(pk=self.get.user_id)
+        except UserProfile.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
         if user.phone_num == '' or user.address == '':
             return Response(format_body(0, 'The user has no address ', ''))
         serializer = UserAddressSerializer(user)
