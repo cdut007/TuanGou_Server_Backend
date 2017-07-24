@@ -33,16 +33,7 @@ class GoodsGalleryAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super(GoodsGalleryAdmin, self).save_model(request,obj, form,change)
         if obj.is_primary:
-            image_origin = obj.image.path
-            image_thumbnail = os.path.splitext(image_origin)[0] + '_thumbnail' + os.path.splitext(image_origin)[1]
-            if not os.path.exists(image_thumbnail):
-                from PIL import Image
-                try:
-                    im = Image.open(obj.image)
-                    im.thumbnail((230, 230))
-                    im.save(image_thumbnail, im.format)
-                except IOError:
-                    print("cannot create thumbnail for", image_origin)
+            GoodsAdmin.create_thumbnail(obj.image)
 
 
 class GoodsGalleryInline(admin.TabularInline):
@@ -105,6 +96,27 @@ class GoodsAdmin(admin.ModelAdmin):
             '/static/js/kindeditor/config.js'
         )
 
+    def save_formset(self, request, form, formset, change):
+        super(GoodsAdmin, self).save_formset( request, form, formset, change)
+        if formset.prefix == 'images':
+            for image_item in formset.cleaned_data:
+                if image_item['id'] and image_item['is_primary'] and not image_item['DELETE']:
+                    self.create_thumbnail(image_item['image'])
+            for image_item in formset.new_objects:
+                if image_item.is_primary: self.create_thumbnail(image_item.image)
+
+    @staticmethod
+    def create_thumbnail(image):
+        image_origin = image.path
+        image_thumbnail = os.path.splitext(image_origin)[0] + '_thumbnail' + os.path.splitext(image_origin)[1]
+        if not os.path.exists(image_thumbnail):
+            from PIL import Image
+            try:
+                im = Image.open(image)
+                im.thumbnail((230, 230))
+                im.save(image_thumbnail, im.format)
+            except IOError:
+                print("cannot create thumbnail for", image_origin)
 
 admin.site.register(GroupBuy, GroupBuyAdmin)
 admin.site.register(Banner, BannerAdmin)
