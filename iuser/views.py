@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from utils.common import format_body
+from ilinkgo.config import web_link
 from utils.winxin import code_to_access_token, access_token_to_user_info
 from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
 from market.serializers import GroupBuyGoodsSerializer, GoodsClassifySerializer, GroupBuySerializer
@@ -164,7 +165,7 @@ class AgentOrderView(APIView):
             if order_record:
                 return Response(format_body(4, 'The user already applied this group_buy', ''))
             serializer.save()
-            return Response(format_body(1, 'Success', {'agent_url': user.openid}))
+            return Response(format_body(1, 'Success', {'agent_url': web_link() + '?agent_code=' + user.openid}))
         return Response(format_body(2, serializer.errors, ''))
 
 
@@ -265,12 +266,21 @@ class GenericOrderView(APIView):
             return Response(format_body(2, order_serializer.errors, ''))
         order_bulk = []
         for item in order_serializer.data['goods']:
-           order_bulk.append(GenericOrder(
+            order_record = GenericOrder.objects.filter(
+                user=self.post.user_id,
+                agent_code=request.data['agent_code'],
+                goods=item['goods']
+            ).first()
+            if order_record:
+                order_record.quantity += item['quantity']
+                order_record.save()
+                continue
+            order_bulk.append(GenericOrder(
                user=order_serializer.validated_data['user'],
                agent_code=order_serializer.validated_data['agent_code'],
                goods = GroupBuyGoods.objects.get(pk=item['goods']),
                quantity=item['quantity']
-           ))
+            ))
         GenericOrder.objects.bulk_create(order_bulk)
         return Response(format_body(1, 'Success', ''))
 
