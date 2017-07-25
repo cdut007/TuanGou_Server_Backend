@@ -173,7 +173,7 @@ class GroupBuyGoodsDetail(APIView):
 
     @staticmethod
     def purchased_amount(goods_id):
-        generic_orders = GenericOrder.objects.filter(goods=goods_id)
+        generic_orders = GenericOrder.objects.filter(goods=goods_id, status=1)
         purchased = generic_orders.aggregate(Sum('quantity'))['quantity__sum']
         return purchased or 0
 
