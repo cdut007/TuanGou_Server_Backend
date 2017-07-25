@@ -250,7 +250,12 @@ class GenericOrderView(APIView):
         for group_buy in group_buys_serializer.data:
             classify_serializer = GoodsClassifySerializer(GoodsClassify.objects.get(group_buy=group_buy['id']))
             group_buy['classify'] = classify_serializer.data
-            goods = GenericOrder.objects.filter(user=self.get.user_id, agent_code=agent_code, goods__group_buy=group_buy['id'])
+            goods = GenericOrder.objects.filter(
+                user=self.get.user_id,
+                agent_code=agent_code,
+                goods__group_buy=group_buy['id'],
+                status=1
+            )
             goods_serializer = GenericOrderSerializer2(goods, many=True)
             for item in goods_serializer.data:
                 goods_info = GroupBuyGoodsSerializer(GroupBuyGoods.objects.get(pk=item['goods']))
