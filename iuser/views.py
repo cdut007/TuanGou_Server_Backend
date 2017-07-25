@@ -284,3 +284,16 @@ class GenericOrderView(APIView):
         GenericOrder.objects.bulk_create(order_bulk)
         return Response(format_body(1, 'Success', ''))
 
+    @Authentication.token_required
+    def delete(self, request):
+        try:
+            order_goods = GenericOrder.objects.get(
+                user=self.delete.user_id,
+                agent_code=request.data['agent_code'],
+                goods=request.data['goods_id']
+            )
+        except GenericOrder.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
+        order_goods.status = 0
+        order_goods.save()
+        return Response(format_body(1, 'Success', ''))
