@@ -247,9 +247,9 @@ class GenericOrderView(APIView):
             group_buys = group_buys.filter(end_time__lt=datetime.now())
 
         group_buys_serializer = GroupBuySerializer(group_buys, many=True)
-        
+
         res_data = group_buys_serializer.data
-        for group_buy in res_data:
+        for index, group_buy in enumerate(res_data):
             classify_serializer = GoodsClassifySerializer(GoodsClassify.objects.get(group_buy=group_buy['id']))
             group_buy['classify'] = classify_serializer.data
             goods = GenericOrder.objects.filter(
@@ -259,7 +259,7 @@ class GenericOrderView(APIView):
                 status=1
             )
             if not goods.count():
-                res_data.remove(group_buy)
+                del res_data[index]
                 continue
             goods_serializer = GenericOrderSerializer2(goods, many=True)
             for item in goods_serializer.data:
