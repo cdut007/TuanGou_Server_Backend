@@ -1,5 +1,3 @@
-import os
-
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -183,12 +181,21 @@ class GroupBuyGoodsDetail(APIView):
 class UploadImageView(APIView):
     def post(self, request):
         if request.data.has_key('imgFile'):
+            import os, time
+            from utils.common import random_str
+
             image = request.data['imgFile']
-            destination = open('images/' + image.name, 'wb+')
+
+            goods_detail_path = "images/GoodsDetail/{}-{}/".format(time.strftime('%Y'), time.strftime('%m'))
+            if not os.path.exists(goods_detail_path):
+                os.makedirs(goods_detail_path)
+
+            image_name = image.name.split('.')[0] + '_' + random_str() + '.' + image.name.split('.')[-1]
+            destination = open(goods_detail_path + image_name, 'wb+')
             for chunk in image.chunks():
                 destination.write(chunk)
                 destination.close()
-            return Response({'error': 0, 'url':  image_path() + 'images/'+image.name})
+            return Response({'error': 0, 'url':  image_path() + goods_detail_path +image_name})
         return Response({'error':1, 'message': 'file error'})
 
 

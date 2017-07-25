@@ -8,7 +8,7 @@ from django.db import models
 
 class Banner(models.Model):
     name = models.CharField(max_length=24, verbose_name=u'名称', default='')
-    image = models.ImageField(upload_to='images/%Y/%m', default='image/default.png', max_length=100, verbose_name=u'Banner')
+    image = models.ImageField(upload_to='images/Banner', default='image/Banner/default.png', max_length=100, verbose_name=u'Banner')
     add_time = models.DateTimeField(default=datetime.now, verbose_name=u'add time')
     is_show = models.BooleanField(default=True,verbose_name='is show')
 
@@ -23,8 +23,8 @@ class Banner(models.Model):
 class GoodsClassify(models.Model):
     name = models.CharField(max_length=24, verbose_name=u'名称')
     desc = models.CharField(max_length=256, verbose_name='描述',default='')
-    icon = models.ImageField(upload_to='images/%Y/%m', verbose_name='图标', default='')
-    image = models.ImageField(upload_to='images/%Y/%m', verbose_name='图片', default='')
+    icon = models.ImageField(upload_to='images/Classify', verbose_name='图标', default='')
+    image = models.ImageField(upload_to='images/Classify', verbose_name='图片', default='')
 
     class Meta:
         verbose_name = u'商品类别'
@@ -84,7 +84,7 @@ class GroupBuyGoods(models.Model):
 
 class GoodsGallery(models.Model):
     goods = models.ForeignKey(Goods, related_name='images',verbose_name='商品')
-    image = models.ImageField(upload_to='images/%Y/%m',default='image/default.png', max_length=100, verbose_name=u'商品图片')
+    image = models.ImageField(upload_to='images/Goods/%Y-%m',default='image/Goods/default.png', max_length=100, verbose_name=u'商品图片')
     is_primary = models.BooleanField(default=False, verbose_name='是否显示在列表页')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
 
