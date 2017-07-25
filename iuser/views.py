@@ -249,6 +249,7 @@ class GenericOrderView(APIView):
         group_buys_serializer = GroupBuySerializer(group_buys, many=True)
 
         res_data = group_buys_serializer.data
+        res = []
         for index, group_buy in enumerate(res_data):
             classify_serializer = GoodsClassifySerializer(GoodsClassify.objects.get(group_buy=group_buy['id']))
             group_buy['classify'] = classify_serializer.data
@@ -258,16 +259,16 @@ class GenericOrderView(APIView):
                 goods__group_buy=group_buy['id'],
                 status=1
             )
-            if not goods.count():
-                del res_data[index]
-                continue
             goods_serializer = GenericOrderSerializer2(goods, many=True)
             for item in goods_serializer.data:
                 goods_info = GroupBuyGoodsSerializer(GroupBuyGoods.objects.get(pk=item['goods']))
                 item['goods'] = goods_info.data
             group_buy['order_goods'] = goods_serializer.data
 
-        return Response(format_body(1, 'Success', {'group_buy': res_data}))
+            if goods.count():
+                res.append(group_buy)
+
+        return Response(format_body(1, 'Success', {'group_buy': res}))
 
     @Authentication.token_required
     def post(self, request):
