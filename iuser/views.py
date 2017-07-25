@@ -275,17 +275,23 @@ class GenericOrderView(APIView):
         order_serializer = GenericOrderSerializer(data=request.data)
         if not order_serializer.is_valid():
             return Response(format_body(2, order_serializer.errors, ''))
+        
         order_bulk = []
         for item in order_serializer.data['goods']:
             order_record = GenericOrder.objects.filter(
                 user=self.post.user_id,
                 agent_code=request.data['agent_code'],
-                goods=item['goods']
+                goods=item['goods'],
             ).first()
             if order_record:
-                order_record.quantity += item['quantity']
+                if order_record.status == 0:
+                    order_record.quantity = item['quantity']
+                    order_record.status = 1
+                else:
+                    order_record.quantity += item['quantity']
                 order_record.save()
                 continue
+
             order_bulk.append(GenericOrder(
                user=order_serializer.validated_data['user'],
                agent_code=order_serializer.validated_data['agent_code'],
