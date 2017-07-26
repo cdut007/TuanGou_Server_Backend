@@ -99,9 +99,10 @@ class GoodsAdmin(admin.ModelAdmin):
     def save_formset(self, request, form, formset, change):
         super(GoodsAdmin, self).save_formset( request, form, formset, change)
         if formset.prefix == 'images':
-            for key in formset._object_dict:
-                image_item = formset._object_dict[key]
-                if image_item.is_primary: self.create_thumbnail(image_item.image)
+            if hasattr(formset, '_object_dict'):
+                for key in formset._object_dict:
+                    image_item = formset._object_dict[key]
+                    if image_item.is_primary: self.create_thumbnail(image_item.image)
             for image_item in formset.new_objects:
                 if image_item.is_primary: self.create_thumbnail(image_item.image)
 

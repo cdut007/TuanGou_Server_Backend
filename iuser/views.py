@@ -275,7 +275,7 @@ class GenericOrderView(APIView):
         order_serializer = GenericOrderSerializer(data=request.data)
         if not order_serializer.is_valid():
             return Response(format_body(2, order_serializer.errors, ''))
-        
+
         order_bulk = []
         for item in order_serializer.data['goods']:
             order_record = GenericOrder.objects.filter(
