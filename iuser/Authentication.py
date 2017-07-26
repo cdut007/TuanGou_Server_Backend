@@ -10,7 +10,7 @@ from utils.common import format_body
 
 class Authentication():
     @staticmethod
-    def generate_auth_token(user_id, expiration=604800):
+    def generate_auth_token(user_id, expiration=60480000):
         s = Serializer(SECRET_KEY, expires_in=expiration)
         return s.dumps({'id': user_id})
 
