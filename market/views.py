@@ -105,9 +105,9 @@ class GroupBuyList(APIView):
         classify_serializer = GoodsClassifySerializer(classify)
         if agent_code:
             user = UserProfile.objects.get(openid=agent_code)
-            group_buy = GroupBuy.objects.filter(goods_classify=classify_id, agentorder__user=user.id)
+            group_buy = GroupBuy.objects.filter(goods_classify=classify_id, agentorder__user=user.id, end_time__gt=datetime.now())
         else:
-            group_buy = GroupBuy.objects.filter(goods_classify=classify_id)
+            group_buy = GroupBuy.objects.filter(goods_classify=classify_id, end_time__gt=datetime.now())
 
         group_buy_serializer = GroupBuySerializer(group_buy, many=True)
 
