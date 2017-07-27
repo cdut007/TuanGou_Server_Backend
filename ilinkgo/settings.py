@@ -209,3 +209,10 @@ SUIT_CONFIG = {
         }
     )
 }
+
+EMAIL_HOST = 'smtp.sina.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'rock_or_bust@sina.com'
+EMAIL_HOST_PASSWORD = 'op*6785pl'
+EMAIL_USE_TLS = False
+EMAIL_FROM = 'rock_or_bust@sina.com'

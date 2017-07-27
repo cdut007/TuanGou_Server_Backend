@@ -1,12 +1,15 @@
+# _*_ coding:utf-8 _*_
 from datetime import datetime
 from django.db.models import Sum
+from django.core.mail import EmailMessage
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
 
 from utils.common import format_body
 from ilinkgo.config import web_link
 from utils.winxin import code_to_access_token, access_token_to_user_info
+from utils.gen_excel import sheet
+from ilinkgo.settings import BASE_DIR
 from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
 from market.serializers import GroupBuyGoodsSerializer, GoodsClassifySerializer, GroupBuySerializer
 from models import UserProfile, AgentOrder, ShoppingCart, GenericOrder
@@ -315,3 +318,49 @@ class GenericOrderView(APIView):
         order_goods.status = 0
         order_goods.save()
         return Response(format_body(1, 'Success', ''))
+
+
+class SendEmailView(APIView):
+    @Authentication.token_required
+    def post(self, request):
+        from django.db import connection
+        from sql import sql1, sql2
+
+        user_id = self.post.user_id
+        # group_buy = request.data['group_buy']
+
+        cursor = connection.cursor()
+        cursor.execute(sql1)
+        row = cursor.fetchall()
+
+        test_data = {
+            'agent_info': {'time': u'2017/6/13', 'address': u'地址', 'phone': u'12345678', 'wx': u'87654321'},
+            'ship_list': [
+                {'goods': u'巨峰葡萄 $6/500克/盒', u'quantity': '5', 'm_amount': u'$30.00'},
+                {'goods': u'巨峰葡萄 $6/500克/盒', u'quantity': '5', 'm_amount': u'$30.00'},
+                {'goods': u'巨峰葡萄 $6/500克/盒', u'quantity': '5', 'm_amount': u'$30.00'},
+                {'goods': u' ', u'quantity': u'总数量：15', 'm_amount': u'总金额：$90.00'}
+            ],
+            'order_list': [
+                {'user_wx': u'jenifer', 'phone': u'12345678', 'goods': u'巨峰葡萄 $6/500克/盒', 'quantity': u'5',
+                 'm_amount': u'$15.00'},
+                {'user_wx': u'jenifer', 'phone': u'12345678', 'goods': u'巨峰葡萄 $6/500克/盒', 'quantity': u'5',
+                 'm_amount': u'$15.00'},
+                {'user_wx': u'jenifer', 'phone': u'12345678', 'goods': u'巨峰葡萄 $6/500克/盒', 'quantity': u'5',
+                 'm_amount': u'$15.00'},
+                {'user_wx': u'jenifer', 'phone': u'12345678', 'goods': u'巨峰葡萄 $6/500克/盒', 'quantity': u'5',
+                 'm_amount': u'$15.00'},
+            ]
+        }
+
+        # _file = BASE_DIR + '/demo2.xlsx'
+        # message = EmailMessage(
+        #     subject='123',
+        #     body='123',
+        #     from_email='rock_or_bust@sina.com',
+        #     to=['1176011257@qq.com'],
+        # )
+        # message.attach_file(_file)
+        # message.send()
+
+        return Response(format_body(1, 'Success', row))
