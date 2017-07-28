@@ -329,7 +329,7 @@ class SendEmailView(APIView):
         from sql import sql1, sql2
 
         user_id = self.post.user_id
-        group_buy_id = request.data['group_buy'] or 1
+        group_buy_id = request.data['group_buy_id'] or 1
         email_to = request.data['email']
 
         try:
