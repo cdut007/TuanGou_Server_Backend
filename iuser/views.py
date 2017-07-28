@@ -342,39 +342,38 @@ class SendEmailView(APIView):
             return Response(format_body(0, 'GroupBuy does not exist', ''))
 
         file_path = './excel/' + user_info.phone_num + '_' + group_buy.ship_time.strftime('%Y-%m-%d') + '.xlsx'
-        cursor = connection.cursor()
-        sql1 = sql1 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
-        cursor.execute(sql1)
-        order_list = dict_fetch_all(cursor)
-        sql2 = sql2 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
-        cursor.execute(sql2)
-        ship_list = dict_fetch_all(cursor)
 
-        # if not os.path.exists(file_path):
-        #
-        #
-        #     data = {
-        #         'agent_info': {
-        #             'time': group_buy.ship_time.strftime('%Y/%m/%d'),
-        #             'address': user_info.address,
-        #             'phone': user_info.phone_num,
-        #             'wx': user_info.nickname
-        #         },
-        #         'ship_list': ship_list,
-        #         'order_list': order_list,
-        #         'file_path': file_path
-        #     }
-        #
-        #     order_excel(data)
-        #
-        # _file = file_path
-        # message = EmailMessage(
-        #     subject='123',
-        #     body='123',
-        #     from_email='rock_or_bust@sina.com',
-        #     to=['1176011257@qq.com'],
-        # )
-        # message.attach_file(_file)
-        # message.send()
+        if not os.path.exists(file_path):
+            cursor = connection.cursor()
+            sql1 = sql1 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
+            cursor.execute(sql1)
+            order_list = dict_fetch_all(cursor)
+            sql2 = sql2 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
+            cursor.execute(sql2)
+            ship_list = dict_fetch_all(cursor)
 
-        return Response(format_body(1, 'Success', {'order_list':order_list, 'ship_list': ship_list}))
+            data = {
+                'agent_info': {
+                    'time': group_buy.ship_time.strftime('%Y/%m/%d'),
+                    'address': user_info.address,
+                    'phone': user_info.phone_num,
+                    'wx': user_info.nickname
+                },
+                'ship_list': ship_list,
+                'order_list': order_list,
+                'file_path': file_path
+            }
+
+            order_excel(data)
+
+        _file = file_path
+        message = EmailMessage(
+            subject='123',
+            body='123',
+            from_email='rock_or_bust@sina.com',
+            to=[email_to],
+        )
+        message.attach_file(_file)
+        message.send()
+
+        return Response(format_body(1, 'Success', ''))
