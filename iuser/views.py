@@ -333,12 +333,12 @@ class SendEmailView(APIView):
         try:
             user_info = UserProfile.objects.get(id=user_id)
         except UserProfile.DoesNotExist:
-            return Response(format_body(0, 'Object does not exist', ''))
+            return Response(format_body(0, 'User does not exist', ''))
 
         try:
             group_buy = GroupBuy.objects.get(id=group_buy_id)
         except GroupBuy.DoesNotExist:
-            return Response(format_body(0, 'Object does not exist', ''))
+            return Response(format_body(0, 'GroupBuy does not exist', ''))
 
         file_path = './excel/' + user_info.phone_num + group_buy.ship_time.strftime('%Y-%m-%d') + '.xlsx'
 
