@@ -104,11 +104,7 @@ def order_excel(data):
         sheet2.write(cur_row2, 4, item['m_amount'], style_content)
         cur_row2 += 1
 
-    if not os.path.exists('excel'):
-        os.makedirs('excel')
-
-    excel_path = 'excel/'
-    work_book.save('demo2.xlsx')
+    work_book.save(data['file_path'])
 
 if __name__ == '__main__':
     order_excel(test_data)
