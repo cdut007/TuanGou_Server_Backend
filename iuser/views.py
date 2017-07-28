@@ -322,6 +322,7 @@ class SendEmailView(APIView):
     @Authentication.token_required
     def post(self, request):
         import os
+        from ilinkgo.settings import BASE_DIR
         from django.db import connection
         from utils.common import dict_fetch_all
         from utils.gen_excel import order_excel
@@ -341,7 +342,7 @@ class SendEmailView(APIView):
         except GroupBuy.DoesNotExist:
             return Response(format_body(0, 'GroupBuy does not exist', ''))
 
-        file_path = './excel/' + user_info.phone_num + '_' + group_buy.ship_time.strftime('%Y-%m-%d') + '.xlsx'
+        file_path = BASE_DIR + '/excel/' + user_info.phone_num + '_' + group_buy.ship_time.strftime('%Y-%m-%d') + '.xlsx'
 
         if not os.path.exists(file_path):
             cursor = connection.cursor()
