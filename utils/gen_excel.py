@@ -53,10 +53,10 @@ def order_excel(data):
     sheet1.write(1,2, u'团长电话', style_content)
     sheet1.write(1,3, u'团长微信名', style_content)
 
-    sheet1.write(2,0, data['agent_info']['time'], style_content)
-    sheet1.write(2,1, data['agent_info']['address'], style_content)
-    sheet1.write(2,2, data['agent_info']['phone'], style_content)
-    sheet1.write(2,3, data['agent_info']['wx'], style_content)
+    sheet1.write(2,0, data['agent_info']['time'].decode('utf-8'), style_content)
+    sheet1.write(2,1, data['agent_info']['address'].decode('utf-8'), style_content)
+    sheet1.write(2,2, data['agent_info']['phone'].decode('utf-8'), style_content)
+    sheet1.write(2,3, data['agent_info']['wx'].decode('utf-8'), style_content)
 
     sheet1.write_merge(4, 4, 0, 1, u'商品名', style_content)
     sheet1.write(4, 2, u'数量', style_content)
@@ -68,7 +68,7 @@ def order_excel(data):
         sheet1.row(cur_row1).height = content_height
         sheet1.write_merge(cur_row1, cur_row1, 0, 1, item['goods'], style_content)
         sheet1.write(cur_row1, 2, item['quantity'], style_content)
-        sheet1.write(cur_row1, 3, item['m_amount'], style_content)
+        sheet1.write(cur_row1, 3, item['m_amount'].decode('utf-8'), style_content)
         cur_row1 += 1
 
     #团员购买清单
@@ -96,11 +96,11 @@ def order_excel(data):
     for item in data['order_list']:
         sheet2.row(cur_row2).height_mismatch = True
         sheet2.row(cur_row2).height = content_height
-        sheet2.write(cur_row2, 0, item['user_wx'], style_content)
-        sheet2.write(cur_row2, 1, item['phone'], style_content)
-        sheet2.write(cur_row2, 2, item['goods'], style_content)
+        sheet2.write(cur_row2, 0, item['user_wx'].decode('utf-8'), style_content)
+        sheet2.write(cur_row2, 1, item['phone'].decode('utf-8'), style_content)
+        sheet2.write(cur_row2, 2, item['goods'].decode('utf-8'), style_content)
         sheet2.write(cur_row2, 3, item['quantity'], style_content)
-        sheet2.write(cur_row2, 4, item['m_amount'], style_content)
+        sheet2.write(cur_row2, 4, item['m_amount'].decode('utf-8'), style_content)
         cur_row2 += 1
 
     work_book.save(data['file_path'])
