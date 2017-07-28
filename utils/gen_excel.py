@@ -1,5 +1,6 @@
 # _*_ coding:utf-8 _*_
 import xlwt
+import os
 
 test_data = {
     'agent_info': {'time': u'2017/6/13', 'address': u'地址', 'phone': u'12345678', 'wx': u'87654321'},
@@ -30,7 +31,7 @@ style_content = xlwt.easyxf(
 content_height = 384
 title_height = 640
 
-def sheet(data):
+def order_excel(data):
     work_book = xlwt.Workbook()
     sheet1 = work_book.add_sheet(u'sheet1',cell_overwrite_ok=False)
 
@@ -51,7 +52,7 @@ def sheet(data):
     sheet1.write(1,0, u'发货时间', style_content)
     sheet1.write(1,1, u'发货地点', style_content)
     sheet1.write(1,2, u'团长电话', style_content)
-    sheet1.write(1,3, u'团长微信', style_content)
+    sheet1.write(1,3, u'团长微信名', style_content)
 
     sheet1.write(2,0, data['agent_info']['time'], style_content)
     sheet1.write(2,1, data['agent_info']['address'], style_content)
@@ -103,7 +104,7 @@ def sheet(data):
         sheet2.write(cur_row2, 4, item['m_amount'], style_content)
         cur_row2 += 1
 
-    work_book.save('demo2.xlsx')
+    work_book.save(data['file_path'])
 
 if __name__ == '__main__':
-    sheet(test_data)
+    order_excel(test_data)

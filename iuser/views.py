@@ -8,8 +8,6 @@ from rest_framework.views import APIView
 from utils.common import format_body
 from ilinkgo.config import web_link
 from utils.winxin import code_to_access_token, access_token_to_user_info
-from utils.gen_excel import sheet
-from ilinkgo.settings import BASE_DIR
 from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
 from market.serializers import GroupBuyGoodsSerializer, GoodsClassifySerializer, GroupBuySerializer
 from models import UserProfile, AgentOrder, ShoppingCart, GenericOrder
@@ -323,44 +321,58 @@ class GenericOrderView(APIView):
 class SendEmailView(APIView):
     @Authentication.token_required
     def post(self, request):
+        import os
         from django.db import connection
+        from utils.common import dict_fetch_all
+        from utils.gen_excel import order_excel
         from sql import sql1, sql2
 
         user_id = self.post.user_id
-        # group_buy = request.data['group_buy']
+        group_buy_id = request.data['group_buy'] or 1
 
-        cursor = connection.cursor()
-        cursor.execute(sql1)
-        row = cursor.fetchall()
+        try:
+            user_info = UserProfile.objects.get(id=user_id)
+        except UserProfile.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
 
-        test_data = {
-            'agent_info': {'time': u'2017/6/13', 'address': u'地址', 'phone': u'12345678', 'wx': u'87654321'},
-            'ship_list': [
-                {'goods': u'巨峰葡萄 $6/500克/盒', u'quantity': '5', 'm_amount': u'$30.00'},
-                {'goods': u'巨峰葡萄 $6/500克/盒', u'quantity': '5', 'm_amount': u'$30.00'},
-                {'goods': u'巨峰葡萄 $6/500克/盒', u'quantity': '5', 'm_amount': u'$30.00'},
-                {'goods': u' ', u'quantity': u'总数量：15', 'm_amount': u'总金额：$90.00'}
-            ],
-            'order_list': [
-                {'user_wx': u'jenifer', 'phone': u'12345678', 'goods': u'巨峰葡萄 $6/500克/盒', 'quantity': u'5',
-                 'm_amount': u'$15.00'},
-                {'user_wx': u'jenifer', 'phone': u'12345678', 'goods': u'巨峰葡萄 $6/500克/盒', 'quantity': u'5',
-                 'm_amount': u'$15.00'},
-                {'user_wx': u'jenifer', 'phone': u'12345678', 'goods': u'巨峰葡萄 $6/500克/盒', 'quantity': u'5',
-                 'm_amount': u'$15.00'},
-                {'user_wx': u'jenifer', 'phone': u'12345678', 'goods': u'巨峰葡萄 $6/500克/盒', 'quantity': u'5',
-                 'm_amount': u'$15.00'},
-            ]
-        }
+        try:
+            group_buy = GroupBuy.objects.get(id=group_buy_id)
+        except GroupBuy.DoesNotExist:
+            return Response(format_body(0, 'Object does not exist', ''))
 
-        # _file = BASE_DIR + '/demo2.xlsx'
-        # message = EmailMessage(
-        #     subject='123',
-        #     body='123',
-        #     from_email='rock_or_bust@sina.com',
-        #     to=['1176011257@qq.com'],
-        # )
-        # message.attach_file(_file)
-        # message.send()
+        file_path = './excel/' + user_info.phone_num + group_buy.ship_time.strftime('%Y-%m-%d') + '.xlsx'
 
-        return Response(format_body(1, 'Success', row))
+        if not os.path.exists(file_path):
+            cursor = connection.cursor()
+            sql1 = sql1 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
+            cursor.execute(sql1)
+            order_list = dict_fetch_all(cursor)
+            sql2 = sql2 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
+            cursor.execute(sql2)
+            ship_list = dict_fetch_all(cursor)
+
+            data = {
+                'agent_info': {
+                    'time': group_buy.ship_time.strftime('%Y/%m/%d'),
+                    'address': user_info.address,
+                    'phone': user_info.phone_num,
+                    'wx': user_info.nickname
+                },
+                'ship_list': ship_list,
+                'order_list': order_list,
+                'file_path': file_path
+            }
+
+            order_excel(data)
+
+        _file = file_path
+        message = EmailMessage(
+            subject='123',
+            body='123',
+            from_email='rock_or_bust@sina.com',
+            to=['1176011257@qq.com'],
+        )
+        message.attach_file(_file)
+        message.send()
+
+        return Response(format_body(1, 'Success', ''))
