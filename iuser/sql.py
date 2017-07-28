@@ -10,7 +10,7 @@ SELECT
 	CONCAT(c.`name`,' $',b.price,' ',b.brief_dec) AS goods
 FROM
 	iuser_genericorder AS a
-INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.goods_id
+INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.id
 INNER JOIN market_goods AS c ON b.goods_id = c.id
 INNER JOIN iuser_userprofile AS d ON a.user_id = d.id
 WHERE
@@ -26,7 +26,7 @@ SELECT
     CONCAT(c.`name`,' $',b.price,' ',b.brief_dec) AS goods
 FROM
 	iuser_genericorder AS a
-INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.goods_id
+INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.id
 INNER JOIN market_goods AS c ON b.goods_id = c.id
 WHERE
 	a.agent_code = '%(agent_code)s'
