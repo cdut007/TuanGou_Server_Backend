@@ -329,6 +329,7 @@ class SendEmailView(APIView):
 
         user_id = self.post.user_id
         group_buy_id = request.data['group_buy'] or 1
+        email_to = request.data['email']
 
         try:
             user_info = UserProfile.objects.get(id=user_id)
@@ -340,7 +341,7 @@ class SendEmailView(APIView):
         except GroupBuy.DoesNotExist:
             return Response(format_body(0, 'GroupBuy does not exist', ''))
 
-        file_path = './excel/' + user_info.phone_num + group_buy.ship_time.strftime('%Y-%m-%d') + '.xlsx'
+        file_path = './excel/' + user_info.phone_num + '_' + group_buy.ship_time.strftime('%Y-%m-%d') + '.xlsx'
 
         if not os.path.exists(file_path):
             cursor = connection.cursor()

@@ -1,6 +1,5 @@
 # _*_ coding:utf-8 _*_
 import xlwt
-import os
 
 test_data = {
     'agent_info': {'time': u'2017/6/13', 'address': u'地址', 'phone': u'12345678', 'wx': u'87654321'},
