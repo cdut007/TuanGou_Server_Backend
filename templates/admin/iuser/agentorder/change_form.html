@@ -1,0 +1,66 @@
+{% extends "admin/change_form.html" %}
+
+{% block object-tools %}
+{% endblock %}
+
+{% block field_sets %}
+    {% for fieldset in adminform %}
+      {% include "admin/includes/fieldset.html" %}
+    {% endfor %}
+{% endblock %}
+
+{% block after_related_objects %}
+    <style>
+        caption {
+            font-size: 16px;
+            margin-bottom: 10px
+        }
+    </style>
+    {# 团长信息  #}
+
+
+
+    {#用户订单列表#}
+    <table class="table table-striped">
+	<caption>团员订单详情</caption>
+	<thead>
+		<tr>
+            {% for desc in order_list_desc %}
+            <th>{{ desc }}</th>
+            {% endfor %}
+		</tr>
+	</thead>
+	<tbody>
+        {% for item in order_list %}
+		<tr>
+			<td>{{ item.user_wx }}</td>
+			<td>{{ item.phone }}</td>
+            <td>{{ item.quantity }}</td>
+			<td>{{ item.m_amount }}</td>
+            <td>{{ item.goods }}</td>
+		</tr>
+        {% endfor %}
+	</tbody>
+    </table>
+    {#发货列表#}
+    <table class="table table-striped">
+	<caption>仓库发货清单</caption>
+	<thead>
+		<tr>
+            {% for desc in ship_list_desc %}
+            <th>{{ desc }}</th>
+            {% endfor %}
+		</tr>
+	</thead>
+	<tbody>
+        {% for item in order_list %}
+		<tr>
+			<td>{{ item.quantity }}</td>
+			<td>{{ item.m_amount }}</td>
+            <td>{{ item.goods }}</td>
+		</tr>
+        {% endfor %}
+	</tbody>
+    </table>
+{% endblock %}
+

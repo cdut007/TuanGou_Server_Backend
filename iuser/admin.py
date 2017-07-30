@@ -1,3 +1,4 @@
+# _*_ coding:utf-8 _*_
 from django.db import models
 from django.forms import widgets
 from django.contrib import admin
@@ -34,7 +35,6 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 
 class AgentOrderAdmin(admin.ModelAdmin):
-    readonly_fields = ('user', 'group_buy', 'goods_ids', 'add_time')
     list_display = ('id','user', 'group_buy', 'add_time')
     search_fields = ('user',)
     actions_selection_counter = True
@@ -44,12 +44,29 @@ class AgentOrderAdmin(admin.ModelAdmin):
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         render_change_form = super(AgentOrderAdmin, self).changeform_view(request, object_id, form_url, extra_context)
         if object_id:
-            goods_ids = render_change_form.context_data['original'].goods_ids
-            goods_names = ''
-            for goods_id in goods_ids.split(','):
-                goods = GroupBuyGoods.objects.get(pk=goods_id)
-                goods_names += goods.goods.name + u', '
-            render_change_form.context_data['original'].goods_ids = goods_names
+            from django.db import connection
+            from utils.common import dict_fetch_all
+            from sql import sql1, sql2, sql1_desc, sql2_desc
+
+            this_generic_order = render_change_form.context_data['original']
+            agent_code = this_generic_order.user.openid
+            group_buy_id = this_generic_order.group_buy_id
+
+            cursor = connection.cursor()
+            sql1 = sql1 % {'agent_code': agent_code, 'group_buy_id': group_buy_id}
+            cursor.execute(sql1)
+            order_list = dict_fetch_all(cursor)
+
+            render_change_form.context_data['order_list_desc'] = sql1_desc
+            render_change_form.context_data['order_list'] = order_list
+
+            sql2 = sql2 % {'agent_code': agent_code, 'group_buy_id': group_buy_id}
+            cursor.execute(sql2)
+            ship_list = dict_fetch_all(cursor)
+
+            render_change_form.context_data['ship_list_desc'] = sql2_desc
+            render_change_form.context_data['ship_list'] = ship_list
+
         return render_change_form
 
     # class Media:
