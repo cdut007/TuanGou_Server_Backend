@@ -20,17 +20,20 @@
         })
     </script>
 
-    <div class="row-fluid" >
     <div class="row-fluid">
-		<div class="span4">
-            {#团购信息#}
-            <div class="control-group">
+		<div class="span6">
+        <fieldset class="module aligned first ">
+        {#团购信息#}
+            {% for key, value in group_buy_info.items %}
+            <div class="control-group form-row">
                 <div>
-                    <div class="control-label"><label>团长:</label></div>
-                    <div class="controls"><span class="readonly">仲康</span></div>
+                    <div class="control-label"><label>{{ key }}</label></div>
+                    <div class="controls"><span class="readonly">{{ value }}</span></div>
                 </div>
             </div>
-		</div>
+            {% endfor %}
+        </fieldset>
+        </div>
 	</div>
 
     <br><br>
@@ -83,10 +86,7 @@
     </table>
 		</div>
 	</div>
-    </div>
 
 {% endblock %}
 
-{% block submit_buttons_bottom %}
-{% endblock %}
 

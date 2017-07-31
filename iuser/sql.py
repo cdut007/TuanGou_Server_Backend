@@ -41,4 +41,18 @@ GROUP BY
 """
 
 #'团购信息'
-sql3 = ""
+sql3 = """
+SELECT
+	b.title AS '团购标题',
+	b.end_time AS '团购结束时间',
+	b.ship_time AS '团购发货时间',
+	c.nickname AS '团长昵称',
+	c.address AS '团长地址',
+	c.phone_num AS '团长手机号'
+FROM
+	iuser_agentorder AS a
+INNER JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+INNER JOIN iuser_userprofile AS c ON a.user_id = c.id
+WHERE
+	a.id = %(agent_order_id)s
+"""

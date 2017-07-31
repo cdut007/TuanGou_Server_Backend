@@ -46,12 +46,13 @@ class AgentOrderAdmin(admin.ModelAdmin):
         if object_id:
             from django.db import connection
             from utils.common import dict_fetch_all
-            from sql import sql1, sql2, sql1_desc, sql2_desc
+            from sql import sql1, sql2, sql1_desc, sql2_desc, sql3
 
             this_generic_order = render_change_form.context_data['original']
             agent_code = this_generic_order.user.openid
             group_buy_id = this_generic_order.group_buy_id
 
+            #sql1
             cursor = connection.cursor()
             sql1 = sql1 % {'agent_code': agent_code, 'group_buy_id': group_buy_id}
             cursor.execute(sql1)
@@ -60,12 +61,20 @@ class AgentOrderAdmin(admin.ModelAdmin):
             render_change_form.context_data['order_list_desc'] = sql1_desc
             render_change_form.context_data['order_list'] = order_list
 
+            #sql2
             sql2 = sql2 % {'agent_code': agent_code, 'group_buy_id': group_buy_id}
             cursor.execute(sql2)
             ship_list = dict_fetch_all(cursor)
 
             render_change_form.context_data['ship_list_desc'] = sql2_desc
             render_change_form.context_data['ship_list'] = ship_list
+
+            #sql3
+            sql3 = sql3 % {'agent_order_id': object_id}
+            cursor.execute(sql3)
+            group_buy_info = dict_fetch_all(cursor)
+
+            render_change_form.context_data['group_buy_info'] = group_buy_info[0]
 
         return render_change_form
 
