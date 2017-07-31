@@ -343,7 +343,7 @@ class SendEmailView(APIView):
         except GroupBuy.DoesNotExist:
             return Response(format_body(0, 'GroupBuy does not exist', ''))
 
-        file_path = BASE_DIR + '/excel/' + user_info.phone_num + '_' + group_buy.ship_time.strftime('%Y-%m-%d') + '.xlsx'
+        file_path = BASE_DIR + '/excel/' + user_info.phone_num + '_' + group_buy.__unicode__() + '.xlsx'
 
         if not os.path.exists(file_path):
             cursor = connection.cursor()
