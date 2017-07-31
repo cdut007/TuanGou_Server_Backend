@@ -4,10 +4,8 @@
 {% endblock %}
 
 {% block field_sets %}
-    {% for fieldset in adminform %}
-      {% include "admin/includes/fieldset.html" %}
-    {% endfor %}
 {% endblock %}
+
 
 {% block after_related_objects %}
     <style>
@@ -16,6 +14,11 @@
             margin-bottom: 10px
         }
     </style>
+    <script>
+        Suit.$(document).ready(function () {
+            Suit.$("inner-right-column").remove();
+        })
+    </script>
     {# 团长信息  #}
 
 
@@ -62,5 +65,8 @@
         {% endfor %}
 	</tbody>
     </table>
+{% endblock %}
+
+{% block submit_buttons_bottom %}
 {% endblock %}
 

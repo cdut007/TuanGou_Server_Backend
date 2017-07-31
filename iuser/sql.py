@@ -16,6 +16,7 @@ INNER JOIN market_goods AS c ON b.goods_id = c.id
 INNER JOIN iuser_userprofile AS d ON a.user_id = d.id
 WHERE
 	a.agent_code = '%(agent_code)s'
+AND a.status = 1
 AND b.group_buy_id = %(group_buy_id)s
 """
 
@@ -33,6 +34,7 @@ INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.id
 INNER JOIN market_goods AS c ON b.goods_id = c.id
 WHERE
 	a.agent_code = '%(agent_code)s'
+AND a.status = 1
 AND b.group_buy_id = %(group_buy_id)s
 GROUP BY
 	a.goods_id
