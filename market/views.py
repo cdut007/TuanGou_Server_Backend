@@ -39,7 +39,7 @@ class HomePageList(APIView):
         goods_classify = GoodsClassify.objects.all()
 
         for classify in goods_classify:
-            group_buy = GroupBuy.objects.filter(goods_classify=classify.id).order_by('-add_time').first()
+            group_buy = GroupBuy.objects.filter(goods_classify=classify.id,end_time__gt=datetime.now()).order_by('-add_time').first()
 
             if(group_buy):
                 goods_info = []
