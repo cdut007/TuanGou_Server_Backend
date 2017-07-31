@@ -58,7 +58,7 @@ class GroupBuyGoodsInline(admin.TabularInline):
 
 class GroupBuyAdmin(admin.ModelAdmin):
     form = GroupBuyForm
-    list_display = ('title', 'goods_classify', 'is_end')
+    list_display = ('id','title', 'goods_classify', 'is_end')
     inlines = [GroupBuyGoodsInline]
 
     fieldsets = (

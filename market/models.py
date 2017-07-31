@@ -52,7 +52,7 @@ class GroupBuy(models.Model):
     is_end.short_description = u'是否截团'
 
     def __unicode__(self):
-        return self.title
+        return  str(self.id) + '_' + self.title
 
 
 class Goods(models.Model):
