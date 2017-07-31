@@ -350,6 +350,8 @@ class SendEmailView(APIView):
             sql1 = sql1 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
             cursor.execute(sql1)
             order_list = dict_fetch_all(cursor)
+            if not order_list:
+                return Response(format_body(7, 'Generic order empty', ''))
             sql2 = sql2 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
             cursor.execute(sql2)
             ship_list = dict_fetch_all(cursor)

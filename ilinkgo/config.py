@@ -10,6 +10,7 @@ class StatusCode():
     IsNotAgent = 3
     hasRecord = 4
     KeyError = 6
+    OrderEmpty = 7
 
 
 def mysql_config():
