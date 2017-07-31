@@ -16,15 +16,51 @@
     </style>
     <script>
         Suit.$(document).ready(function () {
-            Suit.$("inner-right-column").remove();
+            Suit.$(".inner-right-column").remove();
         })
     </script>
-    {# 团长信息  #}
 
+    <div class="row-fluid" >
+    <div class="row-fluid">
+		<div class="span4">
+            {#团购信息#}
+            <div class="control-group">
+                <div>
+                    <div class="control-label"><label>团长:</label></div>
+                    <div class="controls"><span class="readonly">仲康</span></div>
+                </div>
+            </div>
+		</div>
+	</div>
 
+    <br><br>
 
-    {#用户订单列表#}
-    <table class="table table-striped">
+    <div class="row-fluid">
+		<div class="span4">
+            {#发货列表#}
+            <table class="table table-striped">
+	<caption>仓库发货清单</caption>
+	<thead>
+		<tr>
+            {% for desc in ship_list_desc %}
+            <th>{{ desc }}</th>
+            {% endfor %}
+		</tr>
+	</thead>
+	<tbody>
+        {% for item in order_list %}
+		<tr>
+			<td>{{ item.quantity }}</td>
+			<td>{{ item.m_amount }}</td>
+            <td>{{ item.goods }}</td>
+		</tr>
+        {% endfor %}
+	</tbody>
+    </table>
+		</div>
+		<div class="span8">
+            {#用户订单列表#}
+            <table class="table table-striped">
 	<caption>团员订单详情</caption>
 	<thead>
 		<tr>
@@ -45,26 +81,10 @@
         {% endfor %}
 	</tbody>
     </table>
-    {#发货列表#}
-    <table class="table table-striped">
-	<caption>仓库发货清单</caption>
-	<thead>
-		<tr>
-            {% for desc in ship_list_desc %}
-            <th>{{ desc }}</th>
-            {% endfor %}
-		</tr>
-	</thead>
-	<tbody>
-        {% for item in order_list %}
-		<tr>
-			<td>{{ item.quantity }}</td>
-			<td>{{ item.m_amount }}</td>
-            <td>{{ item.goods }}</td>
-		</tr>
-        {% endfor %}
-	</tbody>
-    </table>
+		</div>
+	</div>
+    </div>
+
 {% endblock %}
 
 {% block submit_buttons_bottom %}

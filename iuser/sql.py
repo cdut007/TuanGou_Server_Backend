@@ -39,3 +39,6 @@ AND b.group_buy_id = %(group_buy_id)s
 GROUP BY
 	a.goods_id
 """
+
+#'团购信息'
+sql3 = ""

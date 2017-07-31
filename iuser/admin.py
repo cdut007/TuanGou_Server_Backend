@@ -69,11 +69,6 @@ class AgentOrderAdmin(admin.ModelAdmin):
 
         return render_change_form
 
-    # class Media:
-    #     js = (
-    #         '\js\iuser.admin.generic_order.js',
-    #     )
-
 
 admin.site.register(UserProfile, UserProfileAdmin)
 admin.site.register(AgentOrder, AgentOrderAdmin)
