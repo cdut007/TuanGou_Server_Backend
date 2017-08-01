@@ -16,11 +16,12 @@ class MyCheckBoxInputWidget(widgets.CheckboxInput):
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('nickname', 'sex', 'province', 'city', 'is_agent')
+    list_display = ('id', 'nickname', 'sex', 'province', 'city', 'is_agent')
     search_fields = ('nickname',)
     exclude = ('openid', 'unionid', 'privilege')
     readonly_fields = ('nickname', 'sex', 'province', 'city', 'country',
                        'headimgurl', 'address', 'phone_num', 'join_time')
+    actions = None
     formfield_overrides = {
         models.DateTimeField: {'widget': SuitSplitDateTimeWidget},
         models.BooleanField: {'widget': MyCheckBoxInputWidget(
@@ -38,7 +39,6 @@ class AgentOrderAdmin(admin.ModelAdmin):
     list_display = ('id','user', 'group_buy', 'add_time')
     search_fields = ('user__nickname', 'group_buy__title')
     actions = None
-
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         render_change_form = super(AgentOrderAdmin, self).changeform_view(request, object_id, form_url, extra_context)
