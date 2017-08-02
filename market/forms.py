@@ -1,14 +1,14 @@
 from datetime import datetime
 from django import forms
 from models import GroupBuy
-from suit.widgets import SuitSplitDateTimeWidget
+from suit.widgets import SuitSplitDateTimeWidget, SuitDateWidget
 
 class GroupBuyForm(forms.ModelForm):
     class Meta:
         model = GroupBuy
         exclude = ['add_time']
         widgets = {
-            'ship_time': SuitSplitDateTimeWidget,
+            'ship_time': SuitDateWidget,
             'end_time': SuitSplitDateTimeWidget
         }
 

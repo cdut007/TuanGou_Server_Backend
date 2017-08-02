@@ -60,6 +60,10 @@ class GroupBuyGoodsInline(admin.TabularInline):
 class GroupBuyAdmin(admin.ModelAdmin):
     form = GroupBuyForm
     list_display = ('id','title', 'goods_classify', 'is_end', 'ship_time')
+    search_fields = ('title',)
+    search_placeholder = u'请输入: 标题'
+    list_filter = ('goods_classify',)
+    date_hierarchy = 'ship_time'
     inlines = [GroupBuyGoodsInline]
     actions = None
 
@@ -80,8 +84,14 @@ class GroupBuyAdmin(admin.ModelAdmin):
             '/static/js/chosen.jquery/config.js'
         )
 
+    def changelist_view(self, request, extra_context=None):
+        response =  super(GroupBuyAdmin, self).changelist_view(request, extra_context)
+        response.context_data['cl'].search_placeholder = self.search_placeholder
+        return response
+
 
 class GoodsAdmin(admin.ModelAdmin):
+    list_per_page = 20
     list_display = ('id','name',)
     inlines = [GoodsGalleryInline]
     actions = None

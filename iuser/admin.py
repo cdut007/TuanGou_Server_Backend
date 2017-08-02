@@ -19,8 +19,10 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'nickname', 'sex', 'province', 'city', 'is_agent')
     search_fields = ('nickname',)
     exclude = ('openid', 'unionid', 'privilege')
-    readonly_fields = ('nickname', 'sex', 'province', 'city', 'country',
-                       'headimgurl', 'address', 'phone_num', 'join_time')
+    readonly_fields = (
+        'nickname', 'sex', 'province', 'city', 'country',
+        'headimgurl', 'address', 'phone_num', 'join_time'
+    )
     actions = None
     formfield_overrides = {
         models.DateTimeField: {'widget': SuitSplitDateTimeWidget},
