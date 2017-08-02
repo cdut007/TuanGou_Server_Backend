@@ -40,7 +40,13 @@ class UserProfileAdmin(admin.ModelAdmin):
 class AgentOrderAdmin(admin.ModelAdmin):
     list_display = ('id','user', 'group_buy', 'add_time')
     search_fields = ('user__nickname', 'group_buy__title')
+    search_placeholder = u'请输入: 用户名、团购标题'
     actions = None
+
+    def changelist_view(self, request, extra_context=None):
+        response =  super(AgentOrderAdmin, self).changelist_view(request, extra_context)
+        response.context_data['cl'].search_placeholder = self.search_placeholder
+        return response
 
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         render_change_form = super(AgentOrderAdmin, self).changeform_view(request, object_id, form_url, extra_context)
