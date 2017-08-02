@@ -20,6 +20,7 @@ class MyClearableFileInput(widgets.ClearableFileInput):
 
 
 class BannerAdmin(admin.ModelAdmin):
+    actions = None
     formfield_overrides = {
         models.ImageField: {'widget': MyClearableFileInput}
     }
@@ -60,6 +61,7 @@ class GroupBuyAdmin(admin.ModelAdmin):
     form = GroupBuyForm
     list_display = ('id','title', 'goods_classify', 'is_end', 'ship_time')
     inlines = [GroupBuyGoodsInline]
+    actions = None
 
     fieldsets = (
         (None, {
@@ -80,8 +82,9 @@ class GroupBuyAdmin(admin.ModelAdmin):
 
 
 class GoodsAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id','name',)
     inlines = [GoodsGalleryInline]
+    actions = None
     fieldsets = (
         (None, {
             'classes': ('suit-tab', 'suit-tab-general'),

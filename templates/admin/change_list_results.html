@@ -42,8 +42,8 @@
                 <tr{% result_row_attrs cl forloop.counter %}>
                     {% for item in result %}{{ item }}{% endfor %}
                     <td width="10%">
-                        <a href=""><img class="my_opt_img" src={% static 'template_images/edit_b.png'%}></a>&nbsp;
-                        <a href=""><img class="my_opt_img" src={% static 'template_images/delete.png'%}></a>&nbsp;
+                        <a href=""><img class="my_opt_img opt_edit" src={% static 'template_images/edit_b.png'%}></a>&nbsp;
+                        <a href=""><img class="my_opt_img opt_delete" src={% static 'template_images/delete.png'%}></a>&nbsp;
                     </td>
                 </tr>
             {% endfor %}
@@ -68,3 +68,10 @@
         transform: translate(1px, 1px);
     }
 </style>
+<script>
+    Suit.$(".opt_edit").click(function () {
+        var th_peer_node = Suit.$(this).closest("tr").children("th");
+        var href = th_peer_node.children("a").attr("href");
+        Suit.$(this).parent("a").attr("href", href);
+    })
+</script>
