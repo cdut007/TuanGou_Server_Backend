@@ -6,6 +6,7 @@ from django.forms import widgets
 from django.db import models
 from forms import GroupBuyForm
 
+from iuser.admin import MyCheckBoxInputWidget
 from models import Banner,GoodsClassify,GroupBuy,Goods, GroupBuyGoods, GoodsGallery
 # Register your models here.
 
@@ -20,10 +21,22 @@ class MyClearableFileInput(widgets.ClearableFileInput):
 
 
 class BannerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'image', 'is_show')
+    exclude = ('add_time',)
     actions = None
     formfield_overrides = {
-        models.ImageField: {'widget': MyClearableFileInput}
+        models.ImageField: {'widget': MyClearableFileInput},
+        models.BooleanField: {'widget': MyCheckBoxInputWidget(
+            attrs={'class': 'tgl tgl-ios', 'style': 'display:none'}
+        )}
     }
+    class Media:
+        css = {
+            "all": ('/static/css/switch.css',)
+        }
+        js = (
+            '/static/js/market.admin.banner.js',
+        )
 
 
 class GoodsGalleryAdmin(admin.ModelAdmin):
@@ -92,7 +105,7 @@ class GroupBuyAdmin(admin.ModelAdmin):
 
 class GoodsAdmin(admin.ModelAdmin):
     list_per_page = 20
-    list_display = ('id','name',)
+    list_display = ('name',)
     inlines = [GoodsGalleryInline]
     actions = None
     fieldsets = (

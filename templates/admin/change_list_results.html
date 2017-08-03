@@ -33,6 +33,7 @@
             </tr>
             </thead>
             <tbody>
+
             {% for result in results|cells_handler:cl %}
                 {% if result.form.non_field_errors %}
                     <tr>
