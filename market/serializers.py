@@ -55,7 +55,6 @@ class GroupBuySerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super(GroupBuySerializer, self).to_representation(instance)
-        data['ship_time'] = utc_time_to_local_time(data['ship_time'])
         data['end_time'] = utc_time_to_local_time(data['end_time'])
         return data
 
