@@ -106,6 +106,8 @@ class GroupBuyAdmin(admin.ModelAdmin):
 class GoodsAdmin(admin.ModelAdmin):
     list_per_page = 20
     list_display = ('name',)
+    search_fields = ('name',)
+    search_placeholder = u'请输入: 名称'
     inlines = [GoodsGalleryInline]
     actions = None
     fieldsets = (
@@ -121,6 +123,11 @@ class GoodsAdmin(admin.ModelAdmin):
             '/static/js/kindeditor/lang/zh_CN.js',
             '/static/js/kindeditor/config.js'
         )
+
+    def changelist_view(self, request, extra_context=None):
+        response =  super(GoodsAdmin, self).changelist_view(request, extra_context)
+        response.context_data['cl'].search_placeholder = self.search_placeholder
+        return response
 
     def save_formset(self, request, form, formset, change):
         super(GoodsAdmin, self).save_formset( request, form, formset, change)
