@@ -40,6 +40,7 @@ class BannerAdmin(admin.ModelAdmin):
 
 
 class GoodsGalleryAdmin(admin.ModelAdmin):
+    list_per_page = 15
     formfield_overrides = {
         models.ImageField: {'widget': MyClearableFileInput}
     }
@@ -71,6 +72,7 @@ class GroupBuyGoodsInline(admin.TabularInline):
 
 
 class GroupBuyAdmin(admin.ModelAdmin):
+    list_per_page = 15
     form = GroupBuyForm
     list_display = ('id','title', 'goods_classify', 'is_end', 'ship_time')
     search_fields = ('title',)
@@ -104,7 +106,7 @@ class GroupBuyAdmin(admin.ModelAdmin):
 
 
 class GoodsAdmin(admin.ModelAdmin):
-    list_per_page = 20
+    list_per_page = 15
     list_display = ('name',)
     search_fields = ('name',)
     search_placeholder = u'请输入: 名称'

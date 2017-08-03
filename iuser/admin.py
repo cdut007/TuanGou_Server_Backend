@@ -16,6 +16,7 @@ class MyCheckBoxInputWidget(widgets.CheckboxInput):
 
 
 class UserProfileAdmin(admin.ModelAdmin):
+    list_per_page = 15
     list_display = ('id', 'nickname', 'sex', 'province', 'city', 'is_agent')
     search_fields = ('nickname',)
     exclude = ('openid', 'unionid', 'privilege')
@@ -38,6 +39,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 
 class AgentOrderAdmin(admin.ModelAdmin):
+    list_per_page = 15
     list_display = ('id','user', 'group_buy', 'add_time')
     search_fields = ('user__nickname', 'group_buy__title')
     search_placeholder = u'请输入: 用户名、团购标题'
