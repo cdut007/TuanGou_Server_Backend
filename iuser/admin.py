@@ -19,6 +19,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     list_per_page = 15
     list_display = ('id', 'nickname', 'sex', 'province', 'city', 'is_agent')
     search_fields = ('nickname',)
+    search_placeholder = u'请输入: 昵称'
     exclude = ('openid', 'unionid', 'privilege')
     readonly_fields = (
         'nickname', 'sex', 'province', 'city', 'country',
@@ -36,6 +37,11 @@ class UserProfileAdmin(admin.ModelAdmin):
         css = {
             "all": ('/static/css/switch.css',)
         }
+
+    def changelist_view(self, request, extra_context=None):
+        response =  super(UserProfileAdmin, self).changelist_view(request, extra_context)
+        response.context_data['cl'].search_placeholder = self.search_placeholder
+        return response
 
 
 class AgentOrderAdmin(admin.ModelAdmin):
