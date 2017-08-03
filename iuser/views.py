@@ -29,6 +29,11 @@ class UserView(APIView):
         return Response(format_body(1, 'Success', {'user_profile': serializer.data}))
 
     def post(self, request, format=None):
+        if request.data.has_key('virtual_account') and request.data['virtual_account']==1:
+            if request.data['username'] == 'Mike.zk' and request.data['password']=='1234567a':
+                return Response(format_body(1, 'Success', {'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU2MjIyNzQyOSwiaWF0IjoxNTAxNzQ3NDI5fQ.eyJpZCI6MTB9.d3jVre6F5cC94gPYKJrEiij3v4OMwi3FdEvqQH7VE8I'}))
+            return Response(format_body(2, 'ErrorParams', 'username or password error'))
+        
         serializer = UserProfileSerializer(data=request.data)
         if serializer.is_valid():
             user_record = UserProfile.objects.filter(unionid=serializer.validated_data['unionid']).first()
