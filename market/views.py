@@ -72,8 +72,8 @@ class AgentHomePageList(APIView):
         try:
             agent_user = UserProfile.objects.get(openid=agent_code)
         except UserProfile.DoesNotExist:
-            Response(format_body(0, 'agent user does not exist', ''))
-        
+            return Response(format_body(0, 'agent user does not exist', ''))
+
         res = []
         classifies = GroupBuy.objects.filter(agentorder__user=agent_user.id, end_time__gt=datetime.now()).values('goods_classify').distinct()
         path = image_path()
