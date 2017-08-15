@@ -151,11 +151,10 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
+STATIC_ROOT = "/usr/local/nginx/html/ilinkgo/col_statics"
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'images'),
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'excel'),
 ]
 IMAGES_ROOT = 'images'
 
@@ -217,9 +216,10 @@ SUIT_CONFIG = {
     )
 }
 
-EMAIL_HOST = 'smtp.sina.com'
-EMAIL_PORT = 25
-EMAIL_HOST_USER = 'rock_or_bust@sina.com'
-EMAIL_HOST_PASSWORD = 'op*6785pl'
+EMAIL_HOST = 'smtp.exmail.qq.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'ilinkgo@ultralinked.com'
+EMAIL_HOST_PASSWORD = 'Ilinkgo1234'
 EMAIL_USE_TLS = False
-EMAIL_FROM = 'rock_or_bust@sina.com'
+EMAIL_USE_SSL = True
+EMAIL_FROM = 'ilinkgo@ultralinked.com'

@@ -29,11 +29,12 @@ class UserView(APIView):
         return Response(format_body(1, 'Success', {'user_profile': serializer.data}))
 
     def post(self, request, format=None):
+        
         if request.data.has_key('virtual_account') and request.data['virtual_account']==1:
             if request.data['username'] == 'Mike.zk' and request.data['password']=='1234567a':
                 return Response(format_body(1, 'Success', {'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU2MjIyNzQyOSwiaWF0IjoxNTAxNzQ3NDI5fQ.eyJpZCI6MTB9.d3jVre6F5cC94gPYKJrEiij3v4OMwi3FdEvqQH7VE8I'}))
             return Response(format_body(2, 'ErrorParams', 'username or password error'))
-        
+
         serializer = UserProfileSerializer(data=request.data)
         if serializer.is_valid():
             user_record = UserProfile.objects.filter(unionid=serializer.validated_data['unionid']).first()
@@ -376,12 +377,24 @@ class SendEmailView(APIView):
             order_excel(data)
 
         _file = file_path
+
+        subject =  u"类别（%(classify)s）订单详情" % {
+            'classify': group_buy.goods_classify.name
+        }
+        body = u"类别（%(classify)s）发货时间（预计%(month)s月%(day)s日发货）订单信息表" % {
+            'classify': group_buy.goods_classify.name,
+            'month': group_buy.ship_time.month,
+            'day': group_buy.ship_time.day
+        }
+        from_email = u'爱邻购 <ilinkgo@ultralinked.com>'
+
         message = EmailMessage(
-            subject='123',
-            body='123',
-            from_email='rock_or_bust@sina.com',
+            subject=subject,
+            body=body,
+            from_email= from_email,
             to=[email_to],
         )
+
         message.attach_file(_file)
         message.send()
 
