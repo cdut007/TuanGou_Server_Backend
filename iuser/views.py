@@ -1,6 +1,7 @@
 # _*_ coding:utf-8 _*_
 from datetime import datetime
 from django.db.models import Sum
+from django.db import connection
 from django.core.mail import EmailMessage
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -29,7 +30,7 @@ class UserView(APIView):
         return Response(format_body(1, 'Success', {'user_profile': serializer.data}))
 
     def post(self, request, format=None):
-        
+
         if request.data.has_key('virtual_account') and request.data['virtual_account']==1:
             if request.data['username'] == 'Mike.zk' and request.data['password']=='1234567a':
                 return Response(format_body(1, 'Success', {'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU2MjIyNzQyOSwiaWF0IjoxNTAxNzQ3NDI5fQ.eyJpZCI6MTB9.d3jVre6F5cC94gPYKJrEiij3v4OMwi3FdEvqQH7VE8I'}))
@@ -307,6 +308,17 @@ class GenericOrderView(APIView):
                quantity=item['quantity']
             ))
         GenericOrder.objects.bulk_create(order_bulk)
+
+        # 清空购物车
+        from sql import sql4
+        goods_ids = ''
+        for item in request.data['goods']:
+            goods_ids += str(item['goods']) + ','
+        goods_ids = goods_ids.strip(',')
+        sql4 = sql4 % {'user_id': self.post.user_id, 'agent_code': request.data['agent_code'], 'goods_ids': goods_ids}
+        cursor = connection.cursor()
+        cursor.execute(sql4)
+
         return Response(format_body(1, 'Success', ''))
 
     @Authentication.token_required
@@ -329,7 +341,6 @@ class SendEmailView(APIView):
     def post(self, request):
         import os
         from ilinkgo.settings import BASE_DIR
-        from django.db import connection
         from utils.common import dict_fetch_all
         from utils.gen_excel import order_excel
         from sql import sql1, sql2

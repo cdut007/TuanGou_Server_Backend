@@ -56,3 +56,14 @@ INNER JOIN iuser_userprofile AS c ON a.user_id = c.id
 WHERE
 	a.id = %(agent_order_id)s
 """
+
+#'clear shopping cart'
+sql4 = """
+DELETE
+FROM
+	iuser_shoppingcart
+WHERE
+	user_id = %(user_id)s
+AND agent_code = '%(agent_code)s'
+AND goods_id IN (%(goods_ids)s)
+"""
