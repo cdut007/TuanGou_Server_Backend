@@ -24,7 +24,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class UserAddressSerializer(serializers.ModelSerializer):
     phone_num = serializers.CharField(required=True)
-    address = serializers.CharField(required=True)
+    address = serializers.CharField(required=False)
 
     class Meta:
         model = UserProfile
