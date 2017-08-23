@@ -310,14 +310,15 @@ class GenericOrderView(APIView):
         GenericOrder.objects.bulk_create(order_bulk)
 
         # 清空购物车
-        from sql import sql4
-        goods_ids = ''
-        for item in request.data['goods']:
-            goods_ids += str(item['goods']) + ','
-        goods_ids = goods_ids.strip(',')
-        sql4 = sql4 % {'user_id': self.post.user_id, 'agent_code': request.data['agent_code'], 'goods_ids': goods_ids}
-        cursor = connection.cursor()
-        cursor.execute(sql4)
+        if request.data['clear_cart'] is True:
+            from sql import sql4
+            goods_ids = ''
+            for item in request.data['goods']:
+                goods_ids += str(item['goods']) + ','
+            goods_ids = goods_ids.strip(',')
+            sql4 = sql4 % {'user_id': self.post.user_id, 'agent_code': request.data['agent_code'], 'goods_ids': goods_ids}
+            cursor = connection.cursor()
+            cursor.execute(sql4)
 
         return Response(format_body(1, 'Success', ''))
 

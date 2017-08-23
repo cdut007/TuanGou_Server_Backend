@@ -7,8 +7,8 @@ def code_to_access_token(code):
     :return: 
     """
     params = dict()
-    params['appid'] = 'wx9747b8e0e756d85f'
-    params['secret'] = 'bdc13160ebaa652e22854def44dab173'
+    params['appid'] = 'wx3dfb837875e773af'
+    params['secret'] = '8f124947d450ee56458828481d183889'
     params['code'] = code
     params['grant_type'] = 'authorization_code'
     url = 'https://api.weixin.qq.com/sns/oauth2/access_token?' + urllib.urlencode(params)
