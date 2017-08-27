@@ -80,18 +80,23 @@ class GroupBuyAdmin(admin.ModelAdmin):
     list_filter = ('goods_classify',)
     date_hierarchy = 'ship_time'
     inlines = [GroupBuyGoodsInline]
+    formfield_overrides = {
+        models.BooleanField: {'widget': MyCheckBoxInputWidget(
+            attrs={'class': 'tgl tgl-ios', 'style': 'display:none'}
+        )}
+    }
 
     fieldsets = (
         (None, {
             'classes': ('suit-tab', 'suit-tab-general'),
-            'fields': ('title', 'goods_classify', 'end_time','ship_time')
+            'fields': ('title', 'goods_classify', 'end_time','ship_time', 'on_sale')
         }),
     )
     suit_form_tabs = (('general', 'General'), ('goods', 'Goods'))
 
     class Media:
         css = {
-            "all": ('/static/js/chosen.jquery/chosen.css',)
+            "all": ('/static/js/chosen.jquery/chosen.css','/static/css/switch.css')
         }
         js = (
             '/static/js/chosen.jquery/chosen.jquery.js',

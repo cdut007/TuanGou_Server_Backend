@@ -39,7 +39,7 @@ class HomePageList(APIView):
         goods_classify = GoodsClassify.objects.all()
 
         for classify in goods_classify:
-            group_buy = GroupBuy.objects.filter(goods_classify=classify.id,end_time__gt=datetime.now()).order_by('-add_time').first()
+            group_buy = GroupBuy.objects.filter(goods_classify=classify.id,end_time__gt=datetime.now(), on_sale=True).order_by('-add_time').first()
 
             if(group_buy):
                 goods_info = []
@@ -75,13 +75,15 @@ class AgentHomePageList(APIView):
             return Response(format_body(0, 'agent user does not exist', ''))
 
         res = []
-        classifies = GroupBuy.objects.filter(agentorder__user=agent_user.id, end_time__gt=datetime.now()).values('goods_classify').distinct()
+        classifies = GroupBuy.objects.filter(agentorder__user=agent_user.id, end_time__gt=datetime.now(), on_sale=True).values('goods_classify').distinct()
         path = image_path()
         for classify in classifies:
             classify = GoodsClassify.objects.get(pk=classify['goods_classify'])
             classify_serializer = GoodsClassifySerializer(classify)
             group_buy = GroupBuy.objects.filter(agentorder__user=agent_user.id,
-                                                end_time__gt=datetime.now(),goods_classify=classify.id).order_by('-add_time').first()
+                                                end_time__gt=datetime.now(),
+                                                on_sale=True,
+                                                goods_classify=classify.id).order_by('-add_time').first()
             agent_order = AgentOrder.objects.get(group_buy=group_buy.id, user=agent_user.id)
             group_buy_goods = GroupBuyGoods.objects.filter(id__in=str(agent_order.goods_ids).split(','))
             goods_info = []
@@ -109,9 +111,15 @@ class GroupBuyList(APIView):
         classify_serializer = GoodsClassifySerializer(classify)
         if agent_code:
             user = UserProfile.objects.get(openid=agent_code)
-            group_buy = GroupBuy.objects.filter(goods_classify=classify_id, agentorder__user=user.id, end_time__gt=datetime.now())
+            group_buy = GroupBuy.objects.filter(goods_classify=classify_id,
+                                                agentorder__user=user.id,
+                                                on_sale=True,
+                                                end_time__gt=datetime.now())
         else:
-            group_buy = GroupBuy.objects.filter(goods_classify=classify_id, end_time__gt=datetime.now())
+            group_buy = GroupBuy.objects.filter(goods_classify=classify_id,
+                                                end_time__gt=datetime.now(),
+                                                on_sale=True
+                                                )
 
         group_buy_serializer = GroupBuySerializer(group_buy, many=True)
 
