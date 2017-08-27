@@ -16,6 +16,7 @@ class StatusCode():
 def mysql_config():
     """load configuration"""
     mode = os.environ.get('MODE', '')
+    dir_name = os.getcwd().split('/')[-1]
 
     if mode == 'PRODUCTION':
         mysql_config = {
@@ -23,13 +24,13 @@ def mysql_config():
             'user': 'ilinkusr',
             'password': 'I1InkUsr%710',
         }
-    elif mode == 'TESTING':
+    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
        mysql_config = {
             'name': 'ilinkgo',
             'user': 'ilinkusr',
             'password': 'I1InkUsr%710',
        }
-    elif mode == 'OLD_TESTING':
+    elif mode == 'TESTING' and dir_name == 'TuanGou_Server_Backend_Testing':
         mysql_config = {
             'name': 'ilinkgo',
             'user': 'root',
