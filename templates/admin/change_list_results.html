@@ -43,8 +43,8 @@
                 <tr{% result_row_attrs cl forloop.counter %}>
                     {% for item in result %}{{ item }}{% endfor %}
                     <td width="10%">
-                        <a href=""><img class="my_opt_img opt_edit" src={% static 'template_images/edit_b.png'%}></a>&nbsp;
-                        <a href=""><img class="my_opt_img opt_delete" src={% static 'template_images/delete.png'%}></a>&nbsp;
+                        <button type="button" class="transparentButton"><img class="my_opt_img opt_edit" src={% static 'template_images/edit_b.png'%}></button>&nbsp;
+                        <button type="button" class="transparentButton"><img class="my_opt_img opt_delete" src={% static 'template_images/delete.png'%}></button>&nbsp;
                     </td>
                 </tr>
             {% endfor %}
@@ -68,11 +68,53 @@
     .my_opt_img:active {
         transform: translate(1px, 1px);
     }
+    .transparentButton {
+        border-style: none;
+        background-color: inherit;
+        outline-style: none;
+    }
 </style>
 <script>
+    Suit.$.extend({
+        StandardPost:function(url,args){
+            var body = $(document.body),
+                form = $("<form method='post'></form>"),
+                input;
+            form.attr({"action":url});
+            $.each(args,function(key,value){
+                input = $("<input type='hidden'>");
+                input.attr({"name":key});
+                input.val(value);
+                form.append(input);
+            });
+
+            form.appendTo(document.body);
+            form.submit();
+            document.body.removeChild(form[0]);
+        }
+    });
+
     Suit.$(".opt_edit").click(function () {
         var th_peer_node = Suit.$(this).closest("tr").children("th");
+        window.location.href = th_peer_node.children("a").attr("href");
+    });
+
+    Suit.$(".opt_delete").click(function () {
+        var th_peer_node = Suit.$(this).closest("tr").children("th");
         var href = th_peer_node.children("a").attr("href");
-        Suit.$(this).parent("a").attr("href", href);
+        var match_res = /\/(\d+)\//g.exec(href)
+        var item_id = match_res[1];
+
+        var csrf_token = Suit.$("input[name='csrfmiddlewaretoken']").val();
+        var url = window.location.pathname;
+        var send_data = {
+            csrfmiddlewaretoken:csrf_token,
+            _selected_action:item_id,
+            action:'delete_selected',
+            select_across:0,
+            index:0
+        };
+
+        Suit.$.StandardPost(url, send_data)
     })
 </script>

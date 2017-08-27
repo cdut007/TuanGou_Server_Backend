@@ -199,7 +199,12 @@ class UploadImageView(APIView):
             for chunk in image.chunks():
                 destination.write(chunk)
                 destination.close()
-            return Response({'error': 0, 'url':  image_path() + goods_detail_path +image_name})
+            return Response({
+                'error': 0,
+                'url':  image_path() + goods_detail_path +image_name,
+                'width': '100%',
+                'height': 'auto'
+            })
         return Response({'error':1, 'message': 'file error'})
 
 

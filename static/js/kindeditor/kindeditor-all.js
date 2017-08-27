@@ -7466,8 +7466,8 @@ KindEditor.plugin('image', function(K) {
 			var img = self.plugin.getSelectedImage();
 			self.plugin.imageDialog({
 				imageUrl : img ? img.attr('data-ke-src') : 'http://',
-				imageWidth : img ? img.width() : '',
-				imageHeight : img ? img.height() : '',
+				imageWidth : img ? img.width() : '100%',
+				imageHeight : img ? img.height() : 'auto',
 				imageTitle : img ? img.attr('title') : '',
 				imageAlign : img ? img.attr('align') : '',
 				showRemote : allowImageRemote,

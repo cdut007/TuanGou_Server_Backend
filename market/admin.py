@@ -23,7 +23,7 @@ class MyClearableFileInput(widgets.ClearableFileInput):
 class BannerAdmin(admin.ModelAdmin):
     list_display = ('name', 'image', 'is_show')
     exclude = ('add_time',)
-    actions = None
+    # actions = None
     formfield_overrides = {
         models.ImageField: {'widget': MyClearableFileInput},
         models.BooleanField: {'widget': MyCheckBoxInputWidget(
@@ -80,7 +80,6 @@ class GroupBuyAdmin(admin.ModelAdmin):
     list_filter = ('goods_classify',)
     date_hierarchy = 'ship_time'
     inlines = [GroupBuyGoodsInline]
-    actions = None
 
     fieldsets = (
         (None, {
@@ -101,7 +100,8 @@ class GroupBuyAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         response =  super(GroupBuyAdmin, self).changelist_view(request, extra_context)
-        response.context_data['cl'].search_placeholder = self.search_placeholder
+        if response.context_data.has_key('cl'):
+            response.context_data['cl'].search_placeholder = self.search_placeholder
         return response
 
 
@@ -111,7 +111,6 @@ class GoodsAdmin(admin.ModelAdmin):
     search_fields = ('name',)
     search_placeholder = u'请输入: 名称'
     inlines = [GoodsGalleryInline]
-    actions = None
     fieldsets = (
         (None, {
             'classes': ('suit-tab', 'suit-tab-general'),
@@ -128,7 +127,8 @@ class GoodsAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         response =  super(GoodsAdmin, self).changelist_view(request, extra_context)
-        response.context_data['cl'].search_placeholder = self.search_placeholder
+        if response.context_data.has_key('cl'):
+            response.context_data['cl'].search_placeholder = self.search_placeholder
         return response
 
     def save_formset(self, request, form, formset, change):
