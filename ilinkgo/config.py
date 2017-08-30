@@ -22,19 +22,19 @@ def mysql_config():
         mysql_config = {
             'name': 'ilinkgo',
             'user': 'ilinkusr',
-            'password': 'I1InkUsr%710',
+            'password': 'ilinkusr123',
         }
     elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
        mysql_config = {
             'name': 'ilinkgo',
             'user': 'ilinkusr',
-            'password': 'I1InkUsr%710',
+            'password': 'ilinkusr123',
        }
     elif mode == 'TESTING' and dir_name == 'TuanGou_Server_Backend_Testing':
         mysql_config = {
-            'name': 'ilinkgo',
-            'user': 'root',
-            'password': 'pPt87G6c9FCG2117',
+            'name': 'ilinkgo_test',
+            'user': 'ilinkusr',
+            'password': 'ilinkusr123',
         }
     else:
         mysql_config = {
