@@ -91,6 +91,9 @@ SELECT
 		'\"cart_id\": \"',
 		temp.cart_id,
 		'\", ',
+		'\"price\": \"',
+		temp.price,
+		'\", ',
 		'\"quantity\": \"',
 		temp.quantity,
 		'\", ',
@@ -113,6 +116,7 @@ FROM
 			c.`name` AS goods_name,
 			d.image,
 			b.brief_dec,
+			b.price,
 			b.group_buy_id
 		FROM
 			iuser_shoppingcart AS a
