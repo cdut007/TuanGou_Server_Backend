@@ -69,15 +69,66 @@ AND goods_id IN (%(goods_ids)s)
 """
 
 sql_add_to_cart = """
-INSERT INTO iuser_genericorder (
+INSERT INTO iuser_shoppingcart (
 	agent_code,
 	add_time,
 	user_id,
 	goods_id,
-	quantity,
-	STATUS
+	quantity
 )
 VALUES
+"""
+
+sql_get_shopping_cart = """
+SELECT
+	e.ship_time,
+	f.`name`,
+	CONCAT('[', GROUP_CONCAT(
+		CONCAT(
+		'{\"goods_id\": \"',
+		temp.goods_id,
+		'\", ',
+		'\"quantity\": \"',
+		temp.quantity,
+		'\", ',
+		'\"goods_name\": \"',
+		temp.goods_name,
+		'\", ',
+		'\"image\": \"',
+		temp.image,
+		'\", ',
+		'\"brief_desc\": \"',
+		temp.brief_dec,
+		'\"}'
+		)), ']') AS `goods_list`
+FROM
+	(
+		SELECT
+			a.goods_id,
+			SUM(a.`quantity`) AS `quantity`,
+			c.`name` AS goods_name,
+			d.image,
+			b.brief_dec,
+			b.group_buy_id
+		FROM
+			iuser_shoppingcart AS a
+		LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+		LEFT JOIN market_goods AS c ON b.goods_id = c.id
+		LEFT JOIN market_goodsgallery AS d ON c.id = d.goods_id
+		AND d.is_primary = 1
+		WHERE
+			a.user_id = %(user_id)s
+		AND a.agent_code = '%(agent_code)s'
+		GROUP BY
+			goods_id
+	) AS temp
+LEFT JOIN market_groupbuy AS e ON temp.group_buy_id=e.id
+LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
+WHERE 
+	e.on_sale = 1 AND e.end_time >= NOW()
+GROUP BY 
+	temp.group_buy_id
+
 """
 
 sql_goods_clasify = """

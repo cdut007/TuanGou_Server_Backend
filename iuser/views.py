@@ -183,30 +183,30 @@ class AgentOrderView(APIView):
 
             serializer.save()
             return Response(format_body(1, 'Success', {'agent_url': web_link() + '?agent_code=' + user.openid, 'group_buy_info': classify_info}))
-        
+
         return Response(format_body(2, serializer.errors, ''))
 
 
 class ShoppingCartView(APIView):
     @Authentication.token_required
     def get(self, request):
-        agent_code = request.GET.get('agent_code', '')
-        group_buys = GroupBuy.objects.filter(
-            group_buy_goods__shoppingcart__user=self.get.user_id,
-            group_buy_goods__shoppingcart__agent_code=agent_code
-        ).distinct()
+        from sql import sql_get_shopping_cart
+        import json
 
-        group_buys_serializer = GroupBuySerializer(group_buys, many=True)
-        for group_buy in group_buys_serializer.data:
-            classify_serializer = GoodsClassifySerializer(GoodsClassify.objects.get(group_buy=group_buy['id']))
-            group_buy['classify'] = classify_serializer.data
-            cart_goods = ShoppingCart.objects.filter(user=self.get.user_id, agent_code=agent_code, goods__group_buy=group_buy['id'])
-            cart_goods_serializer = ShoppingCartSerializer(cart_goods, many=True)
-            for item in cart_goods_serializer.data:
-                goods_info = GroupBuyGoodsSerializer(GroupBuyGoods.objects.get(pk=item['goods']))
-                item['goods'] = goods_info.data
-            group_buy['cart_goods'] = cart_goods_serializer.data
-        return Response(format_body(1, 'Success', {'group_buy': group_buys_serializer.data}))
+        try:
+            sql_get_shopping_cart = sql_get_shopping_cart % {'user_id': self.get.user_id, 'agent_code': request.GET['agent_code']}
+        except KeyError as e:
+            return Response(format_body(2, 'Params error', e.message))
+
+        cursor = connection.cursor()
+        cursor.execute(sql_get_shopping_cart)
+
+        data = dict_fetch_all(cursor)
+
+        for item in data:
+            item['goods_list'] = json.loads(item['goods_list'])
+
+        return Response(format_body(1, 'Success', {'group_buy': data}))
 
     @Authentication.token_required
     def post(self, request):
@@ -215,13 +215,12 @@ class ShoppingCartView(APIView):
         insert_values = ""
         try:
             for goods_item in request.data['goods_list']:
-                insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}', '{5}'),\n".format(
+                insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}'),\n".format(
                     request.data['agent_code'],
                     datetime.now(),
                     self.post.user_id,
                     goods_item['goods_id'],
-                    goods_item['goods_quantity'],
-                    1
+                    goods_item['goods_quantity']
                 )
         except KeyError as e:
             return Response(format_body(2, 'Params error', e.message))
