@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils.common import format_body, dict_fetch_all
-from ilinkgo.config import web_link
+from ilinkgo.config import web_link, image_path
 from utils.winxin import code_to_access_token, access_token_to_user_info
 from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
 from market.serializers import GroupBuyGoodsSerializer, GoodsClassifySerializer, GroupBuySerializer
@@ -194,7 +194,11 @@ class ShoppingCartView(APIView):
         import json
 
         try:
-            sql_get_shopping_cart = sql_get_shopping_cart % {'user_id': self.get.user_id, 'agent_code': request.GET['agent_code']}
+            sql_get_shopping_cart = sql_get_shopping_cart % {
+                'user_id': self.get.user_id,
+                'agent_code': request.GET['agent_code'],
+                'image_prefix': image_path()
+            }
         except KeyError as e:
             return Response(format_body(2, 'Params error', e.message))
 

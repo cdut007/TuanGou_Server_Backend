@@ -88,13 +88,16 @@ SELECT
 		'{\"goods_id\": \"',
 		temp.goods_id,
 		'\", ',
+		'\"cart_id\": \"',
+		temp.cart_id,
+		'\", ',
 		'\"quantity\": \"',
 		temp.quantity,
 		'\", ',
 		'\"goods_name\": \"',
 		temp.goods_name,
 		'\", ',
-		'\"image\": \"',
+		'\"image\": \"%(image_prefix)s',
 		temp.image,
 		'\", ',
 		'\"brief_desc\": \"',
@@ -104,6 +107,7 @@ SELECT
 FROM
 	(
 		SELECT
+		    a.id AS cart_id,
 			a.goods_id,
 			SUM(a.`quantity`) AS `quantity`,
 			c.`name` AS goods_name,
