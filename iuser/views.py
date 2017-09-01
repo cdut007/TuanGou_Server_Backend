@@ -201,20 +201,28 @@ class ShoppingCartView(APIView):
 
     @Authentication.token_required
     def post(self, request):
-        request.data['user'] = self.post.user_id
-        serializer = ShoppingCartSerializer(data=request.data)
-        if serializer.is_valid():
-            record = ShoppingCart.objects.filter(
-                user=self.post.user_id,
-                agent_code=request.data['agent_code'],
-                goods=request.data['goods']).first()
-            if record:
-                record.quantity += request.data['quantity']
-                record.save()
-            else:
-                serializer.save()
-            return Response(format_body(1, 'Success', ''))
-        return Response(format_body(2, serializer.errors, ''))
+        from sql import sql_add_to_cart
+
+        insert_values = ""
+        try:
+            for goods_item in request.data['goods_list']:
+                insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}', '{5}'),\n".format(
+                    request.data['agent_code'],
+                    datetime.now(),
+                    self.post.user_id,
+                    goods_item['goods_id'],
+                    goods_item['goods_quantity'],
+                    1
+                )
+        except KeyError as e:
+            return Response(format_body(2, 'Params error', e.message))
+
+        sql_add_to_cart += insert_values[0:-2]
+        
+        cursor = connection.cursor()
+        cursor.execute(sql_add_to_cart)
+
+        return Response(format_body(1, 'Success', ''))
 
     @Authentication.token_required
     def put(self, request):

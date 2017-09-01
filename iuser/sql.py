@@ -67,3 +67,15 @@ WHERE
 AND agent_code = '%(agent_code)s'
 AND goods_id IN (%(goods_ids)s)
 """
+
+sql_add_to_cart = """
+INSERT INTO iuser_genericorder (
+	agent_code,
+	add_time,
+	user_id,
+	goods_id,
+	quantity,
+	STATUS
+)
+VALUES
+"""
