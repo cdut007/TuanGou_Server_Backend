@@ -229,7 +229,7 @@ class ShoppingCartView(APIView):
         except KeyError as e:
             return Response(format_body(2, 'Params error', e.message))
 
-        sql_add_to_cart += insert_values[0:-2]
+        sql_add_to_cart = sql_add_to_cart % {'values': insert_values[0:-2]}
         
         cursor = connection.cursor()
         cursor.execute(sql_add_to_cart)

@@ -77,6 +77,8 @@ INSERT INTO iuser_shoppingcart (
 	quantity
 )
 VALUES
+%(values)s
+ON DUPLICATE KEY UPDATE quantity = quantity + 2;
 """
 
 sql_get_shopping_cart = """
