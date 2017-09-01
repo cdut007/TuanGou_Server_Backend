@@ -171,9 +171,6 @@ class AgentOrderView(APIView):
         serializer = AgentOrderSerializer(data=request.data)
         if serializer.is_valid():
             order_record = AgentOrder.objects.filter(user=user.id, group_buy=serializer.validated_data['group_buy'])
-            if order_record:
-                return Response(format_body(4, 'The user already applied this group_buy', ''))
-            serializer.save()
 
             from sql import sql_group_buy_classify
             sql_group_buy_classify = sql_group_buy_classify % {'group_buy_id': request.data['group_buy']}
@@ -181,7 +178,12 @@ class AgentOrderView(APIView):
             cursor.execute(sql_group_buy_classify)
             classify_info = dict_fetch_all(cursor)
 
+            if order_record:
+                return Response(format_body(4, 'The user already applied this group_buy', {'agent_url': web_link() + '?agent_code=' + user.openid, 'group_buy_info': classify_info}))
+
+            serializer.save()
             return Response(format_body(1, 'Success', {'agent_url': web_link() + '?agent_code=' + user.openid, 'group_buy_info': classify_info}))
+        
         return Response(format_body(2, serializer.errors, ''))
 
 
