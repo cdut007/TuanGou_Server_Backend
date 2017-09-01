@@ -6,7 +6,7 @@ from django.core.mail import EmailMessage
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body
+from utils.common import format_body, dict_fetch_all
 from ilinkgo.config import web_link
 from utils.winxin import code_to_access_token, access_token_to_user_info
 from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
@@ -174,7 +174,14 @@ class AgentOrderView(APIView):
             if order_record:
                 return Response(format_body(4, 'The user already applied this group_buy', ''))
             serializer.save()
-            return Response(format_body(1, 'Success', {'agent_url': web_link() + '?agent_code=' + user.openid}))
+
+            from sql import sql_group_buy_classify
+            sql_group_buy_classify = sql_group_buy_classify % {'group_buy_id': request.data['group_buy']}
+            cursor = connection.cursor()
+            cursor.execute(sql_group_buy_classify)
+            classify_info = dict_fetch_all(cursor)
+
+            return Response(format_body(1, 'Success', {'agent_url': web_link() + '?agent_code=' + user.openid, 'group_buy_info': classify_info}))
         return Response(format_body(2, serializer.errors, ''))
 
 

@@ -79,3 +79,28 @@ INSERT INTO iuser_genericorder (
 )
 VALUES
 """
+
+sql_goods_clasify = """
+SELECT
+	c.id AS classify_id,
+	c.`name`,
+	c.`desc`
+FROM
+	market_groupbuygoods AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+LEFT JOIN market_goodsclassify AS c ON b.goods_classify_id=c.id
+WHERE
+	a.id = %(goods_id)s
+"""
+
+sql_group_buy_classify = """
+SELECT
+	a.title AS group_buy_title,
+	b.`name` AS classify_name,
+	b.`desc` AS classify_desc
+FROM
+	market_groupbuy AS a
+LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
+WHERE
+	a.id = %(group_buy_id)s
+"""
