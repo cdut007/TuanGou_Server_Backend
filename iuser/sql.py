@@ -117,7 +117,7 @@ FROM
 		SELECT
 		    a.id AS cart_id,
 			a.goods_id,
-			a.`quantity` AS `quantity`,
+			a.`quantity`,
 			c.`name` AS goods_name,
 			d.image,
 			b.brief_dec,
