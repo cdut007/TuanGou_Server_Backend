@@ -300,52 +300,48 @@ class GenericOrderView(APIView):
 
     @Authentication.token_required
     def post(self, request):
-        request.data['user'] = self.post.user_id
-        order_serializer = GenericOrderSerializer(data=request.data)
-        if not order_serializer.is_valid():
-            return Response(format_body(2, order_serializer.errors, ''))
-
-        order_bulk = []
-        for item in order_serializer.data['goods']:
-            order_record = GenericOrder.objects.filter(
-                user=self.post.user_id,
-                agent_code=request.data['agent_code'],
-                goods=item['goods'],
-            ).first()
-            if order_record:
-                if order_record.status == 0:
-                    order_record.quantity = item['quantity']
-                    order_record.status = 1
-                else:
-                    order_record.quantity += item['quantity']
-                order_record.save()
-                continue
-
-            order_bulk.append(GenericOrder(
-               user=order_serializer.validated_data['user'],
-               agent_code=order_serializer.validated_data['agent_code'],
-               goods = GroupBuyGoods.objects.get(pk=item['goods']),
-               quantity=item['quantity']
-            ))
-        GenericOrder.objects.bulk_create(order_bulk)
+        from sql import sql_insert_generic_order
 
         cursor = connection.cursor()
 
+        # 插入订单
+        insert_values = ""
+        try:
+            for goods_item in request.data['goods']:
+                insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}', {5}),\n".format(
+                    request.data['agent_code'],
+                    datetime.now(),
+                    self.post.user_id,
+                    goods_item['goods'],
+                    goods_item['quantity'],
+                    1
+                )
+            sql_insert_generic_order = sql_insert_generic_order % {'values': insert_values[0:-2]}
+            cursor.execute(sql_insert_generic_order)
+        except KeyError as e:
+            return Response(format_body(2, 'Params error', e.message))
+
         # 清空购物车
-        if request.data['clear_cart'] is True:
-            from sql import sql4
-            goods_ids = ''
-            for item in request.data['goods']:
-                goods_ids += str(item['goods']) + ','
-            goods_ids = goods_ids.strip(',')
-            sql4 = sql4 % {'user_id': self.post.user_id, 'agent_code': request.data['agent_code'], 'goods_ids': goods_ids}
-            cursor.execute(sql4)
+        try:
+            if request.data['clear_cart'] is True:
+                from sql import sql4
+                goods_ids = ''
+                for item in request.data['goods']:
+                    goods_ids += str(item['goods']) + ','
+                goods_ids = goods_ids.strip(',')
+                sql4 = sql4 % {'user_id': self.post.user_id, 'agent_code': request.data['agent_code'], 'goods_ids': goods_ids}
+                cursor.execute(sql4)
+        except KeyError as e:
+            return Response(format_body(2, 'Params error', e.message))
 
         #减少库存
-        sql_reduce_stock = ""
-        for item in request.data['goods']:
-            sql_reduce_stock += "UPDATE market_groupbuygoods SET stock = stock - {0} WHERE id = {1};\n".format(item['quantity'], item['goods'])
-        cursor.execute(sql_reduce_stock)
+        try:
+            sql_reduce_stock = ""
+            for item in request.data['goods']:
+                sql_reduce_stock += "UPDATE market_groupbuygoods SET stock = stock - {0} WHERE id = {1};\n".format(item['quantity'], item['goods'])
+            cursor.execute(sql_reduce_stock)
+        except KeyError as e:
+            return Response(format_body(2, 'Params error', e.message))
 
         return Response(format_body(1, 'Success', ''))
 
