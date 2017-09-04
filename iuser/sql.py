@@ -94,6 +94,9 @@ SELECT
 		'\"price\": \"',
 		temp.price,
 		'\", ',
+		'\"stock\": \"',
+		temp.stock,
+		'\", ',
 		'\"quantity\": \"',
 		temp.quantity,
 		'\", ',
@@ -112,11 +115,12 @@ FROM
 		SELECT
 		    a.id AS cart_id,
 			a.goods_id,
-			SUM(a.`quantity`) AS `quantity`,
+			a.`quantity` AS `quantity`,
 			c.`name` AS goods_name,
 			d.image,
 			b.brief_dec,
 			b.price,
+			b.stock,
 			b.group_buy_id
 		FROM
 			iuser_shoppingcart AS a
@@ -127,8 +131,6 @@ FROM
 		WHERE
 			a.user_id = %(user_id)s
 		AND a.agent_code = '%(agent_code)s'
-		GROUP BY
-			goods_id
 	) AS temp
 LEFT JOIN market_groupbuy AS e ON temp.group_buy_id=e.id
 LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
@@ -136,7 +138,6 @@ WHERE
 	e.on_sale = 1 AND e.end_time >= NOW()
 GROUP BY 
 	temp.group_buy_id
-
 """
 
 sql_goods_clasify = """

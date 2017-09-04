@@ -329,6 +329,8 @@ class GenericOrderView(APIView):
             ))
         GenericOrder.objects.bulk_create(order_bulk)
 
+        cursor = connection.cursor()
+
         # 清空购物车
         if request.data['clear_cart'] is True:
             from sql import sql4
@@ -337,8 +339,13 @@ class GenericOrderView(APIView):
                 goods_ids += str(item['goods']) + ','
             goods_ids = goods_ids.strip(',')
             sql4 = sql4 % {'user_id': self.post.user_id, 'agent_code': request.data['agent_code'], 'goods_ids': goods_ids}
-            cursor = connection.cursor()
             cursor.execute(sql4)
+
+        #减少库存
+        sql_reduce_stock = ""
+        for item in request.data['goods']:
+            sql_reduce_stock += "UPDATE market_groupbuygoods SET stock = stock - {0} WHERE id = {1};\n".format(item['quantity'], item['goods'])
+        cursor.execute(sql_reduce_stock)
 
         return Response(format_body(1, 'Success', ''))
 
