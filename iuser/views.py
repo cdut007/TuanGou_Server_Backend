@@ -1,7 +1,7 @@
 # _*_ coding:utf-8 _*_
 from datetime import datetime
 from django.db.models import Sum
-from django.db import connection
+from django.db import connection, transaction
 from django.core.mail import EmailMessage
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,8 +12,7 @@ from utils.winxin import code_to_access_token, access_token_to_user_info
 from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
 from market.serializers import GroupBuyGoodsSerializer, GoodsClassifySerializer, GroupBuySerializer
 from models import UserProfile, AgentOrder, ShoppingCart, GenericOrder
-from serializers import UserProfileSerializer, UserAddressSerializer, AgentOrderSerializer, AgentApplySerializer, \
-    ShoppingCartSerializer, GenericOrderSerializer, GenericOrderSerializer2
+from serializers import UserProfileSerializer, UserAddressSerializer, AgentOrderSerializer, AgentApplySerializer, GenericOrderSerializer2
 
 from Authentication import Authentication
 # Create your views here.
@@ -298,11 +297,13 @@ class GenericOrderView(APIView):
 
         return Response(format_body(1, 'Success', {'group_buy': res_data}))
 
+
     @Authentication.token_required
     def post(self, request):
         from sql import sql_insert_generic_order
 
         cursor = connection.cursor()
+        cursor.execute("START TRANSACTION;")
 
         # 插入订单
         insert_values = ""
@@ -319,6 +320,7 @@ class GenericOrderView(APIView):
             sql_insert_generic_order = sql_insert_generic_order % {'values': insert_values[0:-2]}
             cursor.execute(sql_insert_generic_order)
         except KeyError as e:
+            cursor.execute("ROLLBACK;")
             return Response(format_body(2, 'Params error', e.message))
 
         # 清空购物车
@@ -332,21 +334,25 @@ class GenericOrderView(APIView):
                 sql4 = sql4 % {'user_id': self.post.user_id, 'agent_code': request.data['agent_code'], 'goods_ids': goods_ids}
                 cursor.execute(sql4)
         except KeyError as e:
+            cursor.execute("ROLLBACK;")
             return Response(format_body(2, 'Params error', e.message))
 
         #减少库存
         try:
-            sql_reduce_stock = ""
             for item in request.data['goods']:
-                sql_reduce_stock += "UPDATE market_groupbuygoods SET stock = stock - {0} WHERE id = {1};\n".format(item['quantity'], item['goods'])
-            cursor.execute(sql_reduce_stock)
+                sql_reduce_stock = "UPDATE market_groupbuygoods SET stock = stock - {0} WHERE id = {1};".format(item['quantity'], item['goods'])
+                cursor.execute(sql_reduce_stock)
         except KeyError as e:
+            cursor.execute("ROLLBACK;")
             return Response(format_body(2, 'Params error', e.message))
+
+        cursor.execute("COMMIT;")
 
         return Response(format_body(1, 'Success', ''))
 
     @Authentication.token_required
     def delete(self, request):
+        # 删除订单
         try:
             order_goods = GenericOrder.objects.get(
                 user=self.delete.user_id,
@@ -354,9 +360,14 @@ class GenericOrderView(APIView):
                 goods=request.data['goods_id']
             )
         except GenericOrder.DoesNotExist:
-            return Response(format_body(0, 'Object does not exist', ''))
+            return Response(format_body(0, 'order does not exist', ''))
         order_goods.status = 0
         order_goods.save()
+
+        #更新库存
+        order_goods.goods.stock += order_goods.quantity
+        order_goods.goods.save()
+        
         return Response(format_body(1, 'Success', ''))
 
 
