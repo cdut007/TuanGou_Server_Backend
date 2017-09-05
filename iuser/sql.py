@@ -68,6 +68,20 @@ AND agent_code = '%(agent_code)s'
 AND goods_id IN (%(goods_ids)s)
 """
 
+sql_insert_generic_order = """
+INSERT INTO iuser_genericorder (
+	agent_code,
+	add_time,
+	user_id,
+	goods_id,
+	quantity,
+	status
+)
+VALUES
+%(values)s
+ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity);
+"""
+
 sql_add_to_cart = """
 INSERT INTO iuser_shoppingcart (
 	agent_code,

@@ -48,7 +48,7 @@ class AgentApply(models.Model):
 class AgentOrder(models.Model):
     group_buy = models.ForeignKey(GroupBuy, verbose_name='团购', on_delete=models.CASCADE)
     user = models.ForeignKey(UserProfile, verbose_name='团长')
-    goods_ids = models.CharField(max_length=64, verbose_name='商品')
+    goods_ids = models.CharField(max_length=256, verbose_name='商品')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='申请时间')
 
     class Meta:
