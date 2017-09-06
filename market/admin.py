@@ -68,7 +68,7 @@ class GroupBuyGoodsInline(admin.TabularInline):
     verbose_name_plural = ''
     model = GroupBuyGoods
     extra = 0
-    suit_classes = 'suit-tab suit-tab-goods'
+    # suit_classes = 'suit-tab suit-tab-goods'
 
 
 class GroupBuyAdmin(admin.ModelAdmin):
@@ -88,11 +88,11 @@ class GroupBuyAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'classes': ('suit-tab', 'suit-tab-general'),
+            # 'classes': ('suit-tab', 'suit-tab-general'),
             'fields': ('title', 'goods_classify', 'end_time','ship_time', 'on_sale')
         }),
     )
-    suit_form_tabs = (('general', 'General'), ('goods', 'Goods'))
+    # suit_form_tabs = (('general', 'General'), ('goods', 'Goods'))
 
     class Media:
         css = {
@@ -105,8 +105,9 @@ class GroupBuyAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         response =  super(GroupBuyAdmin, self).changelist_view(request, extra_context)
-        if response.context_data.has_key('cl'):
+        if hasattr(response,'context_data') and response.context_data.has_key('cl'):
             response.context_data['cl'].search_placeholder = self.search_placeholder
+            response.context_data['cl'].show_copy = True
         return response
 
 
@@ -132,7 +133,7 @@ class GoodsAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         response =  super(GoodsAdmin, self).changelist_view(request, extra_context)
-        if response.context_data.has_key('cl'):
+        if hasattr(response, 'context_data') and response.context_data.has_key('cl'):
             response.context_data['cl'].search_placeholder = self.search_placeholder
         return response
 

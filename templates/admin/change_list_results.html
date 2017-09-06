@@ -45,6 +45,7 @@
                     <td width="10%">
                         <button type="button" class="transparentButton"><img class="my_opt_img opt_edit" src={% static 'template_images/edit_b.png'%}></button>&nbsp;
                         <button type="button" class="transparentButton"><img class="my_opt_img opt_delete" src={% static 'template_images/delete.png'%}></button>&nbsp;
+                        {% if cl.show_copy %}<button type="button" class="transparentButton"><img class="my_opt_img opt_copy" src={% static 'template_images/copy.png'%}></button>&nbsp;{% endif %}
                     </td>
                 </tr>
             {% endfor %}
@@ -100,21 +101,44 @@
     });
 
     Suit.$(".opt_delete").click(function () {
-        var th_peer_node = Suit.$(this).closest("tr").children("th");
-        var href = th_peer_node.children("a").attr("href");
-        var match_res = /\/(\d+)\//g.exec(href)
-        var item_id = match_res[1];
+        var itemId = getItemId(this)
 
         var csrf_token = Suit.$("input[name='csrfmiddlewaretoken']").val();
         var url = window.location.pathname;
         var send_data = {
             csrfmiddlewaretoken:csrf_token,
-            _selected_action:item_id,
+            _selected_action:itemId,
             action:'delete_selected',
             select_across:0,
             index:0
         };
 
         Suit.$.StandardPost(url, send_data)
-    })
+    });
+
+    Suit.$(".opt_copy").click(function () {
+        var itemId = getItemId(this);
+        var post_data = {
+                option: "copy",
+                params: {group_buy_id: itemId}
+            };
+
+        Suit.$.ajax({
+            type: 'post',
+            url: '/admin/custom/market/group_buy',
+            data: JSON.stringify(post_data),
+            contentType: 'application/json;charset=utf-8',
+            dataType: "json",
+            success: function (res) {
+                window.location.reload();
+            }
+        });
+    });
+
+    function getItemId(elem) {
+        var th_peer_node = Suit.$(elem).closest("tr").children("th");
+        var href = th_peer_node.children("a").attr("href");
+        var match_res = /\/(\d+)\//g.exec(href);
+        return match_res[1];
+    }
 </script>

@@ -1,0 +1,3 @@
+9-5:
+ALTER TABLE iuser_genericorder ADD CONSTRAINT uc_generic_order UNIQUE (agent_code, user_id, goods_id)
+ALTER TABLE iuser_shoppingcart ADD CONSTRAINT uc_shopping_cart UNIQUE (agent_code, user_id, goods_id)

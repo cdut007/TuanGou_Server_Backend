@@ -11,6 +11,7 @@ class StatusCode():
     hasRecord = 4
     KeyError = 6
     OrderEmpty = 7
+    NoHttpMethod = 10
 
 
 def mysql_config():

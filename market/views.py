@@ -1,6 +1,5 @@
-from rest_framework.decorators import api_view
+
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 from django.db.models import Sum
@@ -8,7 +7,6 @@ from datetime import datetime
 from utils.common import format_body, thumbnail
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
-from serializers import UploadImageSerializer
 from ilinkgo.config import image_path
 from iuser.models import AgentOrder, UserProfile, GenericOrder
 

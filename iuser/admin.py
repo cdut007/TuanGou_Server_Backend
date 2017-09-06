@@ -40,7 +40,7 @@ class UserProfileAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         response =  super(UserProfileAdmin, self).changelist_view(request, extra_context)
-        if response.context_data.has_key('cl'):
+        if hasattr(response, 'context_data') and response.context_data.has_key('cl'):
             response.context_data['cl'].search_placeholder = self.search_placeholder
         return response
 
@@ -54,7 +54,7 @@ class AgentOrderAdmin(admin.ModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         response =  super(AgentOrderAdmin, self).changelist_view(request, extra_context)
-        if response.context_data.has_key('cl'):
+        if hasattr(response, 'context_data') and response.context_data.has_key('cl'):
             response.context_data['cl'].search_placeholder = self.search_placeholder
         return response
 

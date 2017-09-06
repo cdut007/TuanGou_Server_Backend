@@ -4,6 +4,7 @@ from django.conf.urls import url, include
 
 from views import BannerList, GroupBuyList, HomePageList,GroupBuyGoodsDetail, GroupBuyDetailView, AgentHomePageList
 from views import UploadImageView, FileManagerView
+from admin_views import GroupBuyAdminView
 
 urlpatterns = [
     # url(r'^', api_root, name='api_root'),
@@ -14,5 +15,5 @@ urlpatterns = [
     url(r'^group_buy_detail', GroupBuyDetailView.as_view(), name='group_buy_detail'),
     url(r'^goods_detail', GroupBuyGoodsDetail.as_view(), name='goods_detail'),
     url(r'^upload_image', UploadImageView.as_view(), name='upload_image'),
-    url(r'^file_manager', FileManagerView.as_view(), name='file_manager')
+    url(r'^file_manager', FileManagerView.as_view(), name='file_manager'),
 ]

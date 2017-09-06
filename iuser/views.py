@@ -1,7 +1,7 @@
 # _*_ coding:utf-8 _*_
 from datetime import datetime
 from django.db.models import Sum
-from django.db import connection, transaction
+from django.db import connection
 from django.core.mail import EmailMessage
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -367,7 +367,7 @@ class GenericOrderView(APIView):
         #更新库存
         order_goods.goods.stock += order_goods.quantity
         order_goods.goods.save()
-        
+
         return Response(format_body(1, 'Success', ''))
 
 
