@@ -5,6 +5,31 @@
         {% for item in result_hidden_fields %}{{ item }}{% endfor %}
     </div>
 {% endif %}
+
+
+<style>
+    .table th {
+        vertical-align: middle;
+    }
+    .table td {
+        height: 30px;
+        vertical-align: middle;
+    }
+    .my_opt_img {
+        width: 20px;
+        height: 20px;
+    }
+    .my_opt_img:active {
+        transform: translate(1px, 1px);
+    }
+    .transparentButton {
+        border-style: none;
+        background-color: inherit;
+        outline-style: none;
+    }
+</style>
+
+
 {% if results %}
     <div class="results">
         <table id="result_list" class="table table-striped table-bordered table-hover table-condensed">
@@ -54,27 +79,6 @@
     </div>
 {% endif %}
 
-<style>
-    .table th {
-        vertical-align: middle;
-    }
-    .table td {
-        height: 30px;
-        vertical-align: middle;
-    }
-    .my_opt_img {
-        width: 20px;
-        height: 20px;
-    }
-    .my_opt_img:active {
-        transform: translate(1px, 1px);
-    }
-    .transparentButton {
-        border-style: none;
-        background-color: inherit;
-        outline-style: none;
-    }
-</style>
 <script>
     Suit.$.extend({
         StandardPost:function(url,args){
