@@ -74,7 +74,7 @@ class GroupBuyGoodsInline(admin.TabularInline):
 class GroupBuyAdmin(admin.ModelAdmin):
     list_per_page = 15
     form = GroupBuyForm
-    list_display = ('id','title', 'goods_classify', 'is_end', 'ship_time')
+    list_display = ('id','title', 'goods_classify', 'is_end', 'on_sale', 'ship_time')
     search_fields = ('title',)
     search_placeholder = u'请输入: 标题'
     list_filter = ('goods_classify',)
