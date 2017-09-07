@@ -1,5 +1,7 @@
 .idea/*
-.images/*
+images
+excel
 *.pyc
 market/migrations/*
+iuser/migrations/*
 
