@@ -320,6 +320,8 @@ class GenericOrderView(APIView):
                 )
             sql_insert_generic_order = sql_insert_generic_order % {'values': insert_values[0:-2]}
             cursor.execute(sql_insert_generic_order)
+
+            group_buy_goods = GroupBuyGoods.objects.get(pk=request.data['goods'][0]['goods'])
         except KeyError as e:
             cursor.execute("ROLLBACK;")
             return Response(format_body(2, 'Params error', e.message))
@@ -349,7 +351,7 @@ class GenericOrderView(APIView):
 
         cursor.execute("COMMIT;")
 
-        return Response(format_body(1, 'Success', ''))
+        return Response(format_body(1, 'Success', {'id': group_buy_goods.group_buy_id}))
 
     @Authentication.token_required
     def delete(self, request):
