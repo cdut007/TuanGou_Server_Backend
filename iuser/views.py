@@ -202,6 +202,7 @@ class ShoppingCartView(APIView):
             return Response(format_body(2, 'Params error', e.message))
 
         cursor = connection.cursor()
+        cursor.execute("SET SESSION group_concat_max_len = 204800;")
         cursor.execute(sql_get_shopping_cart)
 
         data = dict_fetch_all(cursor)
