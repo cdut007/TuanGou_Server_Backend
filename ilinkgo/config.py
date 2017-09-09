@@ -12,6 +12,8 @@ class StatusCode():
     KeyError = 6
     OrderEmpty = 7
     NoHttpMethod = 10
+    MysqlError = 11
+    StockOutOfRange = 12
 
 
 def mysql_config():

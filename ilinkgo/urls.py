@@ -25,5 +25,8 @@ urlpatterns = [
     url(r'^api/v1/', include('market.urls')),
     url(r'^api/v1/', include('iuser.urls')),
     url(r'^admin/', admin.site.urls),
-    url(r'admin/custom/market/', include('market.admin_urls'))
+    url(r'admin/custom/market/', include('market.admin_urls')),
+
+    # v2
+    url(r'^v2/api.', include('apps.urls'))
 ]

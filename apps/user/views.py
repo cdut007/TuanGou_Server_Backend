@@ -1,10 +1,11 @@
 # _*_ coding:utf-8 _*_
+import json
 from datetime import datetime
-from django.db import connection
+from django.db import connection, OperationalError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body, dict_fetch_all
+from utils.common import format_body, dict_fetch_all, raise_general_exception
 from ilinkgo.config import image_path
 from market.models import GroupBuyGoods
 from iuser.models import GenericOrder
@@ -13,24 +14,21 @@ from iuser.Authentication import Authentication
 
 
 class GenericOrderView(APIView):
+    @raise_general_exception
     @Authentication.token_required
     def get(self, request):
-        from iuser.sql import sql_get_gengeric_order
-        import json
+        from sqls import sql_get_consumer_order
 
-        try:
-            sql_get_shopping_cart = sql_get_gengeric_order % {
-                'user_id': self.get.user_id,
-                'agent_code': request.GET['agent_code'],
-                'image_prefix': image_path(),
-                'status_opt': '>=' if request.GET['status'] == '0' else '<='
-            }
-        except KeyError as e:
-            return Response(format_body(2, 'Params error', e.message))
+        sql_get_consumer_order = sql_get_consumer_order % {
+            'consumer_id': self.get.id,
+            'merchant_code': request.GET['merchant_code'],
+            'image_prefix': image_path(),
+            'group_buy_is_over': '>=' if request.GET['group_buy_is_over'] == '0' else '<='
+        }
 
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
-        cursor.execute(sql_get_shopping_cart)
+        cursor.execute(sql_get_consumer_order)
 
         data = dict_fetch_all(cursor)
 
@@ -39,72 +37,69 @@ class GenericOrderView(APIView):
 
         return Response(format_body(1, 'Success', {'group_buy': data}))
 
-
+    @raise_general_exception
     @Authentication.token_required
     def post(self, request):
-        from iuser.sql import sql_insert_generic_order
+        from sqls import sql_create_consumer_order, sql_done_consumer_order_update_stock
 
         cursor = connection.cursor()
         cursor.execute("START TRANSACTION;")
 
         # 插入订单
         insert_values = ""
-        try:
-            for goods_item in request.data['goods']:
-                insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}', {5}),\n".format(
-                    request.data['agent_code'],
-                    datetime.now(),
-                    self.post.user_id,
-                    goods_item['goods'],
-                    goods_item['quantity'],
-                    1
-                )
-            sql_insert_generic_order = sql_insert_generic_order % {'values': insert_values[0:-2]}
-            cursor.execute(sql_insert_generic_order)
-
-            group_buy_goods = GroupBuyGoods.objects.get(pk=request.data['goods'][0]['goods'])
-        except KeyError as e:
-            cursor.execute("ROLLBACK;")
-            return Response(format_body(2, 'Params error', e.message))
+        for goods_item in request.data['goods_list']:
+            insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}', {5}),\n".format(
+                request.data['merchant_code'],
+                datetime.now(),
+                self.post.user_id,
+                goods_item['goods_id'],
+                goods_item['goods_quantity'],
+                1
+            )
+        sql_create_consumer_order = sql_create_consumer_order % {'values': insert_values[0:-2]}
+        cursor.execute(sql_create_consumer_order)
 
         # 清空购物车
-        try:
-            if request.data['clear_cart'] is True:
-                from iuser.sql import sql4
-                goods_ids = ''
-                for item in request.data['goods']:
-                    goods_ids += str(item['goods']) + ','
-                goods_ids = goods_ids.strip(',')
-                sql4 = sql4 % {'user_id': self.post.user_id, 'agent_code': request.data['agent_code'], 'goods_ids': goods_ids}
-                cursor.execute(sql4)
-        except KeyError as e:
-            cursor.execute("ROLLBACK;")
-            return Response(format_body(2, 'Params error', e.message))
+        if request.data['clear_cart'] is True:
+            from sqls import sql_clear_cart
+            goods_ids = ''
+            for item in request.data['goods_list']:
+                goods_ids += str(item['goods_id']) + ','
+            goods_ids = goods_ids.strip(',')
+            sql_clear_cart = sql_clear_cart % {
+                'consumer_id':  self.post.user_id,
+                'merchant_code': request.data['merchant_code'],
+                'goods_ids': goods_ids
+            }
+            cursor.execute(sql_clear_cart)
 
         #减少库存
+        goods_id = 0
         try:
-            for item in request.data['goods']:
-                sql_reduce_stock = "UPDATE market_groupbuygoods SET stock = stock - {0} WHERE id = {1};".format(item['quantity'], item['goods'])
+            for item in request.data['goods_list']:
+                goods_id = item['goods_id']
+                sql_reduce_stock = sql_done_consumer_order_update_stock.format(
+                    item['goods_quantity'],
+                    item['goods_id']
+                )
                 cursor.execute(sql_reduce_stock)
-        except KeyError as e:
-            cursor.execute("ROLLBACK;")
-            return Response(format_body(2, 'Params error', e.message))
+        except OperationalError as e:
+            if e.args[0] == 1690:
+                this_goods_current_stock = GroupBuyGoods.objects.get(pk=goods_id).stock
+                return Response(format_body(12, 'Stock out of range', {'goods_id': goods_id, 'current_stock': this_goods_current_stock}))
+            return Response(format_body(11, 'Mysql error', e.message))
 
         cursor.execute("COMMIT;")
 
+        group_buy_goods = GroupBuyGoods.objects.get(pk=request.data['goods_list'][0]['goods_id'])
+
         return Response(format_body(1, 'Success', {'id': group_buy_goods.group_buy_id}))
 
+    @raise_general_exception
     @Authentication.token_required
     def delete(self, request):
         # 删除订单
-        try:
-            order_goods = GenericOrder.objects.get(
-                user=self.delete.user_id,
-                agent_code=request.data['agent_code'],
-                goods=request.data['goods_id']
-            )
-        except GenericOrder.DoesNotExist:
-            return Response(format_body(0, 'order does not exist', ''))
+        order_goods = GenericOrder.objects.get(pk=request.data['order_id'])
         order_goods.status = 0
         order_goods.save()
 

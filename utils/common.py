@@ -1,6 +1,12 @@
 import os
+import functools
 from datetime import datetime
 from random import Random
+
+from rest_framework.response import Response
+from django.db.models import ObjectDoesNotExist
+from django.db import OperationalError
+
 
 def format_body(code, message, data):
     res = {
@@ -35,3 +41,17 @@ def dict_fetch_all(cursor):
         dict(zip([col[0] for col in desc], row))
         for row in cursor.fetchall()
     ]
+
+
+def raise_general_exception(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kargs):
+        try:
+            return func(self, request, *args, **kargs)
+        except KeyError as e:
+            return Response(format_body(2, 'Params error', e.message))
+        except ObjectDoesNotExist as e:
+            return Response(format_body(6, 'Key value error', e.message))
+        except OperationalError as e:
+            return Response(format_body(11, 'Mysql error', e.message))
+    return wrapper
