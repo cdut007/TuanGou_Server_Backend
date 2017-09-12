@@ -14,13 +14,13 @@ from iuser.Authentication import Authentication
 
 
 class GenericOrderView(APIView):
-    @raise_general_exception
     @Authentication.token_required
+    @raise_general_exception
     def get(self, request):
         from sqls import sql_get_consumer_order
 
         sql_get_consumer_order = sql_get_consumer_order % {
-            'consumer_id': self.get.id,
+            'consumer_id': self.get.user_id,
             'merchant_code': request.GET['merchant_code'],
             'image_prefix': image_path(),
             'group_buy_is_over': '>=' if request.GET['group_buy_is_over'] == '0' else '<='
@@ -37,8 +37,8 @@ class GenericOrderView(APIView):
 
         return Response(format_body(1, 'Success', {'group_buy': data}))
 
-    @raise_general_exception
     @Authentication.token_required
+    @raise_general_exception
     def post(self, request):
         from sqls import sql_create_consumer_order, sql_done_consumer_order_update_stock
 
