@@ -97,6 +97,7 @@ ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity);
 sql_get_shopping_cart = """
 SELECT
 	e.ship_time,
+	e.id AS group_buy_id,
 	f.`name`,
 	CONCAT('[', GROUP_CONCAT(
 		CONCAT(
