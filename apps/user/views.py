@@ -13,7 +13,7 @@ from iuser.models import GenericOrder
 from iuser.Authentication import Authentication
 
 
-class GenericOrderView(APIView):
+class ConsumerOrderView(APIView):
     @Authentication.token_required
     @raise_general_exception
     def get(self, request):
@@ -108,3 +108,34 @@ class GenericOrderView(APIView):
         order_goods.goods.save()
 
         return Response(format_body(1, 'Success', ''))
+
+
+class MerchantOrderView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self,request):
+
+        if request.GET['option'] == 'order_brief':
+            return Response(format_body(1, 'Success', ''))
+
+        elif request.GET['option'] == 'order_detail':
+            from sqls import sql_merchant_order_detail
+
+            sql_merchant_order_detail = sql_merchant_order_detail % {
+                'merchant_code': request.GET['merchant_code'],
+                'group_buy_id': request.GET['group_buy_id']
+            }
+
+            cursor = connection.cursor()
+            cursor.execute("SET SESSION group_concat_max_len = 204800;")
+            cursor.execute(sql_merchant_order_detail)
+            data = dict_fetch_all(cursor)
+
+            for item in data:
+                item['goods_list'] = json.loads(item['goods_list'])
+
+            return Response(format_body(1, 'Success', {'order_detail': data}))
+
+        else:
+            return Response(format_body(13, 'No this option', ''))
+

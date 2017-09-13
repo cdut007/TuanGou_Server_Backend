@@ -85,3 +85,49 @@ AND goods_id IN (%(goods_ids)s)
 """
 
 sql_done_consumer_order_update_stock = """UPDATE market_groupbuygoods SET stock = stock - {0} WHERE id = {1};"""
+
+sql_merchant_order_detail = """
+SELECT
+	CONCAT(
+		'[',
+		GROUP_CONCAT(
+			CONCAT(
+				'{\"name\": \"',
+				temp.`name`,
+				'\", ',
+				'\"quantity\": \"',
+				temp.quantity,
+				'\", ',
+				'\"amount\": \"',
+				temp.amount,
+				'\"}'
+			)
+		),
+		']'
+	) AS goods_list,
+	temp.time,
+	COUNT(temp.user_id) AS total_quantity,
+	SUM(temp.amount) AS total_amount,
+	a.nickname,
+	a.headimgurl
+FROM
+	(
+		SELECT
+			a.user_id,
+			b.price * a.quantity AS amount,
+			CONCAT(c.`name`,' -- ',b.brief_dec) AS NAME,
+			a.quantity,
+			DATE_FORMAT(a.add_time,'%%Y-%%m-%%d %%H:%%i') AS time
+		FROM
+			iuser_genericorder AS a
+		LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+		LEFT JOIN market_goods AS c ON b.goods_id = c.id
+		WHERE
+			a.agent_code = '%(merchant_code)s'
+		AND a.`status` = 1
+		AND b.group_buy_id = %(group_buy_id)s
+	) AS temp
+INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
+GROUP BY
+	temp.user_id
+"""

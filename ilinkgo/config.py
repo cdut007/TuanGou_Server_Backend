@@ -14,6 +14,7 @@ class StatusCode():
     NoHttpMethod = 10
     MysqlError = 11
     StockOutOfRange = 12
+    NoThisOption = 13
 
 
 def mysql_config():
