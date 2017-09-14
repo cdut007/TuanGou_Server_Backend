@@ -248,8 +248,13 @@ class ShoppingCartView(APIView):
 
     @Authentication.token_required
     def delete(self, request):
+        if request.data.has_key('cart_id'):
+            pk = request.data['cart_id']
+        else:
+            pk = request.GET['cart_id']
+            
         try:
-            cart = ShoppingCart.objects.get(pk=request.data['cart_id'])
+            cart = ShoppingCart.objects.get(pk=pk)
             cart.delete()
         except ShoppingCart.DoesNotExist:
             return Response(format_body(0, 'Object does not exist', ''))
