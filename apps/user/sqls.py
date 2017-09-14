@@ -2,6 +2,7 @@ sql_get_consumer_order = """
 SELECT
 	e.ship_time,
 	e.id AS group_buy_id,
+	f.icon AS classify_icon,
 	f.`name`,
 	CONCAT('[', GROUP_CONCAT(
 		CONCAT(
