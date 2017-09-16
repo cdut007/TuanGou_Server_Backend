@@ -28,5 +28,8 @@ urlpatterns = [
     url(r'admin/custom/market/', include('market.admin_urls')),
 
     # v2
-    url(r'^v2/api.', include('apps.urls'))
+    url(r'^v2/api.', include('apps.urls')),
+
+    # admin api
+    url(r'v2/admin.', include('admin_apps.urls'))
 ]
