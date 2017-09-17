@@ -5,5 +5,6 @@ import views
 
 
 urlpatterns = [
-    url(r'login', views.LogInView.as_view(), name='login')
+    url(r'login', views.LogInView.as_view(), name='login'),
+    url(r'product', views.ProductView.as_view(), name='product')
 ]

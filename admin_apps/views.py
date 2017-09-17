@@ -5,7 +5,7 @@ from django.db import connection, OperationalError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body, dict_fetch_all, raise_general_exception
+from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit, sql_count
 from ilinkgo.config import image_path
 from market.models import GroupBuyGoods
 from iuser.models import GenericOrder
@@ -34,3 +34,35 @@ class LogInView(APIView):
 
         token = Authentication.generate_auth_token(user.id, 604800)
         return Response(format_body(1, 'success', {'token': token}))
+
+
+class ProductView(APIView):
+    # @Authentication.token_required
+    # @raise_general_exception
+    def get(self, request):
+        from sqls import sql_goods_list
+
+        _sql_goods_list = sql_goods_list.format(**{
+            '_image_prefix': 'http://www.ailinkgo.com:3001/',
+            '_where': '',
+            '_order_by': 'ORDER BY a.id DESC',
+            '_limit': sql_limit(request)
+        })
+        _sql_goods_list_count = sql_count(sql_goods_list.format(**{
+            '_image_prefix': 'http://www.ailinkgo.com:3001/',
+            '_where': '',
+            '_order_by': '',
+            '_limit': ''
+        }))
+
+        cursor = connection.cursor()
+        cursor.execute(_sql_goods_list)
+        product_list = dict_fetch_all(cursor)
+
+        cursor.execute(_sql_goods_list_count)
+        count = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {
+            'product_list': product_list,
+            'paged': {'total': count[0]['count']}
+        }))

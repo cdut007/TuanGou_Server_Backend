@@ -55,3 +55,24 @@ def raise_general_exception(func):
         except OperationalError as e:
             return Response(format_body(11, 'Mysql error', e.message))
     return wrapper
+
+
+def sql_limit(request):
+    if request.GET.has_key('pageSize'):
+        pageSize = request.GET['pageSize']
+    else:
+        pageSize = 10
+
+    if request.GET.has_key('currentPage'):
+        currentPage = request.GET['currentPage']
+    else:
+        currentPage = 1
+
+    start = (int(currentPage) - 1) * int(pageSize)
+
+    _limit = "LIMIT " + str(start) + ", " + str(pageSize)
+
+    return _limit
+
+def sql_count(sql):
+    return "SELECT COUNT(*) AS count FROM(" + sql + ") AS temp"
