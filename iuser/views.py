@@ -27,7 +27,7 @@ class UserView(APIView):
             return Response(format_body(0, 'Object does not exist', ''))
         serializer = UserProfileSerializer(user_profile)
         data = serializer.data
-        data['adress_set'] = {'address': user_profile.address, 'phone_num': user_profile.phone_num}
+        data['address_set'] = {'address': user_profile.address, 'phone_num': user_profile.phone_num}
 
         return Response(format_body(1, 'Success', {'user_profile': data}))
 
