@@ -3,6 +3,7 @@ from django.conf.urls import url
 
 from views import UserView, UserAddressView, AgentOrderView, AgentApplyView, ShoppingCartView, GenericOrderView
 from views import WebUserView, AgentInfoView, SendEmailView
+
 urlpatterns = [
     url(r'^user$', UserView.as_view(), name='user'),
     url(r'^agent_info', AgentInfoView.as_view(), name='agent_view'),
