@@ -26,7 +26,10 @@ class UserView(APIView):
         except UserProfile.DoesNotExist:
             return Response(format_body(0, 'Object does not exist', ''))
         serializer = UserProfileSerializer(user_profile)
-        return Response(format_body(1, 'Success', {'user_profile': serializer.data}))
+        data = serializer.data
+        data['address_set'] = {'address': user_profile.address, 'phone_num': user_profile.phone_num}
+
+        return Response(format_body(1, 'Success', {'user_profile': data}))
 
     def post(self, request, format=None):
 
@@ -252,7 +255,7 @@ class ShoppingCartView(APIView):
             pk = request.data['cart_id']
         else:
             pk = request.GET['cart_id']
-            
+
         try:
             cart = ShoppingCart.objects.get(pk=pk)
             cart.delete()
