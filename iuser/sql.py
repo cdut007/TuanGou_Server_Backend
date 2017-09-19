@@ -99,6 +99,7 @@ SELECT
 	e.ship_time,
 	e.id AS group_buy_id,
 	f.`name`,
+	f.icon AS classify_icon
 	CONCAT('[', GROUP_CONCAT(
 		CONCAT(
 		'{\"goods_id\": \"',
