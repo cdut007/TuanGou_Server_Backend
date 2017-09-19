@@ -99,7 +99,7 @@ SELECT
 	e.ship_time,
 	e.id AS group_buy_id,
 	f.`name`,
-	f.icon AS classify_icon,
+	CONCAT('%(image_prefix)s', f.icon) AS classify_icon,
 	CONCAT('[', GROUP_CONCAT(
 		CONCAT(
 		'{\"goods_id\": \"',
@@ -157,7 +157,7 @@ GROUP BY
 	temp.group_buy_id
 """
 
-sql_goods_clasify = """
+sql_goods_classify = """
 SELECT
 	c.id AS classify_id,
 	c.`name`,
