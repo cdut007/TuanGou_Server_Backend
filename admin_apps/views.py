@@ -40,29 +40,42 @@ class ProductView(APIView):
     # @Authentication.token_required
     # @raise_general_exception
     def get(self, request):
-        from sqls import sql_goods_list
-
-        _sql_goods_list = sql_goods_list.format(**{
-            '_image_prefix': 'http://www.ailinkgo.com:3001/',
-            '_where': '',
-            '_order_by': 'ORDER BY a.id DESC',
-            '_limit': sql_limit(request)
-        })
-        _sql_goods_list_count = sql_count(sql_goods_list.format(**{
-            '_image_prefix': 'http://www.ailinkgo.com:3001/',
-            '_where': '',
-            '_order_by': '',
-            '_limit': ''
-        }))
-
         cursor = connection.cursor()
-        cursor.execute(_sql_goods_list)
-        product_list = dict_fetch_all(cursor)
 
-        cursor.execute(_sql_goods_list_count)
-        count = dict_fetch_all(cursor)
+        # option list
+        if request.GET['option'] == 'list':
+            from sqls import sql_goods_list
 
-        return Response(format_body(1, 'Success', {
-            'product_list': product_list,
-            'paged': {'total': count[0]['count']}
-        }))
+            _sql_goods_list = sql_goods_list.format(**{
+                '_image_prefix': 'http://www.ailinkgo.com:3001/',
+                '_where': '',
+                '_order_by': 'ORDER BY a.id DESC',
+                '_limit': sql_limit(request)
+            })
+            _sql_goods_list_count = sql_count(sql_goods_list.format(**{
+                '_image_prefix': 'http://www.ailinkgo.com:3001/',
+                '_where': '',
+                '_order_by': '',
+                '_limit': ''
+            }))
+
+            cursor.execute(_sql_goods_list)
+            product_list = dict_fetch_all(cursor)
+
+            cursor.execute(_sql_goods_list_count)
+            count = dict_fetch_all(cursor)
+
+            return Response(format_body(1, 'Success', {
+                'product_list': product_list,
+                'paged': {'total': count[0]['count']}
+            }))
+
+        # option detail
+        elif request.GET['option'] == 'detail':
+            return Response(format_body(1, 'Success', {
+                'product_list': 1,
+                'paged': {'total': 2}
+            }))
+        
+        else:
+            return Response(format_body(13, 'No this option', ''))
