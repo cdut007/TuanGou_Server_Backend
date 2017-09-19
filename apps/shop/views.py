@@ -18,25 +18,31 @@ class GoodsView(APIView):
     def get(self, request):
         cursor = connection.cursor()
         if request.GET['option'] == 'detail':
-            from sqls import sql_goods_detail, sql_goods_detail_related
+            from sqls import sql_goods_detail, sql_goods_detail_related, sql_goods_classify
 
-            sql_goods_detail = sql_goods_detail.format(**{
+            query = {
                 'goods_id': request.GET['goods_id'],
                 'image_prefix': image_path()
-            })
-            sql_goods_detail_related = sql_goods_detail_related.format(**{
-                'goods_id': request.GET['goods_id'],
-                'image_prefix': image_path()
-            })
+            }
+
+            sql_goods_detail = sql_goods_detail.format(**query)
+            sql_goods_detail_related = sql_goods_detail_related.format(**query)
+            sql_goods_classify = sql_goods_classify.format(**query)
 
             cursor.execute(sql_goods_detail)
             goods_detail = dict_fetch_all(cursor)[0]
-            goods_detail['images'] = json.loads(goods_detail['images'])
+
+            cursor.execute(sql_goods_classify)
+            classify = dict_fetch_all(cursor)[0]
 
             cursor.execute(sql_goods_detail_related)
             goods_detail_related = dict_fetch_all(cursor)
 
-            return Response(format_body(1, 'Success', {'goods_detail': goods_detail, 'group_buy': goods_detail_related}))
+            goods_detail['group_buy'] = goods_detail_related
+            goods_detail['classify'] = classify
+            goods_detail['images'] = json.loads(goods_detail['images'])
+
+            return Response(format_body(1, 'Success', {'goods_detail': goods_detail}))
 
         elif request.GET['option'] == 'list':
             return Response(format_body(1, 'Success', {'goods_detail': 1, 'group_buy': 1}))
