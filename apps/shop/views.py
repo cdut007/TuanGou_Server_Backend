@@ -35,6 +35,7 @@ class GoodsView(APIView):
             cursor.execute(sql_goods_classify)
             classify = dict_fetch_all(cursor)[0]
 
+
             cursor.execute(sql_goods_detail_related)
             goods_detail_related = dict_fetch_all(cursor)
 
