@@ -21,6 +21,18 @@ GROUP BY
 	a.id
 """
 
+sql_goods_classify = """
+SELECT
+	c.`name`,
+	CONCAT('{image_prefix}', c.icon) AS icon
+FROM
+	market_groupbuygoods AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+LEFT JOIN market_goodsclassify AS c ON c.id = b.goods_classify_id
+WHERE
+	a.id = {goods_id}
+"""
+
 sql_goods_detail_related = """
 SELECT
 	a.id AS goods_id,
