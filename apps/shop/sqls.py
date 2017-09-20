@@ -75,10 +75,10 @@ AND end_time >= NOW()
 """
 
 sql_classify_info = """
-SELECT CONCAT('{image_prefix}', image) AS image, `desc` FROM market_goodsclassify WHERE id = {classify_id}
+SELECT CONCAT('{image_prefix}', image) AS image, `desc`, name FROM market_goodsclassify WHERE id = {classify_id}
 """
 
-sql_classify_group_buy_first = """
+sql_goods_list = """
 SELECT
 	a.id AS goods_id,
 	a.price,
@@ -96,17 +96,5 @@ FROM
 INNER JOIN market_goods AS b ON a.goods_id = b.id
 INNER JOIN market_goodsgallery AS c ON b.id = c.goods_id
 WHERE
-	group_buy_id = (
-		SELECT
-			id
-		FROM
-			market_groupbuy AS a
-		WHERE
-			goods_classify_id = {classify_id}
-		AND on_sale = 1
-        AND end_time >= NOW()
-		ORDER BY
-			ship_time DESC
-		LIMIT 1
-	)
+	group_buy_id = {group_buy_id}
 """
