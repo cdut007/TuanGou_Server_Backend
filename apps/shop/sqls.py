@@ -6,6 +6,7 @@ SELECT
 	a.brief_dec,
 	b.`name`,
 	b.desc,
+	d.ship_time,
 	CONCAT(
 		'[',
 		GROUP_CONCAT(CONCAT('"', '{image_prefix}', c.image, '"')),
@@ -15,6 +16,7 @@ FROM
 	market_groupbuygoods AS a
 LEFT JOIN market_goods AS b ON a.goods_id = b.id
 LEFT JOIN market_goodsgallery AS c ON b.id = c.goods_id
+LEFT JOIN market_groupbuy AS d ON a.group_buy_id=d.id
 WHERE
 	a.id = {goods_id}
 GROUP BY
