@@ -67,7 +67,7 @@ sql_classify_group_buy_list = """
 SELECT
 	id AS group_buy_id, 
 	ship_time,
-	end_time
+	DATE_FORMAT(end_time,'%Y-%m-%d %H:%i:%s') AS end_time
 FROM
 	market_groupbuy AS a
 WHERE

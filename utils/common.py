@@ -52,6 +52,8 @@ def raise_general_exception(func):
             return Response(format_body(2, 'Params error', e.message))
         except ObjectDoesNotExist as e:
             return Response(format_body(6, 'Key value error', e.message))
+        except IndexError as e:
+            return Response(format_body(14, 'index error', e.message))
         except OperationalError as e:
             return Response(format_body(11, 'Mysql error', e.message))
     return wrapper
