@@ -99,7 +99,7 @@ class ConsumerOrderView(APIView):
     @Authentication.token_required
     def delete(self, request):
         # 删除订单
-        order_goods = GenericOrder.objects.get(pk=request.GET['order'])
+        order_goods = GenericOrder.objects.get(pk=request.GET['order_id'])
         order_goods.status = 0
         order_goods.save()
 
