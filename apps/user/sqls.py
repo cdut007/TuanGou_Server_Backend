@@ -56,7 +56,7 @@ FROM
 LEFT JOIN market_groupbuy AS e ON temp.group_buy_id=e.id
 LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
 WHERE 
-	e.on_sale = 1 AND e.end_time %(group_buy_is_over)s NOW()
+	a.status = 1 AND e.on_sale = 1 AND e.end_time %(group_buy_is_over)s NOW()
 GROUP BY 
 	temp.group_buy_id
 """
