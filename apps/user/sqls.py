@@ -51,12 +51,13 @@ FROM
 		AND d.is_primary = 1
 		WHERE
 			a.user_id = %(consumer_id)s
+		AND a.status = 1
 		AND a.agent_code = '%(merchant_code)s'
 	) AS temp
 LEFT JOIN market_groupbuy AS e ON temp.group_buy_id=e.id
 LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
 WHERE 
-	a.status = 1 AND e.on_sale = 1 AND e.end_time %(group_buy_is_over)s NOW()
+	e.on_sale = 1 AND e.end_time %(group_buy_is_over)s NOW()
 GROUP BY 
 	temp.group_buy_id
 """
