@@ -96,7 +96,7 @@ SELECT
 FROM
 	market_groupbuygoods AS a
 INNER JOIN market_goods AS b ON a.goods_id = b.id
-INNER JOIN market_goodsgallery AS c ON b.id = c.goods_id
+INNER JOIN market_goodsgallery AS c ON b.id = c.goods_id AND c.is_primary = 1
 WHERE
 	group_buy_id = {group_buy_id}
 """
