@@ -84,3 +84,10 @@ class ProductDetailView(APIView):
         goods_detail['images'] = json.loads(goods_detail['images'])
 
         return Response(format_body(1, 'Success', {'goods_detail': goods_detail}))
+
+
+class ProductCreateView(APIView):
+    def post(self, request):
+        print '123'
+        return Response(format_body(1, 'Success', ''))
+
