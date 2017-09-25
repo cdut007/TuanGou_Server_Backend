@@ -12,5 +12,5 @@ urlpatterns = [
     # shop
     url(r'goods.detail', ShopViews.GoodsDetailView.as_view(), name='goods.detail'),
     url(r'goods.list', ShopViews.GoodsListView.as_view(), name='goods.list'),
-    url(r'classify.group_buy', ShopViews.ClassifyView.as_view(), name='classify.group_buy')
+    url(r'merchant.classify.group_buy', ShopViews.MerchantClassifyView.as_view(), name='merchant.classify.group_buy')
 ]
