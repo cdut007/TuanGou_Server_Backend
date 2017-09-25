@@ -70,26 +70,30 @@ class ClassifyView(APIView):
     def get(self, request):
         cursor = connection.cursor()
 
-        from sqls import sql_classify_group_buy_list, sql_classify_info
+        from sqls import sql_merchant_classify_group_buy_list_with_all_goods, sql_classify_info
 
         query = {
             'classify_id': request.GET['classify_id'],
+            'merchant_code': request.GET['merchant_code'],
             'image_prefix': image_path()
         }
 
         sql_classify_info = sql_classify_info.format(**query)
-        sql_classify_group_buy_list = sql_classify_group_buy_list.format(**query)
+        sql_classify_group_buy_list = sql_merchant_classify_group_buy_list_with_all_goods % query
 
         cursor.execute(sql_classify_info)
         info = dict_fetch_all(cursor)[0]
 
+        cursor.execute("SET SESSION group_concat_max_len = 204800;")
         cursor.execute(sql_classify_group_buy_list)
-        list = dict_fetch_all(cursor)
+        _list = dict_fetch_all(cursor)
 
+        for item in _list:
+            item['goods_list'] = json.loads(item['goods_list'])
 
         data = {
             'classify': info,
-            'group_buy_list': list,
+            'group_buy_list': _list,
         }
 
         return Response(format_body(1, 'Success', data))
