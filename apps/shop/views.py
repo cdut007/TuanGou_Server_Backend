@@ -11,20 +11,21 @@ from ilinkgo.config import image_path
 from iuser.Authentication import Authentication
 
 
-class GoodsDetailView(APIView):
+class MerchantGoodsDetailView(APIView):
     @raise_general_exception
     def get(self, request):
         cursor = connection.cursor()
 
-        from sqls import sql_goods_detail, sql_goods_detail_related, sql_goods_classify
+        from sqls import sql_goods_detail, sql_merchant_goods_detail_related, sql_goods_classify
 
         query = {
             'goods_id': request.GET['goods_id'],
+            'merchant_code': request.GET['merchant_code'],
             'image_prefix': image_path()
         }
 
         sql_goods_detail = sql_goods_detail.format(**query)
-        sql_goods_detail_related = sql_goods_detail_related.format(**query)
+        sql_goods_detail_related = sql_merchant_goods_detail_related.format(**query)
         sql_goods_classify = sql_goods_classify.format(**query)
 
         cursor.execute(sql_goods_detail)
@@ -43,7 +44,7 @@ class GoodsDetailView(APIView):
         return Response(format_body(1, 'Success', {'goods_detail': goods_detail}))
 
 
-class GoodsListView(APIView):
+class MerchantGoodsListView(APIView):
     @raise_general_exception
     def get(self, request):
         from sqls import sql_goods_list

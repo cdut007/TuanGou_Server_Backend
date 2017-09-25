@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'merchant.order', UserViews.MerchantOrderView.as_view(), name='merchant.order'),
 
     # shop
-    url(r'goods.detail', ShopViews.GoodsDetailView.as_view(), name='goods.detail'),
-    url(r'goods.list', ShopViews.GoodsListView.as_view(), name='goods.list'),
+    url(r'merchant.goods.detail', ShopViews.MerchantGoodsDetailView.as_view(), name='merchant.goods.detail'),
+    url(r'merchant.goods.list', ShopViews.MerchantGoodsListView.as_view(), name='merchant.goods.list'),
     url(r'merchant.classify.group_buy', ShopViews.MerchantClassifyView.as_view(), name='merchant.classify.group_buy')
 ]

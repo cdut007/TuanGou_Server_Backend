@@ -63,6 +63,37 @@ WHERE
 AND a.id != {goods_id}
 """
 
+sql_merchant_goods_detail_related = """
+SELECT
+	a.id AS goods_id,
+	a.price,
+	b.`name`,
+	CONCAT(
+		'{image_prefix}',
+		SUBSTRING_INDEX(c.image, '.', 1),
+		'_thumbnail.',
+		SUBSTRING_INDEX(c.image, '.', - 1)
+	) AS image
+FROM
+	market_groupbuygoods AS a
+INNER JOIN market_goods AS b ON a.goods_id = b.id
+INNER JOIN market_goodsgallery AS c ON b.id = c.goods_id
+INNER JOIN iuser_agentorder AS d ON FIND_IN_SET(a.id,d.goods_ids)
+INNER JOIN iuser_userprofile AS e ON d.user_id=e.id
+AND c.is_primary = 1
+WHERE
+	a.group_buy_id = (
+		SELECT
+			group_buy_id
+		FROM
+			market_groupbuygoods
+		WHERE
+			id = {goods_id}
+	)
+AND a.id != {goods_id}
+AND e.openid='{merchant_code}'
+"""
+
 sql_classify_info = """
 SELECT CONCAT('{image_prefix}', image) AS image, `desc`, name FROM market_goodsclassify WHERE id = {classify_id}
 """
