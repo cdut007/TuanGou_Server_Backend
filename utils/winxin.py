@@ -34,10 +34,9 @@ class WeiXinAPI:
         return json.loads(response.read())
 
     @staticmethod
-    def js_api_config(js_api_ticket):
+    def js_api_config(js_api_ticket, url):
         noncestr = random_str(10)
         timestamp = int(time.time())
-        url = 'http://www.ailinkgo.com/'
         string1 = 'jsapi_ticket={0}&noncestr={1}&timestamp={2}&url={3}'.format(
             js_api_ticket,noncestr,timestamp,url)
         signature = hashlib.sha1(string1).hexdigest()
@@ -117,7 +116,7 @@ class WeiXinAPI:
         else:
             return 'error'
 
-    def get_wei_xin_js_sdk_config(self):
+    def get_wei_xin_js_sdk_config(self, url):
         access_token = self.get_wei_xin_basal_access_token()
         if access_token == 'error':
             return 'error'
@@ -126,6 +125,6 @@ class WeiXinAPI:
         if ticket == 'error':
             return 'error'
 
-        config = self.js_api_config(ticket)
+        config = self.js_api_config(ticket, url)
         return config
 

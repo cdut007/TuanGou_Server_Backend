@@ -16,7 +16,10 @@ class WeiXinJsSdkConfigView(APIView):
     @raise_general_exception
     def get(self, request):
         wei_xin_api = WeiXinAPI()
-        config = wei_xin_api.get_wei_xin_js_sdk_config()
+
+        url = request.GET['url']
+        config = wei_xin_api.get_wei_xin_js_sdk_config(url)
+
         if config == 'error':
             return Response(format_body(15, 'Fail', 'error'))
         return Response(format_body(1, 'Success', config))
