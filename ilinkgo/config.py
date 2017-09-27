@@ -16,6 +16,7 @@ class StatusCode():
     StockOutOfRange = 12
     NoThisOption = 13
     IndexError = 14
+    JsApiConfigError = 15
 
 
 def mysql_config():

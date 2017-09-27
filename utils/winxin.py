@@ -4,8 +4,9 @@ import urllib2
 import json
 import hashlib
 import time
+from datetime import datetime
 from common import random_str
-
+from apps.other.models import WinXinCache
 
 class WeiXinAPI:
     def __init__(self):
@@ -35,7 +36,7 @@ class WeiXinAPI:
     @staticmethod
     def js_api_config(js_api_ticket):
         noncestr = random_str(10)
-        timestamp = time.time()
+        timestamp = int(time.time())
         url = 'http://www.ailinkgo.com/'
         string1 = 'jsapi_ticket={0}&noncestr={1}&timestamp={2}&url={3}'.format(
             js_api_ticket,noncestr,timestamp,url)
@@ -70,12 +71,61 @@ class WeiXinAPI:
         response = urllib2.urlopen(urllib2.Request(url))
         return json.loads(response.read())
 
-    @staticmethod
-    def get_wei_xin_basal_access_token():
-        return 'paNAi-ikq2QBhEtjgu5OKcVGT1Vj3WpUnpAzSKdXFW-3aeUZMN7kl45gV2Sosox_jYB8-6XwJLbWwfdzGtfxRHBxeqmOQZQDghAYPR3OBdCxj8y8UuLE8-tVglksfO3GJRUaAEAAIL'
+    def get_wei_xin_basal_access_token(self):
+        cached = WinXinCache.objects.filter(cache_key='access_token')
+        if cached:
+            cached = cached[0]
+            if cached.expire_date > datetime.now():
+                return cached.cache_value
+            else:
+                cached.delete()
+
+        data = self.basal_access_token()
+        if data.has_key('access_token'):
+            expire_date = time.localtime(int(time.time()) + data['expires_in'])
+            expire_date = time.strftime('%Y-%m-%d %H:%M:%S', expire_date)
+            q = WinXinCache(
+                cache_key='access_token',
+                cache_value=data['access_token'],
+                expire_date=expire_date
+            )
+            q.save()
+            return data['access_token']
+        else:
+            return 'error'
+
+    def get_wei_xin_js_api_ticket(self, access_token):
+        cached = WinXinCache.objects.filter(cache_key='js_api_ticket')
+        if cached:
+            cached = cached[0]
+            if cached.expire_date > datetime.now():
+                return cached.cache_value
+            else:
+                cached.delete()
+
+        data = self.js_api_ticket(access_token)
+        if data.has_key('ticket'):
+            expire_date = time.localtime(int(time.time()) + data['expires_in'])
+            expire_date = time.strftime('%Y-%m-%d %H:%M:%S', expire_date)
+            q = WinXinCache(
+                cache_key='js_api_ticket',
+                cache_value=data['ticket'],
+                expire_date=expire_date
+            )
+            q.save()
+            return data['access_token']
+        else:
+            return 'error'
 
     def get_wei_xin_js_sdk_config(self):
-        ticket = 'HoagFKDcsGMVCIY2vOjf9qGYYgyqaWgWZ6RmHt4w2NdhTEFzUyZW0nAeUCu-Y1iVA-wLIuxgdSsovdLVd54cpw'
+        access_token = self.get_wei_xin_basal_access_token()
+        if access_token == 'error':
+            return 'error'
+
+        ticket = self.get_wei_xin_js_api_ticket(access_token)
+        if ticket == 'error':
+            return 'error'
+
         config = self.js_api_config(ticket)
         return config
 

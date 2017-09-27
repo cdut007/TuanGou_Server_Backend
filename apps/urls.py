@@ -16,5 +16,5 @@ urlpatterns = [
     url(r'merchant.classify.group_buy', ShopViews.MerchantClassifyView.as_view(), name='merchant.classify.group_buy'),
 
     # other
-    url(r'winxin.js_sdk_config', OtherViews.WeiXinJsSdkConfigView.as_view(), name='other.winxin.js_sdk_config'),
+    url(r'winxin.js_sdk_config', OtherViews.WeiXinJsSdkConfigView.as_view(), name='winxin.js_sdk_config'),
 ]

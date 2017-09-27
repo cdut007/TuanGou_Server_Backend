@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'market',
     'iuser',
-    'corsheaders'
+    'corsheaders',
+    'apps.other'
 ]
 
 MIDDLEWARE = [
