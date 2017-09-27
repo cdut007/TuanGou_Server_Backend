@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 
 from utils.common import format_body, dict_fetch_all
 from ilinkgo.config import web_link, image_path
-from utils.winxin import code_to_access_token, access_token_to_user_info
+from utils.winxin import WeiXinAPI
 from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
 from market.serializers import GroupBuyGoodsSerializer, GoodsClassifySerializer, GroupBuySerializer
 from models import UserProfile, AgentOrder, ShoppingCart, GenericOrder
@@ -65,9 +65,10 @@ class UserView(APIView):
 class WebUserView(APIView):
     def get(self,request):
         code = request.GET.get('code', '')
-        data = code_to_access_token(code)
+        wei_xin_api = WeiXinAPI()
+        data = wei_xin_api.website_authorization_access_token(code)
         try:
-            user_info = access_token_to_user_info(data['access_token'], data['openid'])
+            user_info = wei_xin_api.website_user_info(data['access_token'], data['openid'])
         except KeyError:
             return Response(format_body(6, 'code error', ''))
         serializer = UserProfileSerializer(data=user_info)
