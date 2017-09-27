@@ -113,7 +113,7 @@ class WeiXinAPI:
                 expire_date=expire_date
             )
             q.save()
-            return data['access_token']
+            return data['ticket']
         else:
             return 'error'
 
