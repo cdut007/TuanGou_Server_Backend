@@ -1,4 +1,4 @@
-import os
+import os, time
 import functools
 from datetime import datetime
 from random import Random
@@ -6,6 +6,8 @@ from random import Random
 from rest_framework.response import Response
 from django.db.models import ObjectDoesNotExist
 from django.db import OperationalError
+
+from ilinkgo.config import images_save_base_path
 
 
 def format_body(code, message, data):
@@ -35,7 +37,7 @@ def random_str(random_length=5):
 
 
 def dict_fetch_all(cursor):
-    "Returns all rows from a cursor as a dict"
+    """Returns all rows from a cursor as a dict"""
     desc = cursor.description
     return [
         dict(zip([col[0] for col in desc], row))
@@ -78,3 +80,27 @@ def sql_limit(request):
 
 def sql_count(sql):
     return "SELECT COUNT(*) AS count FROM(" + sql + ") AS temp"
+
+
+def save_images(image_file, destination='Goods', create_thumbnail=False):
+    try:
+        sub_path = destination + "/{}-{}/".format(
+            time.strftime('%Y'),
+            time.strftime('%m')
+        )
+        path = images_save_base_path() + sub_path
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        temp = image_file.name.split('.')
+        image_name = temp[0] + '_' + random_str() + '.' + temp[-1]
+
+        destination = open(path + image_name, 'wb+')
+        for chunk in image_file.chunks():
+            destination.write(chunk)
+            destination.close()
+    except Exception as e:
+        return False
+    return sub_path+image_name
+

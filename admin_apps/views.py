@@ -5,10 +5,9 @@ from django.db import connection, OperationalError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit, sql_count
-from ilinkgo.config import image_path
-from market.models import GroupBuyGoods
-from iuser.models import GenericOrder
+from utils.common import format_body, dict_fetch_all, raise_general_exception
+from ilinkgo.config import image_path_v2
+from utils.common import sql_limit, sql_count, save_images
 
 from iuser.Authentication import Authentication
 
@@ -90,4 +89,15 @@ class ProductCreateView(APIView):
     def post(self, request):
         print '123'
         return Response(format_body(1, 'Success', ''))
+
+
+class ImageUploadView(APIView):
+    def post(self, request):
+        image = request.FILES['image']
+        image_path = save_images(image, 'GoodsDetail')
+        if image_path:
+            url = image_path_v2() + image_path
+            return Response(format_body(1, 'Success', url))
+        return Response(format_body(16, 'Fail', ''))
+
 

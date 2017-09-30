@@ -17,6 +17,7 @@ class StatusCode():
     NoThisOption = 13
     IndexError = 14
     JsApiConfigError = 15
+    SaveImageFail = 16
 
 
 def mysql_config():
@@ -67,6 +68,40 @@ def image_path():
     else:
         path = 'http://192.168.222.128:3000/'
 
+    return path
+
+def image_path_v2():
+    """load configuration"""
+    mode = os.environ.get('MODE', '')
+    dir_name = os.getcwd().split('/')[-1]
+
+    if mode == 'PRODUCTION':
+        path = ''
+    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
+        path = 'http://www.ailinkgo.com:3000/'
+    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
+        path = 'http://www.ailinkgo.com:3001/'
+    elif mode == 'HOME':
+        path = 'http://192.168.239.129:8000/'
+    else:
+        path = 'http://www.ailinkgo.demo/admin/images/'
+
+    return path
+
+def images_save_base_path():
+    mode = os.environ.get('MODE', '')
+    dir_name = os.getcwd().split('/')[-1]
+
+    if mode == 'PRODUCTION':
+        path = ''
+    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
+        path = ''
+    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
+        path = ''
+    elif mode == 'HOME':
+        path = ''
+    else:
+        path = '/usr/local/nginx/html/ilinkgo/admin/images/'
     return path
 
 def web_link():
