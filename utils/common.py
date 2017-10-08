@@ -100,6 +100,15 @@ def save_images(image_file, destination='Goods', create_thumbnail=False):
         for chunk in image_file.chunks():
             destination.write(chunk)
             destination.close()
+
+        if create_thumbnail:
+            from PIL import Image
+            origin_image = image_name.split('.')
+            image_thumbnail = path + origin_image[0] + '_thumbnail.' + origin_image[1]
+            im = Image.open(image_file)
+            im.thumbnail((230, 230))
+            im.save(image_thumbnail, im.format)
+
     except Exception as e:
         return False
     return sub_path+image_name

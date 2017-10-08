@@ -9,6 +9,8 @@ from utils.common import format_body, dict_fetch_all, raise_general_exception
 from ilinkgo.config import image_path_v2
 from utils.common import sql_limit, sql_count, save_images
 
+from market.models import Goods, GoodsGallery
+
 from iuser.Authentication import Authentication
 
 
@@ -42,13 +44,13 @@ class ProductListView(APIView):
         from sqls import sql_goods_list
 
         _sql_goods_list = sql_goods_list.format(**{
-            '_image_prefix': 'http://www.ailinkgo.com:3001/',
+            '_image_prefix': 'http://www.ailinkgo.demo/',
             '_where': '',
             '_order_by': 'ORDER BY a.id DESC',
             '_limit': sql_limit(request)
         })
         _sql_goods_list_count = sql_count(sql_goods_list.format(**{
-            '_image_prefix': 'http://www.ailinkgo.com:3001/',
+            '_image_prefix': 'http://www.ailinkgo.demo/',
             '_where': '',
             '_order_by': '',
             '_limit': ''
@@ -73,7 +75,7 @@ class ProductDetailView(APIView):
     def get(self, request):
         from sqls import sql_goods_detail
 
-        sql_goods_detail = sql_goods_detail % {'goods_id': request.GET['goods_id'], 'image_prefix': 'http://www.ailinkgo.com:3001/'}
+        sql_goods_detail = sql_goods_detail % {'goods_id': request.GET['goods_id'], 'image_prefix': 'http://www.ailinkgo.demo/'}
 
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
@@ -86,8 +88,57 @@ class ProductDetailView(APIView):
 
 
 class ProductCreateView(APIView):
+    @raise_general_exception
     def post(self, request):
-        print '123'
+        from sqls import sql_insert_goods_gallery
+
+        goods = Goods(
+            name=request.data['name'],
+            desc=request.data['desc']
+        )
+        goods.save()
+
+        insert_values = ""
+        is_primary = 1
+        for image in sorted(request.FILES):
+            image_path = 'admin/images/' + save_images(request.FILES[image], 'Goods', create_thumbnail=True)
+            insert_values += "('{0}', '{1}', '{2}', '{3}'),\n".format(image_path,is_primary,datetime.now(),goods.id)
+            is_primary = 0
+
+        sql_insert_goods_gallery = sql_insert_goods_gallery.format(values=insert_values[0:-2])
+
+        cursor = connection.cursor()
+        cursor.execute(sql_insert_goods_gallery)
+
+        return Response(format_body(1, 'Success', ''))
+
+
+class ProductUpdateView(APIView):
+    @raise_general_exception
+    def post(self, request):
+        goods = Goods.objects.get(id=request.data['product_id'])
+        goods.name = request.data['name']
+        goods.desc = request.data['desc']
+        goods.save()
+
+        cursor = connection.cursor()
+
+        if request.FILES:
+            from sqls import  sql_insert_goods_gallery
+            insert_values = ""
+            for image in sorted(request.FILES):
+                image_path = 'admin/images/' + save_images(request.FILES[image], 'Goods', create_thumbnail=True)
+                insert_values += "('{0}', '{1}', '{2}', '{3}'),\n".format(image_path, 0, datetime.now(), goods.id)
+            sql_insert_goods_gallery = sql_insert_goods_gallery.format(values=insert_values[0:-2])
+            cursor.execute(sql_insert_goods_gallery)
+
+        if request.data['detImg']:
+            from sqls import sql_delete_goods_gallery, sql_update_gallery_primary
+            sql_delete_goods_gallery = sql_delete_goods_gallery.format(detImg=request.data['detImg'])
+            sql_update_gallery_primary = sql_update_gallery_primary.format(goods_id=goods.id)
+            cursor.execute(sql_delete_goods_gallery)
+            cursor.execute(sql_update_gallery_primary)
+
         return Response(format_body(1, 'Success', ''))
 
 
@@ -99,5 +150,60 @@ class ImageUploadView(APIView):
             url = image_path_v2() + image_path
             return Response(format_body(1, 'Success', url))
         return Response(format_body(16, 'Fail', ''))
+
+
+class CleanImages(APIView):
+    def get(self, request):
+        import os
+        sql = """
+        SELECT
+            SUBSTRING_INDEX(image, '/' ,- 1) AS images
+        FROM
+            market_goodsgallery
+        WHERE
+            image LIKE '%/2017-09/%'
+	"""
+        cursor = connection.cursor()
+        cursor.execute(sql)
+
+        images = cursor.fetchall()
+        images = [i[0] for i in  images]
+
+        _dir = '/usr/local/nginx_1.10.3/html/ailinkgo/admin/images/Goods/2017-09'
+
+        files = os.listdir(_dir)
+        for file in files:
+            try:
+                if '_thumbnail.' not in file and  file not in images:
+                    path = os.path.join(_dir, file)
+                    thumbnail = file.split('.')[0] + '_thumbnail.' + file.split('.')[-1]
+                    path_thumbnail = os.path.join(_dir, thumbnail)
+                    os.remove(path)
+                    os.remove(path_thumbnail)
+            except OSError :
+                continue
+
+        return Response(format_body(1, 'Success', ''))
+
+
+class ProductSearchView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_product_search
+
+        cursor = connection.cursor()
+
+        sql_product_search = sql_product_search.format(
+            _image_prefix = 'http://www.ailinkgo.demo/',
+            keyword = request.GET['keyword']
+        )
+
+        cursor.execute(sql_product_search)
+
+        data = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', data))
+
+
 
 

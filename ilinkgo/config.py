@@ -82,7 +82,7 @@ def image_path_v2():
     elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
         path = 'http://www.ailinkgo.com:3001/'
     elif mode == 'HOME':
-        path = 'http://192.168.239.129:8000/'
+        path = 'http://www.ailinkgo.demo/admin/images/'
     else:
         path = 'http://www.ailinkgo.demo/admin/images/'
 
@@ -99,7 +99,7 @@ def images_save_base_path():
     elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
         path = ''
     elif mode == 'HOME':
-        path = ''
+        path = '/usr/local/nginx_1.10.3/html/ailinkgo/admin/images/'
     else:
         path = '/usr/local/nginx/html/ilinkgo/admin/images/'
     return path
