@@ -9,7 +9,7 @@ from utils.common import format_body, dict_fetch_all, raise_general_exception
 from ilinkgo.config import image_path_v2
 from utils.common import sql_limit, sql_count, save_images
 
-from market.models import Goods, GoodsGallery
+from market.models import Goods
 
 from iuser.Authentication import Authentication
 
@@ -195,7 +195,7 @@ class ProductSearchView(APIView):
 
         sql_product_search = sql_product_search.format(
             _image_prefix = 'http://www.ailinkgo.demo/',
-            keyword = request.GET['keyword']
+            _keyword = request.GET['keyword']
         )
 
         cursor.execute(sql_product_search)
@@ -203,6 +203,25 @@ class ProductSearchView(APIView):
         data = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', data))
+
+
+class GroupBuyingListView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_group_buying_list
+
+        cursor = connection.cursor()
+        cursor.execute(sql_group_buying_list)
+        sql_goods_buying_list_count = sql_count(sql_group_buying_list)
+        data = dict_fetch_all(cursor)
+
+        cursor.execute(sql_goods_buying_list_count)
+        count = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {
+            'groupbuying_list': data,
+            'paged': {'total': count[0]['count']}
+        }))
 
 
 

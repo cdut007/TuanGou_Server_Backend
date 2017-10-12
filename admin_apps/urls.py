@@ -12,5 +12,6 @@ urlpatterns = [
     url(r'goods.update', views.ProductUpdateView.as_view(), name='product.update'),
     url(r'image.upload', views.ImageUploadView.as_view(), name='image.upload'),
     url(r'image.clean', views.CleanImages.as_view(), name='image.clean'),
-    url(r'goods.search', views.ProductSearchView.as_view(), name='goods.search')
+    url(r'goods.search', views.ProductSearchView.as_view(), name='goods.search'),
+    url(r'groupbuying.list', views.GroupBuyingListView.as_view(), name='groupbuying.list')
 ]

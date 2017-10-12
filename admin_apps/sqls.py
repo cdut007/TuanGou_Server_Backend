@@ -89,3 +89,16 @@ LEFT JOIN market_goodsgallery AS b ON a.id=b.goods_id AND b.is_primary=1
 WHERE
 	a.`name` LIKE '%{_keyword}%'
 """
+
+sql_group_buying_list = """
+SELECT
+	a.id,
+	a.end_time,
+	a.title,
+	a.ship_time,
+	a.on_sale,
+	b.`name` AS classify
+FROM
+	market_groupbuy AS a
+INNER JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
+"""
