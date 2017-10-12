@@ -100,8 +100,7 @@ class ConsumerOrderView(APIView):
     def delete(self, request):
         # 删除订单
         order_goods = GenericOrder.objects.get(pk=request.GET['order_id'])
-        order_goods.status = 0
-        order_goods.save()
+        order_goods.delete()
 
         #更新库存
         order_goods.goods.stock += order_goods.quantity

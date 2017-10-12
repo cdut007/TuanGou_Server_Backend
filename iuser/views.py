@@ -373,8 +373,7 @@ class GenericOrderView(APIView):
             )
         except GenericOrder.DoesNotExist:
             return Response(format_body(0, 'order does not exist', ''))
-        order_goods.status = 0
-        order_goods.save()
+        order_goods.delete()
 
         #更新库存
         order_goods.goods.stock += order_goods.quantity
