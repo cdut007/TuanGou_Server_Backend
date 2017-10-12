@@ -139,3 +139,23 @@ class MerchantOrderView(APIView):
         else:
             return Response(format_body(13, 'No this option', ''))
 
+
+class ShareGroupBuyingView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_share_latest_groupbuying
+
+        sql_share_latest_groupbuying = sql_share_latest_groupbuying.format(
+            image_prefix=image_path(),
+            user_id=self.get.user_id
+        )
+
+        cursor = connection.cursor()
+        cursor.execute(sql_share_latest_groupbuying)
+        data = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'success', data))
+
+
+

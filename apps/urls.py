@@ -9,6 +9,7 @@ urlpatterns = [
     # user
     url(r'consumer.order', UserViews.ConsumerOrderView.as_view(), name='consumer.order'),
     url(r'merchant.order', UserViews.MerchantOrderView.as_view(), name='merchant.order'),
+    url(r'merchant.groupbuying.share', UserViews.ShareGroupBuyingView.as_view(), name='merchant.groupbuying.share'),
 
     # shop
     url(r'merchant.goods.detail', ShopViews.MerchantGoodsDetailView.as_view(), name='merchant.goods.detail'),

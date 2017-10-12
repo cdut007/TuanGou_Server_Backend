@@ -133,3 +133,20 @@ INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
 GROUP BY
 	temp.user_id
 """
+
+sql_share_latest_groupbuying = """
+SELECT
+	c.`name`,
+	c.`desc`,
+	CONCAT('{image_prefix}', c.icon) AS icon,
+	CONCAT('{image_prefix}', c.image) AS image
+FROM
+	iuser_agentorder AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
+LEFT JOIN market_goodsclassify AS c ON c.id=b.goods_classify_id
+WHERE
+	a.user_id = {user_id}
+ORDER BY
+	a.add_time DESC
+LIMIT 1
+"""
