@@ -95,10 +95,12 @@ SELECT
 	a.id,
 	a.end_time,
 	a.title,
-	a.ship_time,
+	DATE_FORMAT(a.ship_time, '%d  %b  %y') AS ship_time,
 	a.on_sale,
 	b.`name` AS classify
 FROM
 	market_groupbuy AS a
 INNER JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
+ORDER BY 
+a.id DESC 
 """
