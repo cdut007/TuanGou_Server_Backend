@@ -92,14 +92,14 @@ WHERE
 
 sql_group_buying_list = """
 SELECT
-	a.id,
-	a.end_time,
-	a.title,
-	DATE_FORMAT(a.ship_time, '%d  %b  %y') AS ship_time,
-	a.on_sale,
-	b.`name` AS classify
+  a.id,
+  a.end_time,
+  a.title,
+  DATE_FORMAT(a.ship_time, '%d  %b  %y') AS ship_time,
+  a.on_sale,
+  b.`name` AS classify
 FROM
-	market_groupbuy AS a
+  market_groupbuy AS a
 INNER JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
 {_where}
 {_order_by}
@@ -108,35 +108,74 @@ INNER JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
 
 sql_group_buying_detail = """
 SELECT
-	a.id,
-	a.end_time,
-	a.ship_time,
-	a.title,
-	a.on_sale,
-	b.id AS classify
+  a.id,
+  a.end_time,
+  a.ship_time,
+  a.title,
+  a.on_sale,
+  b.id AS classify
 FROM
-	market_groupbuy AS a
+  market_groupbuy AS a
 LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id=b.id
 WHERE
-	a.id = {id}
+  a.id = {id}
 """
 
 sql_group_buying_products = """
 SELECT
-	a.id,
-	a.price,
-	a.brief_dec,
-	a.stock,
-	c.`name`,
-	d.image
+  a.id,
+  a.price,
+  a.brief_dec,
+  a.stock,
+  c.`name`,
+  d.image
 FROM
-	market_groupbuygoods AS a
+  market_groupbuygoods AS a
 INNER JOIN market_groupbuy AS b ON a.group_buy_id = b.id AND a.group_buy_id={id}
 LEFT JOIN market_goods AS c ON a.goods_id=c.id
 LEFT JOIN market_goodsgallery AS d ON c.id=d.goods_id AND d.is_primary=1
 
 """
 
-sql_classify_list = """
-SELECT * FROM market_goodsclassify
+sql_classify_list = """SELECT * FROM market_goodsclassify"""
+
+sql_merchant_order_summary = """
+SELECT
+  a.id AS user_id,
+  a.nickname,
+  CONCAT(
+    '[',
+    GROUP_CONCAT(
+      '{\"goods\": \"',
+      temp1.goods,
+      '\", ',
+      '\"money\": \"',
+      temp1.money,
+      '\", ',
+      '\"quantity\": \"',
+      temp1.quantity,
+      '\"}'
+    ),
+    ']'
+  ) AS infh
+FROM
+  (
+    SELECT
+      a.agent_code,
+      SUM(a.quantity) AS quantity,
+      CONCAT(c.`name`, ' $', b.price, ' ', b.brief_dec) AS goods,
+      SUM(a.quantity) * b.price AS money
+    FROM
+      iuser_genericorder AS a
+    INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+    INNER JOIN market_goods AS c ON b.goods_id = c.id
+    AND a. STATUS = 1
+    AND b.group_buy_id = 10
+    GROUP BY
+      a.agent_code,
+      a.goods_id
+  ) AS temp1
+LEFT JOIN iuser_userprofile AS a ON temp1.agent_code=a.openid
+GROUP BY
+  temp1.agent_code
 """
