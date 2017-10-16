@@ -4,6 +4,12 @@ SELECT
 	e.id AS group_buy_id,
 	CONCAT('%(image_prefix)s', f.icon) AS classify_icon,
 	f.`name`,
+	DATE_FORMAT(
+		temp.add_time,
+		'%%Y-%%m-%%d %%H:%%i:%%s'
+	) AS add_time,
+	SUM(temp.quantity) AS total_quantity,
+	SUM(temp.money) AS total_monty,
 	CONCAT('[', GROUP_CONCAT(
 		CONCAT(
 		'{\"goods_id\": \"',
@@ -37,12 +43,14 @@ FROM
 			a.id as order_id,
 			a.goods_id,
 			a.`quantity`,
+			a.add_time,
 			c.`name` AS goods_name,
 			d.image,
 			b.brief_dec,
 			b.price,
 			b.stock,
-			b.group_buy_id
+			b.group_buy_id,
+			a.quantity * b.price AS money
 		FROM
 			iuser_genericorder AS a
 		LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
