@@ -9,7 +9,7 @@ SELECT
 		'%%Y-%%m-%%d %%H:%%i:%%s'
 	) AS add_time,
 	SUM(temp.quantity) AS total_quantity,
-	SUM(temp.money) AS total_monty,
+	SUM(temp.money) AS total_money,
 	CONCAT('[', GROUP_CONCAT(
 		CONCAT(
 		'{\"goods_id\": \"',
