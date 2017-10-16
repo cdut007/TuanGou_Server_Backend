@@ -75,8 +75,16 @@ class AgentOrderAdmin(admin.ModelAdmin):
             cursor.execute(sql1)
             order_list = dict_fetch_all(cursor)
 
+            order_list_total_quantity = 0
+            order_list_total_money = 0
+            for item in order_list:
+                order_list_total_money += float(item['m_amount'].replace('$', ''))
+                order_list_total_quantity += int(item['quantity'])
+
             render_change_form.context_data['order_list_desc'] = sql1_desc
             render_change_form.context_data['order_list'] = order_list
+            render_change_form.context_data['order_list_total_quantity'] = order_list_total_quantity
+            render_change_form.context_data['order_list_total_money'] = order_list_total_money
 
             #sql2
             sql2 = sql2 % {'agent_code': agent_code, 'group_buy_id': group_buy_id}
