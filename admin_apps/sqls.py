@@ -104,3 +104,44 @@ INNER JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
 ORDER BY 
 a.id DESC 
 """
+
+sql_merchant_order_summary = """
+SELECT
+	a.id AS user_id,
+	a.nickname,
+	CONCAT(
+		'[',
+		GROUP_CONCAT(
+			'{\"goods\": \"',
+			temp1.goods,
+			'\", ',
+			'\"money\": \"',
+			temp1.money,
+			'\", ',
+			'\"quantity\": \"',
+			temp1.quantity,
+			'\"}'
+		),
+		']'
+	) AS infh
+FROM
+	(
+		SELECT
+			a.agent_code,
+			SUM(a.quantity) AS quantity,
+			CONCAT(c.`name`, ' $', b.price, ' ', b.brief_dec) AS goods,
+			SUM(a.quantity) * b.price AS money
+		FROM
+			iuser_genericorder AS a
+		INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+		INNER JOIN market_goods AS c ON b.goods_id = c.id
+		AND a. STATUS = 1
+		AND b.group_buy_id = 10
+		GROUP BY
+			a.agent_code,
+			a.goods_id
+	) AS temp1
+LEFT JOIN iuser_userprofile AS a ON temp1.agent_code=a.openid
+GROUP BY
+	temp1.agent_code
+"""
