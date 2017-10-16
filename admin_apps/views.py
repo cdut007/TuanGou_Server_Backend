@@ -211,11 +211,35 @@ class GroupBuyingListView(APIView):
         from sqls import sql_group_buying_list
 
         cursor = connection.cursor()
-        cursor.execute(sql_group_buying_list)
-        sql_goods_buying_list_count = sql_count(sql_group_buying_list)
+
+        sql_where = ""
+        where_or_and = "WHERE "
+        if request.GET['on_sale'] == '1':
+            sql_where += "{} a.on_sale = {}".format(where_or_and, request.GET['on_sale'])
+            where_or_and = " AND "
+        if request.GET['ship_time']:
+            sql_where += "{} a.ship_time >= '{}'".format(where_or_and, request.GET['ship_time'])
+            where_or_and = " AND "
+        if request.GET['title']:
+            sql_where += "{} a.title LIKE '%{}%'".format(where_or_and, request.GET['title'])
+            where_or_and = " AND "
+        if request.GET['classify']:
+            sql_where += "{} b.name LIKE '%{}%'".format(where_or_and, request.GET['classify'])
+
+        _sql_group_buying_list = sql_group_buying_list.format(
+            _where = sql_where,
+            _order_by = 'ORDER BY a.id DESC ',
+            _limit = sql_limit(request)
+        )
+        cursor.execute(_sql_group_buying_list)
         data = dict_fetch_all(cursor)
 
-        cursor.execute(sql_goods_buying_list_count)
+        _sql_goods_buying_list_count = sql_count(sql_group_buying_list.format(
+            _where=sql_where,
+            _order_by='',
+            _limit=''
+        ))
+        cursor.execute(_sql_goods_buying_list_count)
         count = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {
@@ -223,6 +247,35 @@ class GroupBuyingListView(APIView):
             'paged': {'total': count[0]['count']}
         }))
 
+
+class GroupBuyingDetailView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_group_buying_detail, sql_group_buying_products
+        cursor = connection.cursor()
+
+        sql_group_buying_detail = sql_group_buying_detail.format(id=request.GET['groupbuying_id'])
+        sql_group_buying_products = sql_group_buying_products.format(id=request.GET['groupbuying_id'])
+
+        cursor.execute(sql_group_buying_detail)
+        group_buying_detail = dict_fetch_all(cursor)[0]
+
+        cursor.execute(sql_group_buying_products)
+        group_buying_products = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'group_buying_detail': group_buying_detail, 'group_buying_products': group_buying_products}))
+
+
+class ClassifyListView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_classify_list
+        cursor = connection.cursor()
+
+        cursor.execute(sql_classify_list)
+        classify_list = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'classify_list': classify_list}))
 
 
 

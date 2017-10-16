@@ -101,6 +101,42 @@ SELECT
 FROM
 	market_groupbuy AS a
 INNER JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
-ORDER BY 
-a.id DESC 
+{_where}
+{_order_by}
+{_limit}
+"""
+
+sql_group_buying_detail = """
+SELECT
+	a.id,
+	a.end_time,
+	a.ship_time,
+	a.title,
+	a.on_sale,
+	b.id AS classify
+FROM
+	market_groupbuy AS a
+LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id=b.id
+WHERE
+	a.id = {id}
+"""
+
+sql_group_buying_products = """
+SELECT
+	a.id,
+	a.price,
+	a.brief_dec,
+	a.stock,
+	c.`name`,
+	d.image
+FROM
+	market_groupbuygoods AS a
+INNER JOIN market_groupbuy AS b ON a.group_buy_id = b.id AND a.group_buy_id={id}
+LEFT JOIN market_goods AS c ON a.goods_id=c.id
+LEFT JOIN market_goodsgallery AS d ON c.id=d.goods_id AND d.is_primary=1
+
+"""
+
+sql_classify_list = """
+SELECT * FROM market_goodsclassify
 """
