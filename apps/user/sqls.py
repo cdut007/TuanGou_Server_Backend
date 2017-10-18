@@ -108,6 +108,9 @@ SELECT
 				'\"quantity\": \"',
 				temp.quantity,
 				'\", ',
+				'\"price\": \"',
+				temp.price,
+				'\", ',
 				'\"amount\": \"',
 				temp.amount,
 				'\"}'
@@ -124,8 +127,9 @@ FROM
 	(
 		SELECT
 			a.user_id,
+			b.price,
 			b.price * a.quantity AS amount,
-			CONCAT(c.`name`,' -- ',b.brief_dec) AS NAME,
+			CONCAT(c.`name`, ' (', b.brief_dec, ')') AS NAME,
 			a.quantity,
 			DATE_FORMAT(a.add_time,'%%Y-%%m-%%d %%H:%%i') AS time
 		FROM
