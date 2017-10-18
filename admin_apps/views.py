@@ -290,12 +290,12 @@ class GroupBuyingCreateView(APIView):
             insert_values += "({price}, {stock}, '{unit}', {goods_id}, {group_buy_id}),".format(
                 price = product['price'],
                 stock = product['stock'],
-                unit = product['brief_dec'],
+                unit = product['unit'],
                 goods_id = product['id'],
                 group_buy_id = new_goupy_buying.id
             )
 
-        sql = sql_group_buying_goods_create_update % {'values': insert_values[0:-2]}
+        sql = sql_group_buying_goods_create_update % {'values': insert_values[0:-1]}
 
         cursor = connection.cursor()
         cursor.execute(sql)
