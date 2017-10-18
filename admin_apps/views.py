@@ -195,7 +195,7 @@ class ProductSearchView(APIView):
 
         sql_product_search = sql_product_search.format(
             _image_prefix = 'http://www.ailinkgo.demo/',
-            _keyword = request.GET['keyword']
+            _keyword = request.GET['keyword'] if request.GET['keyword'] != 'all' else ''
         )
 
         cursor.execute(sql_product_search)
@@ -266,6 +266,43 @@ class GroupBuyingDetailView(APIView):
         return Response(format_body(1, 'Success', {'group_buying_detail': group_buying_detail, 'group_buying_products': group_buying_products}))
 
 
+class GroupBuyingCreateView(APIView):
+    @raise_general_exception
+    def post(self, request):
+        from market.models import GroupBuy
+        from sqls import sql_group_buying_goods_create_update
+
+        group_buying_info = request.data['groupbuying_info']
+        group_buying_products = request.data['groupbuying_products']
+
+        new_goupy_buying = GroupBuy(
+            goods_classify_id = group_buying_info['classify'],
+            title = group_buying_info['title'],
+            end_time = group_buying_info['end_time'],
+            ship_time = group_buying_info['ship_time'],
+            add_time = datetime.now(),
+            on_sale = group_buying_info['on_sale']
+        )
+        new_goupy_buying.save()
+
+        insert_values = ""
+        for product in group_buying_products:
+            insert_values += "({price}, {stock}, '{unit}', {goods_id}, {group_buy_id}),".format(
+                price = product['price'],
+                stock = product['stock'],
+                unit = product['brief_dec'],
+                goods_id = product['id'],
+                group_buy_id = new_goupy_buying.id
+            )
+
+        sql = sql_group_buying_goods_create_update % {'values': insert_values[0:-2]}
+
+        cursor = connection.cursor()
+        cursor.execute(sql)
+
+        return Response(format_body(1, 'Success', ''))
+
+
 class ClassifyListView(APIView):
     @raise_general_exception
     def get(self, request):
@@ -276,6 +313,9 @@ class ClassifyListView(APIView):
         classify_list = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'classify_list': classify_list}))
+
+
+
 
 
 

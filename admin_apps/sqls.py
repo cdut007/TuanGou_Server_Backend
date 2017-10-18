@@ -179,3 +179,15 @@ LEFT JOIN iuser_userprofile AS a ON temp1.agent_code=a.openid
 GROUP BY
   temp1.agent_code
 """
+
+sql_group_buying_goods_create_update = """
+INSERT INTO market_groupbuygoods (
+	price,
+	stock,
+	brief_dec,
+	goods_id,
+	group_buy_id
+)
+VALUES
+%(values)s
+"""
