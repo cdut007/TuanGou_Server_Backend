@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'classify.list', views.ClassifyListView.as_view(), name='classify.list'),
     url(r'groupbuying.list', views.GroupBuyingListView.as_view(), name='groupbuying.list'),
     url(r'groupbuying.detail', views.GroupBuyingDetailView.as_view(), name='groupbuying.detail'),
-    url(r'groupbuying.create', views.GroupBuyingCreateView.as_view(), name='groupbuying.create')
+    url(r'groupbuying.create', views.GroupBuyingCreateView.as_view(), name='groupbuying.create'),
+    url(r'user.list', views.UserListView.as_view(), name='user.list')
 ]

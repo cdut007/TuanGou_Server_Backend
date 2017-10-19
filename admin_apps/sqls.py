@@ -191,3 +191,18 @@ INSERT INTO market_groupbuygoods (
 VALUES
 %(values)s
 """
+
+sql_user_lsit = """
+SELECT
+	id,
+	nickname,
+	country,
+	address,
+	phone_num,
+	is_agent,
+
+IF (is_agent, openid, '') AS merchant_code
+FROM
+	iuser_userprofile
+ORDER BY id DESC
+"""

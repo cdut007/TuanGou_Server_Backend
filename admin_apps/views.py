@@ -315,6 +315,18 @@ class ClassifyListView(APIView):
         return Response(format_body(1, 'Success', {'classify_list': classify_list}))
 
 
+class UserListView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_user_lsit
+        cursor = connection.cursor()
+
+        cursor.execute(sql_user_lsit)
+        users = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'users': users}))
+
+
 
 
 
