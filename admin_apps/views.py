@@ -270,7 +270,7 @@ class GroupBuyingCreateView(APIView):
     @raise_general_exception
     def post(self, request):
         from market.models import GroupBuy
-        from sqls import sql_group_buying_goods_create_update
+        from sqls import sql_group_buying_goods_create
 
         group_buying_info = request.data['groupbuying_info']
         group_buying_products = request.data['groupbuying_products']
@@ -291,14 +291,58 @@ class GroupBuyingCreateView(APIView):
                 price = product['price'],
                 stock = product['stock'],
                 unit = product['unit'],
-                goods_id = product['id'],
+                goods_id = product['org_goods_id'],
                 group_buy_id = new_goupy_buying.id
             )
 
-        sql = sql_group_buying_goods_create_update % {'values': insert_values[0:-1]}
+        sql = sql_group_buying_goods_create % {'values': insert_values[0:-1]}
 
         cursor = connection.cursor()
         cursor.execute(sql)
+
+        return Response(format_body(1, 'Success', ''))
+
+
+class GroupBuyingUpdateView(APIView):
+    @raise_general_exception
+    def post(self, request):
+        from market.models import GroupBuy
+        from sqls import sql_group_buying_goods_update, sql_group_buying_goods_delete
+
+        group_buying_info = request.data['groupbuying_info']
+        group_buying_products = request.data['groupbuying_products']
+        del_org_goods = request.data['del_org_goods']
+
+        GroupBuy.objects.filter(pk=group_buying_info['id']).update(
+            goods_classify_id = group_buying_info['classify'],
+            title = group_buying_info['title'],
+            end_time = group_buying_info['end_time'],
+            ship_time = group_buying_info['ship_time'],
+            add_time = datetime.now(),
+            on_sale = group_buying_info['on_sale']
+        )
+
+        cursor = connection.cursor()
+
+        if del_org_goods:
+            sql = sql_group_buying_goods_delete.format(
+                group_buy_id = group_buying_info['id'],
+                org_goods_id=','.join(del_org_goods)
+            )
+            cursor.execute(sql)
+
+        if group_buying_products:
+            update_values = ""
+            for product in group_buying_products:
+                update_values += "({price}, {stock}, '{unit}', {goods_id}, {group_buy_id}),".format(
+                    price = product['price'],
+                    stock = product['stock'],
+                    unit = product['unit'],
+                    goods_id = product['org_goods_id'],
+                    group_buy_id = group_buying_info['id']
+                )
+            sql = sql_group_buying_goods_update % {'values': update_values[0:-1]}
+            cursor.execute(sql)
 
         return Response(format_body(1, 'Success', ''))
 

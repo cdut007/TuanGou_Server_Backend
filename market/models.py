@@ -78,6 +78,7 @@ class GroupBuyGoods(models.Model):
     class Meta:
         verbose_name = u'团购商品'
         verbose_name_plural = verbose_name
+        unique_together = (("goods", "group_buy"),)
 
     def __unicode__(self):
         return self.group_buy.title + '-' + self.goods.name

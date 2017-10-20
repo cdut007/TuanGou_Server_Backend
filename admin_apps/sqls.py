@@ -75,7 +75,7 @@ LIMIT 1
 
 sql_product_search = """
 SELECT
-	a.id,
+	a.id AS org_goods_id,
 	a.`name`,
 	CONCAT(
 	'{_image_prefix}', 
@@ -109,8 +109,8 @@ INNER JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
 sql_group_buying_detail = """
 SELECT
   a.id,
-  a.end_time,
-  a.ship_time,
+  DATE_FORMAT(a.ship_time, '%Y-%m-%d') AS ship_time,
+  DATE_FORMAT(a.end_time, '%Y-%m-%d %h:%i:%s') AS end_time,
   a.title,
   a.on_sale,
   b.id AS classify
@@ -123,10 +123,11 @@ WHERE
 
 sql_group_buying_products = """
 SELECT
-  a.id,
+  a.id AS goods_id,
   a.price,
-  a.brief_dec,
+  a.brief_dec AS unit,
   a.stock,
+  c.id AS org_goods_id,
   c.`name`,
   d.image
 FROM
@@ -134,7 +135,6 @@ FROM
 INNER JOIN market_groupbuy AS b ON a.group_buy_id = b.id AND a.group_buy_id={id}
 LEFT JOIN market_goods AS c ON a.goods_id=c.id
 LEFT JOIN market_goodsgallery AS d ON c.id=d.goods_id AND d.is_primary=1
-
 """
 
 sql_classify_list = """SELECT * FROM market_goodsclassify"""
@@ -180,7 +180,7 @@ GROUP BY
   temp1.agent_code
 """
 
-sql_group_buying_goods_create_update = """
+sql_group_buying_goods_create = """
 INSERT INTO market_groupbuygoods (
 	price,
 	stock,
@@ -190,4 +190,20 @@ INSERT INTO market_groupbuygoods (
 )
 VALUES
 %(values)s
+"""
+
+sql_group_buying_goods_update = """
+REPLACE INTO market_groupbuygoods (
+	price,
+	stock,
+	brief_dec,
+	goods_id,
+	group_buy_id
+)
+VALUES
+%(values)s
+"""
+
+sql_group_buying_goods_delete = """
+DELETE FROM market_groupbuygoods WHERE group_buy_id={group_buy_id} AND goods_id IN ({org_goods_id})
 """

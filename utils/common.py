@@ -58,6 +58,8 @@ def raise_general_exception(func):
             return Response(format_body(14, 'index error', e.message))
         except OperationalError as e:
             return Response(format_body(11, 'Mysql error', e.message))
+        except Exception as e:
+            return Response(format_body(19, 'Other error', e.message))
     return wrapper
 
 
