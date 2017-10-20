@@ -207,3 +207,17 @@ VALUES
 sql_group_buying_goods_delete = """
 DELETE FROM market_groupbuygoods WHERE group_buy_id={group_buy_id} AND goods_id IN ({org_goods_id})
 """
+
+sql_user_list = """
+SELECT
+	id,
+	nickname,
+	country,
+	address,
+	phone_num,
+	is_agent,
+    IF (is_agent, openid, '') AS merchant_code
+FROM
+	iuser_userprofile
+ORDER BY id DESC
+"""
