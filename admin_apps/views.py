@@ -10,7 +10,7 @@ from ilinkgo.config import image_path_v2
 from utils.common import sql_limit, sql_count, save_images
 
 from market.models import Goods
-
+from iuser.models import UserProfile
 from iuser.Authentication import Authentication
 
 
@@ -369,6 +369,14 @@ class UserListView(APIView):
         users = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'users': users}))
+
+
+class UserProfileUpdateView(APIView):
+    @raise_general_exception
+    def post(self, request):
+        if request.data['role']:
+            user = UserProfile.objects.get(pk=request.data['user_id'])
+            user.is_agent = 1 if request.data['role'] == 'merchant' else 0
 
 
 class GroupBuyingOrderView(APIView):
