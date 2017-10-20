@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'groupbuying.detail', views.GroupBuyingDetailView.as_view(), name='groupbuying.detail'),
     url(r'groupbuying.create', views.GroupBuyingCreateView.as_view(), name='groupbuying.create'),
     url(r'groupbuying.update', views.GroupBuyingUpdateView.as_view(), name='groupbuying.update'),
+    url(r'groupbuying.order.summary', views.GroupBuyingOrderView.as_view(), name='groupbuying.order.summary'),
     url(r'user.list', views.UserListView.as_view(), name='user.list')
 ]

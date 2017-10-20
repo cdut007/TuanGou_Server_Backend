@@ -371,6 +371,27 @@ class UserListView(APIView):
         return Response(format_body(1, 'Success', {'users': users}))
 
 
+class GroupBuyingOrderView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_merchant_order_summary, sql_group_buying_sell_summary
+        cursor = connection.cursor()
+
+        sql_merchant_order_summary = sql_merchant_order_summary % ({'group_buy_id': request.GET['groupbuying_id']})
+        cursor.execute(sql_merchant_order_summary)
+        orders_summary = dict_fetch_all(cursor)
+        for item in orders_summary:
+            item['hgh'] = json.loads(item['hgh'])
+
+        sql_group_buying_sell_summary = sql_group_buying_sell_summary.format(group_buy_id=request.GET['groupbuying_id'])
+        cursor.execute(sql_group_buying_sell_summary)
+        sell_summary = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'orders_summary': orders_summary, 'sell_summary': sell_summary}))
+
+
+
+
 
 
 

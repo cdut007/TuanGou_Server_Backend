@@ -157,7 +157,7 @@ SELECT
       '\"}'
     ),
     ']'
-  ) AS infh
+  ) AS hgh
 FROM
   (
     SELECT
@@ -170,7 +170,7 @@ FROM
     INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.id
     INNER JOIN market_goods AS c ON b.goods_id = c.id
     AND a. STATUS = 1
-    AND b.group_buy_id = 10
+    AND b.group_buy_id = %(group_buy_id)s
     GROUP BY
       a.agent_code,
       a.goods_id
@@ -178,6 +178,20 @@ FROM
 LEFT JOIN iuser_userprofile AS a ON temp1.agent_code=a.openid
 GROUP BY
   temp1.agent_code
+"""
+
+sql_group_buying_sell_summary = """
+SELECT
+	CONCAT(b.`name`,' $', a.price,' ', a.brief_dec) AS goods,
+	IFNULL(SUM(c.quantity), 0) AS quantity,
+	IFNULL(CONVERT(SUM(c.quantity)*a.price, DECIMAL(10, 2)), 0) AS money
+FROM
+	market_groupbuygoods AS a
+LEFT JOIN market_goods AS b ON a.goods_id = b.id
+LEFT JOIN iuser_genericorder AS c ON c.goods_id = a.id
+WHERE
+	a.group_buy_id = {group_buy_id}
+group BY a.id
 """
 
 sql_group_buying_goods_create = """
