@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils.common import format_body, dict_fetch_all, raise_general_exception
-from ilinkgo.config import image_path_v2
+from ilinkgo.config import image_path_v2, image_path
 from utils.common import sql_limit, sql_count, save_images
 
 from market.models import Goods
@@ -44,13 +44,13 @@ class ProductListView(APIView):
         from sqls import sql_goods_list
 
         _sql_goods_list = sql_goods_list.format(**{
-            '_image_prefix': 'http://www.ailinkgo.demo/',
+            '_image_prefix': image_path(),
             '_where': '',
             '_order_by': 'ORDER BY a.id DESC',
             '_limit': sql_limit(request)
         })
         _sql_goods_list_count = sql_count(sql_goods_list.format(**{
-            '_image_prefix': 'http://www.ailinkgo.demo/',
+            '_image_prefix': image_path(),
             '_where': '',
             '_order_by': '',
             '_limit': ''
@@ -101,7 +101,7 @@ class ProductCreateView(APIView):
         insert_values = ""
         is_primary = 1
         for image in sorted(request.FILES):
-            image_path = 'admin/images/' + save_images(request.FILES[image], 'Goods', create_thumbnail=True)
+            image_path = save_images(request.FILES[image], 'Goods', create_thumbnail=True)
             insert_values += "('{0}', '{1}', '{2}', '{3}'),\n".format(image_path,is_primary,datetime.now(),goods.id)
             is_primary = 0
 
@@ -127,7 +127,7 @@ class ProductUpdateView(APIView):
             from sqls import  sql_insert_goods_gallery
             insert_values = ""
             for image in sorted(request.FILES):
-                image_path = 'admin/images/' + save_images(request.FILES[image], 'Goods', create_thumbnail=True)
+                image_path = save_images(request.FILES[image], 'Goods', create_thumbnail=True)
                 insert_values += "('{0}', '{1}', '{2}', '{3}'),\n".format(image_path, 0, datetime.now(), goods.id)
             sql_insert_goods_gallery = sql_insert_goods_gallery.format(values=insert_values[0:-2])
             cursor.execute(sql_insert_goods_gallery)
@@ -365,18 +365,40 @@ class UserListView(APIView):
         from sqls import sql_user_list
         cursor = connection.cursor()
 
-        cursor.execute(sql_user_list)
+        sql_where = ""
+        where_or_and = "WHERE "
+        if request.GET['nickname']:
+            sql_where += "{} nickname = '{}'".format(where_or_and, request.GET['nickname'])
+            where_or_and = " AND "
+
+        _sql_user_list = sql_user_list.format(**{
+            '_where': sql_where,
+            '_order_by': 'ORDER BY id DESC',
+            '_limit': sql_limit(request)
+        })
+        _sql_user_list_count = sql_count(sql_user_list.format(**{
+            '_where': sql_where,
+            '_order_by': '',
+            '_limit': ''
+        }))
+
+        cursor.execute(_sql_user_list)
         users = dict_fetch_all(cursor)
 
-        return Response(format_body(1, 'Success', {'users': users}))
+        cursor.execute(_sql_user_list_count)
+        count = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'users': users, 'paged': {'total': count[0]['count']}}))
 
 
 class UserProfileUpdateView(APIView):
     @raise_general_exception
     def post(self, request):
-        if request.data['role']:
-            user = UserProfile.objects.get(pk=request.data['user_id'])
-            user.is_agent = 1 if request.data['role'] == 'merchant' else 0
+        user = UserProfile.objects.get(pk=request.data['user_id'])
+        user.is_agent = request.data['role']
+        user.save()
+
+        return Response(format_body(1, 'Success', ''))
 
 
 class GroupBuyingOrderView(APIView):

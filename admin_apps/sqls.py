@@ -224,7 +224,7 @@ DELETE FROM market_groupbuygoods WHERE group_buy_id={group_buy_id} AND goods_id 
 
 sql_user_list = """
 SELECT
-	id,
+	id AS user_id,
 	nickname,
 	country,
 	address,
@@ -233,5 +233,7 @@ SELECT
     IF (is_agent, openid, '') AS merchant_code
 FROM
 	iuser_userprofile
-ORDER BY id DESC
+{_where}
+{_order_by}
+{_limit}
 """

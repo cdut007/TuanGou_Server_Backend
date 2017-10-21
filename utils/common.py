@@ -113,5 +113,5 @@ def save_images(image_file, destination='Goods', create_thumbnail=False):
 
     except Exception as e:
         return False
-    return sub_path+image_name
+    return '/'.join(images_save_base_path().split('/')[-3:])+sub_path+image_name
 
