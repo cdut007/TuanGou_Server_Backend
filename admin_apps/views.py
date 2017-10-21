@@ -75,7 +75,7 @@ class ProductDetailView(APIView):
     def get(self, request):
         from sqls import sql_goods_detail
 
-        sql_goods_detail = sql_goods_detail % {'goods_id': request.GET['goods_id'], 'image_prefix': 'http://www.ailinkgo.demo/'}
+        sql_goods_detail = sql_goods_detail % {'goods_id': request.GET['goods_id'], 'image_prefix': image_path()}
 
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
