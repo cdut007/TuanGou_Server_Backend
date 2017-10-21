@@ -255,7 +255,10 @@ class GroupBuyingDetailView(APIView):
         cursor = connection.cursor()
 
         sql_group_buying_detail = sql_group_buying_detail.format(id=request.GET['groupbuying_id'])
-        sql_group_buying_products = sql_group_buying_products.format(id=request.GET['groupbuying_id'])
+        sql_group_buying_products = sql_group_buying_products.format(
+            image_prefix = image_path(),
+            id = request.GET['groupbuying_id']
+        )
 
         cursor.execute(sql_group_buying_detail)
         group_buying_detail = dict_fetch_all(cursor)[0]
