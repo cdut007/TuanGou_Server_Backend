@@ -129,7 +129,7 @@ SELECT
   a.stock,
   c.id AS org_goods_id,
   c.`name`,
-  CONCAT({image_prefix}, d.image)
+  CONCAT('{image_prefix}', d.image) AS image
 FROM
   market_groupbuygoods AS a
 INNER JOIN market_groupbuy AS b ON a.group_buy_id = b.id AND a.group_buy_id={id}
