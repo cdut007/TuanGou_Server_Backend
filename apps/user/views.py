@@ -40,7 +40,7 @@ class ConsumerOrderView(APIView):
     @Authentication.token_required
     @raise_general_exception
     def post(self, request):
-        from sqls import sql_create_consumer_order, sql_done_consumer_order_update_stock
+        from sqls import sql_create_consumer_order, sql_done_consumer_order_update_stock, sql_create_consumer_order_remarks
 
         cursor = connection.cursor()
         cursor.execute("START TRANSACTION;")
@@ -58,6 +58,18 @@ class ConsumerOrderView(APIView):
             )
         sql_create_consumer_order = sql_create_consumer_order % {'values': insert_values[0:-2]}
         cursor.execute(sql_create_consumer_order)
+
+        # 添加备注
+        insert_values = ""
+        for remark in request.data['remarks']:
+            insert_values += "('{group_buying_id}', '{user_id}', '{remark}', '{add_time}'),\n".format(
+                group_buying_id = remark['group_buying_id'],
+                user_id = self.post.user_id,
+                remark = remark['remark'],
+                add_time = datetime.now()
+            )
+        sql_create_consumer_order_remarks = sql_create_consumer_order_remarks % {'values': insert_values[0:-2]}
+        cursor.execute(sql_create_consumer_order_remarks)
 
         # 清空购物车
         if request.data['clear_cart'] is True:

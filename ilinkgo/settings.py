@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'market',
     'iuser',
     'corsheaders',
-    'apps.other'
+    'apps.other',
+    'apps.user'
 ]
 
 MIDDLEWARE = [

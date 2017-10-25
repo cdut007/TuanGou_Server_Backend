@@ -1,6 +1,7 @@
 sql_get_consumer_order = """
 SELECT
 	e.ship_time,
+	IFNULL(g.remark,'') AS remark,
 	e.id AS group_buy_id,
 	CONCAT('%(image_prefix)s', f.icon) AS classify_icon,
 	f.`name`,
@@ -64,6 +65,7 @@ FROM
 	) AS temp
 LEFT JOIN market_groupbuy AS e ON temp.group_buy_id=e.id
 LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
+LEFT JOIN lg_consumer_order_remarks AS g ON temp.group_buy_id=g.group_buying_id AND g.user_id=%(consumer_id)s
 WHERE 
 	e.on_sale = 1 AND e.end_time %(group_buy_is_over)s NOW()
 GROUP BY 
@@ -82,6 +84,18 @@ INSERT INTO iuser_genericorder (
 VALUES
 %(values)s
 ON DUPLICATE KEY UPDATE quantity = quantity + VALUES(quantity);
+"""
+
+sql_create_consumer_order_remarks = """
+INSERT INTO lg_consumer_order_remarks (
+	group_buying_id,
+	user_id,
+	remark,
+	add_time
+)
+VALUES
+%(values)s
+ON DUPLICATE KEY UPDATE remark=VALUES(remark), add_time=VALUES(add_time) ;
 """
 
 sql_clear_cart = """
@@ -122,7 +136,8 @@ SELECT
 	COUNT(temp.user_id) AS total_quantity,
 	SUM(temp.amount) AS total_amount,
 	a.nickname,
-	a.headimgurl
+	a.headimgurl,
+	IFNULL(b.remark,'') AS remark
 FROM
 	(
 		SELECT
@@ -142,6 +157,7 @@ FROM
 		AND b.group_buy_id = %(group_buy_id)s
 	) AS temp
 INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
+LEFT JOIN lg_consumer_order_remarks AS b ON a.id=b.user_id AND b.group_buying_id=%(group_buy_id)s
 GROUP BY
 	temp.user_id
 """

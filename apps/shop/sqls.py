@@ -166,6 +166,7 @@ sql_merchant_classify_group_buy_list_with_all_goods = """
 SELECT
 	a.id AS group_buy_id,
 	a.ship_time,
+	IFNULL(e.remark,'') AS user_remark,
 	DATE_FORMAT(
 		a.end_time,
 		'%%Y-%%m-%%d %%H:%%i:%%s'
@@ -221,6 +222,7 @@ LEFT JOIN (
 INNER JOIN iuser_agentorder AS c ON b.group_buy_id = c.group_buy_id
 AND FIND_IN_SET(b.goods_id, c.goods_ids)
 INNER JOIN iuser_userprofile AS d ON c.user_id = d.id
+LEFT JOIN lg_consumer_order_remarks AS e ON c.user_id=e.user_id AND e.group_buying_id=b.group_buy_id
 WHERE
 	a.goods_classify_id = %(classify_id)s
 AND a.on_sale = 1
