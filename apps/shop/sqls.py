@@ -23,6 +23,18 @@ GROUP BY
 	a.id
 """
 
+sql_goods_purchased_user = """
+SELECT
+	b.nickname,
+	b.headimgurl
+FROM
+	iuser_genericorder AS a
+LEFT JOIN iuser_userprofile AS b ON a.user_id=b.id
+WHERE 
+	a.goods_id = {goods_id} AND a.`status`=1
+{_limit}
+"""
+
 sql_goods_classify = """
 SELECT
 	c.`name`,

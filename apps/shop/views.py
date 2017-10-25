@@ -5,7 +5,7 @@ from django.db import connection
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body, dict_fetch_all, raise_general_exception
+from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit
 from ilinkgo.config import image_path
 
 from iuser.Authentication import Authentication
@@ -17,6 +17,7 @@ class MerchantGoodsDetailView(APIView):
         cursor = connection.cursor()
 
         from sqls import sql_goods_detail, sql_merchant_goods_detail_related, sql_goods_classify
+        from sqls import sql_goods_purchased_user
 
         query = {
             'goods_id': request.GET['goods_id'],
@@ -41,7 +42,33 @@ class MerchantGoodsDetailView(APIView):
         goods_detail['classify'] = classify
         goods_detail['images'] = json.loads(goods_detail['images'])
 
+        sql_goods_purchased_user = sql_goods_purchased_user.format(
+            goods_id=request.GET['goods_id'],
+            _limit='LIMIT 0, 6'
+        )
+
+        cursor.execute(sql_goods_purchased_user)
+        purchased_user = dict_fetch_all(cursor)
+        goods_detail['purchased_user'] = purchased_user
+
         return Response(format_body(1, 'Success', {'goods_detail': goods_detail}))
+
+
+class MerchantGoodsPurchasedUserView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_goods_purchased_user
+        cursor = connection.cursor()
+
+        sql_goods_purchased_user = sql_goods_purchased_user.format(
+            goods_id=request.GET['goods_id'],
+            _limit=sql_limit(request)
+        )
+
+        cursor.execute(sql_goods_purchased_user)
+        purchased_user = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'purchased_user': purchased_user}))
 
 
 class MerchantGoodsListView(APIView):
