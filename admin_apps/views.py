@@ -362,6 +362,30 @@ class ClassifyListView(APIView):
         return Response(format_body(1, 'Success', {'classify_list': classify_list}))
 
 
+class ClassifyUpdateView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_classify_list
+        cursor = connection.cursor()
+
+        cursor.execute(sql_classify_list)
+        classify_list = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'classify_list': classify_list}))
+
+
+class ClassifyCreateView(APIView):
+    @raise_general_exception
+    def post(self, request):
+        from sqls import sql_classify_list
+        cursor = connection.cursor()
+
+        cursor.execute(sql_classify_list)
+        classify_list = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'classify_list': classify_list}))
+
+
 class UserListView(APIView):
     @raise_general_exception
     def get(self, request):
