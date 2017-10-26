@@ -152,7 +152,7 @@ FROM
 	) AS temp
 LEFT JOIN market_groupbuy AS e ON temp.group_buy_id=e.id
 LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
-LEFT JOIN lg_consumer_order_remarks AS g ON g.user_id=%(user_id)s AND g.group_buying_id=e.id
+LEFT JOIN lg_consumer_order_remarks AS g ON g.user_id=%(user_id)s AND g.group_buying_id=e.id AND g.merchant_code='%(agent_code)s'
 WHERE 
 	e.on_sale = 1 AND e.end_time >= NOW()
 GROUP BY 

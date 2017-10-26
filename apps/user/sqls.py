@@ -65,7 +65,7 @@ FROM
 	) AS temp
 LEFT JOIN market_groupbuy AS e ON temp.group_buy_id=e.id
 LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
-LEFT JOIN lg_consumer_order_remarks AS g ON temp.group_buy_id=g.group_buying_id AND g.user_id=%(consumer_id)s
+LEFT JOIN lg_consumer_order_remarks AS g ON temp.group_buy_id=g.group_buying_id AND g.user_id=%(consumer_id)s AND g.merchant_code='%(merchant_code)s'
 WHERE 
 	e.on_sale = 1 AND e.end_time %(group_buy_is_over)s NOW()
 GROUP BY 
@@ -90,6 +90,7 @@ sql_create_consumer_order_remarks = """
 INSERT INTO lg_consumer_order_remarks (
 	group_buying_id,
 	user_id,
+	merchant_code,
 	remark,
 	add_time
 )
@@ -157,7 +158,7 @@ FROM
 		AND b.group_buy_id = %(group_buy_id)s
 	) AS temp
 INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
-LEFT JOIN lg_consumer_order_remarks AS b ON a.id=b.user_id AND b.group_buying_id=%(group_buy_id)s
+LEFT JOIN lg_consumer_order_remarks AS b ON a.id=b.user_id AND b.group_buying_id=%(group_buy_id)s AND b.merchant_code='%(merchant_code)s'
 GROUP BY
 	temp.user_id
 """

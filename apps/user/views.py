@@ -64,9 +64,10 @@ class ConsumerOrderView(APIView):
         if request.data.has_key('remarks') and len(request.data['remarks']) > 0:
             insert_values = ""
             for remark in request.data['remarks']:
-                insert_values += "('{group_buying_id}', '{user_id}', '{remark}', '{add_time}'),\n".format(
+                insert_values += "('{group_buying_id}', '{user_id}', '{merchant_code}', '{remark}', '{add_time}'),\n".format(
                     group_buying_id = remark['group_buying_id'],
                     user_id = self.post.user_id,
+                    merchant_code = request.data['merchant_code'],
                     remark = escape_string(remark['remark']),
                     add_time = datetime.now()
                 )
