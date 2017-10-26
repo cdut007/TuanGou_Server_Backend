@@ -9,18 +9,25 @@ SELECT
 	d.ship_time,
 	CONCAT(
 		'[',
-		GROUP_CONCAT(CONCAT('"', '{image_prefix}', c.image, '"')),
+		GROUP_CONCAT(CONCAT('"', '%(image_prefix)s', c.image, '"')),
 		']'
 	) AS images,
-	IFNULL(e.remark,'') AS group_buying_user_remark
+	CONCAT(
+        '{\"group_buying_id\": \"',
+        d.id,
+        '\", ',
+        '\"user_remark\": \"',
+        IFNULL(e.remark, ''),
+        '\"} '
+	) AS  group_buying
 FROM
 	market_groupbuygoods AS a
 LEFT JOIN market_goods AS b ON a.goods_id = b.id
 LEFT JOIN market_goodsgallery AS c ON b.id = c.goods_id
 LEFT JOIN market_groupbuy AS d ON a.group_buy_id=d.id
-LEFT JOIN lg_consumer_order_remarks AS e ON e.group_buying_id=d.id AND e.user_id={access_user}
+LEFT JOIN lg_consumer_order_remarks AS e ON e.group_buying_id=d.id AND e.user_id=%(access_user)s
 WHERE
-	a.id = {goods_id}
+	a.id = %(goods_id)s
 GROUP BY
 	a.id
 """

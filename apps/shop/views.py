@@ -26,7 +26,7 @@ class MerchantGoodsDetailView(APIView):
             'access_user': Authentication.access_user(request)
         }
 
-        sql_goods_detail = sql_goods_detail.format(**query)
+        sql_goods_detail = sql_goods_detail % query
         sql_goods_detail_related = sql_merchant_goods_detail_related.format(**query)
         sql_goods_classify = sql_goods_classify.format(**query)
 
@@ -39,7 +39,8 @@ class MerchantGoodsDetailView(APIView):
         cursor.execute(sql_goods_detail_related)
         goods_detail_related = dict_fetch_all(cursor)
 
-        goods_detail['group_buy'] = goods_detail_related
+        goods_detail['group_buying'] = json.loads(goods_detail['group_buying'])
+        goods_detail['group_buying']['goods_list'] = goods_detail_related
         goods_detail['classify'] = classify
         goods_detail['images'] = json.loads(goods_detail['images'])
 

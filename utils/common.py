@@ -1,4 +1,4 @@
-import os, time
+import os, time, json
 import functools
 from datetime import datetime
 from random import Random
@@ -51,15 +51,15 @@ def raise_general_exception(func):
         try:
             return func(self, request, *args, **kargs)
         except KeyError as e:
-            return Response(format_body(2, 'Params error', e.message))
+            return Response(format_body(2, 'Params error', {'message': e.message, 'args': e.args}))
         except ObjectDoesNotExist as e:
-            return Response(format_body(6, 'Key value error', e.message))
+            return Response(format_body(6, 'Key value error', {'message': e.message, 'args': e.args}))
         except IndexError as e:
-            return Response(format_body(14, 'index error', e.message))
+            return Response(format_body(14, 'index error', {'message': e.message, 'args': e.args}))
         except OperationalError as e:
-            return Response(format_body(11, 'Mysql error', e.message))
+            return Response(format_body(11, 'Mysql error', {'message': e.message, 'args': e.args}))
         except Exception as e:
-            return Response(format_body(19, 'Other error', e.message))
+            return Response(format_body(19, 'Other error', {'message': e.message, 'args': e.args}))
     return wrapper
 
 
