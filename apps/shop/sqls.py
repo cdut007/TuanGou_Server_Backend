@@ -11,12 +11,14 @@ SELECT
 		'[',
 		GROUP_CONCAT(CONCAT('"', '{image_prefix}', c.image, '"')),
 		']'
-	) AS images
+	) AS images,
+	IFNULL(e.remark,'') AS group_buying_user_remark
 FROM
 	market_groupbuygoods AS a
 LEFT JOIN market_goods AS b ON a.goods_id = b.id
 LEFT JOIN market_goodsgallery AS c ON b.id = c.goods_id
 LEFT JOIN market_groupbuy AS d ON a.group_buy_id=d.id
+LEFT JOIN lg_consumer_order_remarks AS e ON e.group_buying_id=d.id AND e.user_id={access_user}
 WHERE
 	a.id = {goods_id}
 GROUP BY
@@ -234,7 +236,7 @@ LEFT JOIN (
 INNER JOIN iuser_agentorder AS c ON b.group_buy_id = c.group_buy_id
 AND FIND_IN_SET(b.goods_id, c.goods_ids)
 INNER JOIN iuser_userprofile AS d ON c.user_id = d.id
-LEFT JOIN lg_consumer_order_remarks AS e ON c.user_id=e.user_id AND e.group_buying_id=b.group_buy_id
+LEFT JOIN lg_consumer_order_remarks AS e ON e.user_id=%(access_user)s AND e.group_buying_id=b.group_buy_id
 WHERE
 	a.goods_classify_id = %(classify_id)s
 AND a.on_sale = 1

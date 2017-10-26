@@ -39,3 +39,11 @@ class Authentication():
                 return Response(format_body(-3, 'Authentication token invalid', ''))
             return func(self, request, *args, **kargs)
         return wrapper
+
+    @staticmethod
+    def access_user(request):
+        if request._request.META.has_key('HTTP_AUTHORIZATION'):
+            token = request._request.META['HTTP_AUTHORIZATION']
+            return Authentication.verify_auth_token(token)
+        return 0
+

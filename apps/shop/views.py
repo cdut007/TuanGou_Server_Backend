@@ -22,7 +22,8 @@ class MerchantGoodsDetailView(APIView):
         query = {
             'goods_id': request.GET['goods_id'],
             'merchant_code': request.GET['merchant_code'],
-            'image_prefix': image_path()
+            'image_prefix': image_path(),
+            'access_user': Authentication.access_user(request)
         }
 
         sql_goods_detail = sql_goods_detail.format(**query)
@@ -103,7 +104,8 @@ class MerchantClassifyView(APIView):
         query = {
             'classify_id': request.GET['classify_id'],
             'merchant_code': request.GET['merchant_code'],
-            'image_prefix': image_path()
+            'image_prefix': image_path(),
+            'access_user': Authentication.access_user(request)
         }
 
         sql_classify_info = sql_classify_info.format(**query)
