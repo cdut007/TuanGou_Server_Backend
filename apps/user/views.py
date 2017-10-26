@@ -60,7 +60,7 @@ class ConsumerOrderView(APIView):
         cursor.execute(sql_create_consumer_order)
 
         # 添加备注
-        if request.data.has_key('remarks'):
+        if request.data.has_key('remarks') and len(request.data['remarks']) > 0:
             insert_values = ""
             for remark in request.data['remarks']:
                 if not remark['remark']:
