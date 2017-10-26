@@ -9,6 +9,7 @@ from utils.common import format_body, dict_fetch_all, raise_general_exception
 from ilinkgo.config import image_path
 from market.models import GroupBuyGoods
 from iuser.models import GenericOrder
+from  MySQLdb import escape_string
 
 from iuser.Authentication import Authentication
 
@@ -63,12 +64,10 @@ class ConsumerOrderView(APIView):
         if request.data.has_key('remarks') and len(request.data['remarks']) > 0:
             insert_values = ""
             for remark in request.data['remarks']:
-                if not remark['remark']:
-                    continue
                 insert_values += "('{group_buying_id}', '{user_id}', '{remark}', '{add_time}'),\n".format(
                     group_buying_id = remark['group_buying_id'],
                     user_id = self.post.user_id,
-                    remark = remark['remark'],
+                    remark = escape_string(remark['remark']),
                     add_time = datetime.now()
                 )
             sql_create_consumer_order_remarks = sql_create_consumer_order_remarks % {'values': insert_values[0:-2]}
