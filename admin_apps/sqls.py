@@ -137,7 +137,16 @@ LEFT JOIN market_goods AS c ON a.goods_id=c.id
 LEFT JOIN market_goodsgallery AS d ON c.id=d.goods_id AND d.is_primary=1
 """
 
-sql_classify_list = """SELECT * FROM market_goodsclassify"""
+sql_classify_list = """
+SELECT
+	id,
+	`name`,
+	`desc`,
+	CONCAT('{_image_prefix}', icon) AS icon,
+	CONCAT('{_image_prefix}', image) AS image
+FROM
+	market_goodsclassify
+"""
 
 sql_merchant_order_summary = """
 SELECT

@@ -9,7 +9,7 @@ from utils.common import format_body, dict_fetch_all, raise_general_exception
 from ilinkgo.config import image_path_v2, image_path
 from utils.common import sql_limit, sql_count, save_images
 
-from market.models import Goods
+from market.models import Goods, GoodsClassify
 from iuser.models import UserProfile
 from iuser.Authentication import Authentication
 
@@ -356,6 +356,7 @@ class ClassifyListView(APIView):
         from sqls import sql_classify_list
         cursor = connection.cursor()
 
+        sql_classify_list = sql_classify_list.format(_image_prefix=image_path())
         cursor.execute(sql_classify_list)
         classify_list = dict_fetch_all(cursor)
 
@@ -364,9 +365,22 @@ class ClassifyListView(APIView):
 
 class ClassifyUpdateView(APIView):
     @raise_general_exception
-    def get(self, request):
+    def post(self, request):
         from sqls import sql_classify_list
         cursor = connection.cursor()
+
+        classify = GoodsClassify.objects.get(pk=request.data['id'])
+        classify.name = request.data['name']
+        classify.desc = request.data['desc']
+
+        if not request.data['icon']=='undefined':
+            new_icon = save_images(request.data['icon'], 'Classify')
+            classify.icon = new_icon
+        if not request.data['image']=='undefined':
+            new_image = save_images(request.data['icon'], 'Classify')
+            classify.image = new_image
+
+        classify.save()
 
         cursor.execute(sql_classify_list)
         classify_list = dict_fetch_all(cursor)
