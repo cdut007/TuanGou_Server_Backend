@@ -112,7 +112,6 @@ class MerchantClassifyView(APIView):
 
         sql_classify_info = sql_classify_info.format(**query)
         sql_classify_group_buy_list = sql_merchant_classify_group_buy_list_with_all_goods_v2 % query
-        sql_classify_group_buy_list = sql_classify_group_buy_list.replace('"[', '[').replace(']"', ']')
 
         cursor.execute(sql_classify_info)
         info = dict_fetch_all(cursor)[0]
@@ -122,7 +121,7 @@ class MerchantClassifyView(APIView):
         _list = dict_fetch_all(cursor)
 
         for item in _list:
-            item['goods_list'] = json.loads(item['goods_list'])
+            item['goods_list'] = json.loads(item['goods_list'].replace('"[', '[').replace(']"', ']'))
 
         data = {
             'classify': info,
