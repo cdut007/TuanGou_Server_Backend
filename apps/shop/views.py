@@ -100,7 +100,8 @@ class MerchantClassifyView(APIView):
     def get(self, request):
         cursor = connection.cursor()
 
-        from sqls import sql_merchant_classify_group_buy_list_with_all_goods, sql_classify_info
+        from sqls import sql_classify_info
+        from sqls import sql_merchant_classify_group_buy_list_with_all_goods_v2
 
         query = {
             'classify_id': request.GET['classify_id'],
@@ -110,7 +111,8 @@ class MerchantClassifyView(APIView):
         }
 
         sql_classify_info = sql_classify_info.format(**query)
-        sql_classify_group_buy_list = sql_merchant_classify_group_buy_list_with_all_goods % query
+        sql_classify_group_buy_list = sql_merchant_classify_group_buy_list_with_all_goods_v2 % query
+        sql_classify_group_buy_list = sql_classify_group_buy_list.replace('"[', '[').replace(']"', ']')
 
         cursor.execute(sql_classify_info)
         info = dict_fetch_all(cursor)[0]

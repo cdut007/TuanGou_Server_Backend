@@ -183,6 +183,129 @@ GROUP BY
 	a.id
 """
 
+sql_merchant_classify_group_buy_list_with_all_goods_v2 = """
+SELECT
+	a.id AS group_buy_id,
+	a.ship_time,
+	IFNULL(e.remark,'') AS user_remark,
+	DATE_FORMAT(
+		a.end_time,
+		'%%Y-%%m-%%d %%H:%%i:%%s'
+	) AS end_time,
+	CONCAT(
+		'[',
+		GROUP_CONCAT(
+			CONCAT(
+				'{\"goods_id\": \"',
+				b.goods_id,
+				'\", ',
+				'\"purchased_user\": \"',
+				b.purchased_user,
+				'\", ',
+				'\"price\": \"',
+				b.price,
+				'\", ',
+				'\"stock\": \"',
+				b.stock,
+				'\", ',
+				'\"brief_dec\": \"',
+				b.brief_dec,
+				'\", ',
+				'\"name\": \"',
+				b.`name`,
+				'\", ',
+				'\"image\": \"',
+				b.image,
+				'\"}'
+			)
+		),
+		']'
+	) AS goods_list
+FROM
+	market_groupbuy AS a
+LEFT JOIN (
+	SELECT
+		a.group_buy_id,
+		a.id AS goods_id,
+		a.price,
+		a.stock,
+		a.brief_dec,
+		b.`name`,
+		CONCAT(
+			'%(image_prefix)s',
+			SUBSTRING_INDEX(c.image, '.', 1),
+			'_thumbnail.',
+			SUBSTRING_INDEX(c.image, '.', - 1)
+		) AS image,
+		CONCAT(
+			'[',
+			GROUP_CONCAT(CONCAT(
+				'{\"nickname\": \"',
+				e.nickname,
+				'\", ',
+				'\"headimgurl\": \"',
+				e.headimgurl,
+				'\"}'
+			)),
+			']'
+			) AS purchased_user
+	FROM
+		market_groupbuygoods AS a
+	LEFT JOIN market_goods AS b ON a.goods_id = b.id
+	LEFT JOIN market_goodsgallery AS c ON b.id = c.goods_id AND c.is_primary = 1
+	LEFT JOIN iuser_genericorder AS d ON d.goods_id = a.id
+	LEFT JOIN iuser_userprofile AS e ON d.user_id=e.id
+	GROUP BY
+		a.id
+) AS b ON a.id = b.group_buy_id
+INNER JOIN iuser_agentorder AS c ON b.group_buy_id = c.group_buy_id AND FIND_IN_SET(b.goods_id, c.goods_ids)
+INNER JOIN iuser_userprofile AS d ON c.user_id = d.id
+LEFT JOIN lg_consumer_order_remarks AS e ON e.user_id=%(access_user)s AND e.group_buying_id=b.group_buy_id AND e.merchant_code='%(merchant_code)s'
+WHERE
+	a.goods_classify_id = %(classify_id)s
+AND a.on_sale = 1
+AND a.end_time >= NOW()
+AND d.openid = '%(merchant_code)s'
+GROUP BY
+	a.id
+"""
+
+
+# abandon
+sql_goods_list = """
+SELECT
+	a.id AS goods_id,
+	a.price,
+	a.stock,
+	a.brief_dec,
+	b.`name`,
+	CONCAT(
+		'{image_prefix}',
+		SUBSTRING_INDEX(c.image, '.', 1),
+		'_thumbnail.',
+		SUBSTRING_INDEX(c.image, '.', -1)
+	) AS image
+FROM
+	market_groupbuygoods AS a
+INNER JOIN market_goods AS b ON a.goods_id = b.id
+INNER JOIN market_goodsgallery AS c ON b.id = c.goods_id AND c.is_primary = 1
+WHERE
+	group_buy_id = {group_buy_id}
+"""
+
+sql_classify_group_buy_list = """
+SELECT
+	id AS group_buy_id, 
+	ship_time,
+	DATE_FORMAT(end_time,'%Y-%m-%d %H:%i:%s') AS end_time
+FROM
+	market_groupbuy AS a
+WHERE
+	goods_classify_id = {classify_id}
+AND on_sale = 1
+AND end_time >= NOW()
+"""
+
 sql_merchant_classify_group_buy_list_with_all_goods = """
 SELECT
 	a.id AS group_buy_id,
@@ -251,40 +374,5 @@ AND a.end_time >= NOW()
 AND d.openid = '%(merchant_code)s'
 GROUP BY
 	a.id
-"""
-
-# abandon
-sql_goods_list = """
-SELECT
-	a.id AS goods_id,
-	a.price,
-	a.stock,
-	a.brief_dec,
-	b.`name`,
-	CONCAT(
-		'{image_prefix}',
-		SUBSTRING_INDEX(c.image, '.', 1),
-		'_thumbnail.',
-		SUBSTRING_INDEX(c.image, '.', -1)
-	) AS image
-FROM
-	market_groupbuygoods AS a
-INNER JOIN market_goods AS b ON a.goods_id = b.id
-INNER JOIN market_goodsgallery AS c ON b.id = c.goods_id AND c.is_primary = 1
-WHERE
-	group_buy_id = {group_buy_id}
-"""
-
-sql_classify_group_buy_list = """
-SELECT
-	id AS group_buy_id, 
-	ship_time,
-	DATE_FORMAT(end_time,'%Y-%m-%d %H:%i:%s') AS end_time
-FROM
-	market_groupbuy AS a
-WHERE
-	goods_classify_id = {classify_id}
-AND on_sale = 1
-AND end_time >= NOW()
 """
 

@@ -66,7 +66,7 @@ def image_path():
     elif mode == 'HOME':
         path = 'http://www.ailinkgo.demo/'
     else:
-        path = 'http://192.168.222.128:3000/'
+        path = 'http://www.ailinkgo.demo/'
 
     return path
 
