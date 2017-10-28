@@ -255,14 +255,14 @@ LEFT JOIN (
 		) AS image,
 		CONCAT(
 			'{\"users\": [',
-			GROUP_CONCAT(CONCAT(
+			SUBSTRING_INDEX(GROUP_CONCAT(CONCAT(
 				'{\"nickname\": \"',
 				e.nickname,
 				'\", ',
 				'\"headimgurl\": \"',
 				e.headimgurl,
 				'\"}'
-			)),
+			)), ',{', 5),
 			'], ',
 			'\"count\": \"',
 			COUNT(e.nickname),
