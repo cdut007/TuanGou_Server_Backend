@@ -85,7 +85,6 @@ class MerchantGoodsPurchasedUserView(APIView):
         return Response(format_body(1, 'Success', {'purchased_user': map(pop_count, purchased_user[:-1])}))
 
 
-
 class MerchantGoodsListView(APIView):
     @raise_general_exception
     def get(self, request):
@@ -134,7 +133,12 @@ class MerchantClassifyView(APIView):
         _list = dict_fetch_all(cursor)
 
         for item in _list:
-            item['goods_list'] = json.loads(item['goods_list'].replace('"[', '[').replace(']"', ']'))
+            _list = item['goods_list']\
+                .replace('"[', '[')\
+                .replace(']"', ']')\
+                .replace('}"', '}')\
+                .replace('"{', '{')
+            item['goods_list'] = json.loads(_list)
 
         data = {
             'classify': info,

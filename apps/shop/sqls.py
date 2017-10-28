@@ -254,7 +254,7 @@ LEFT JOIN (
 			SUBSTRING_INDEX(c.image, '.', - 1)
 		) AS image,
 		CONCAT(
-			'[',
+			'{\"users\": [',
 			GROUP_CONCAT(CONCAT(
 				'{\"nickname\": \"',
 				e.nickname,
@@ -263,14 +263,25 @@ LEFT JOIN (
 				e.headimgurl,
 				'\"}'
 			)),
-			']'
-			) AS purchased_user
+			'], ',
+			'\"count\": \"',
+			COUNT(e.nickname),
+			'\"}'
+		) AS purchased_user
 	FROM
 		market_groupbuygoods AS a
 	LEFT JOIN market_goods AS b ON a.goods_id = b.id
 	LEFT JOIN market_goodsgallery AS c ON b.id = c.goods_id AND c.is_primary = 1
-	LEFT JOIN iuser_genericorder AS d ON d.goods_id = a.id
-	LEFT JOIN iuser_userprofile AS e ON d.user_id=e.id
+	LEFT JOIN (
+		SELECT
+			DISTINCT ig1.goods_id,
+			iu2.nickname,
+			iu2.headimgurl
+		FROM
+			iuser_genericorder AS ig1
+		LEFT JOIN iuser_userprofile AS iu2 ON ig1.user_id = iu2.id
+		ORDER BY ig1.add_time DESC
+	) AS e ON e.goods_id=a.id
 	GROUP BY
 		a.id
 ) AS b ON a.id = b.group_buy_id
