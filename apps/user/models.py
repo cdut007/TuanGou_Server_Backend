@@ -9,7 +9,7 @@ class ConsumerOrderRemarks(models.Model):
     group_buying_id = models.PositiveIntegerField()
     user_id = models.PositiveIntegerField()
     merchant_code = models.CharField(max_length=128, default='')
-    remark = models.CharField(max_length=2048, default='')
+    remark = models.CharField(max_length=2048)
     add_time = models.DateTimeField()
 
     class Meta:

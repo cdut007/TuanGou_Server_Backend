@@ -46,12 +46,20 @@ class MerchantGoodsDetailView(APIView):
 
         sql_goods_purchased_user = sql_goods_purchased_user.format(
             goods_id=request.GET['goods_id'],
-            _limit='LIMIT 0, 6'
+            _limit='LIMIT 0, 5'
         )
 
         cursor.execute(sql_goods_purchased_user)
         purchased_user = dict_fetch_all(cursor)
-        goods_detail['purchased_user'] = purchased_user
+
+        def pop_count(v):
+            v.pop('count')
+            return v
+
+        goods_detail['purchased_user'] = {
+            'users': map(pop_count, purchased_user[:-1]),
+            'count': purchased_user[-1]['count']
+        }
 
         return Response(format_body(1, 'Success', {'goods_detail': goods_detail}))
 
@@ -70,7 +78,12 @@ class MerchantGoodsPurchasedUserView(APIView):
         cursor.execute(sql_goods_purchased_user)
         purchased_user = dict_fetch_all(cursor)
 
-        return Response(format_body(1, 'Success', {'purchased_user': purchased_user}))
+        def pop_count(v):
+            v.pop('count')
+            return v
+
+        return Response(format_body(1, 'Success', {'purchased_user': map(pop_count, purchased_user[:-1])}))
+
 
 
 class MerchantGoodsListView(APIView):

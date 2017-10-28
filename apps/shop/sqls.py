@@ -33,15 +33,31 @@ GROUP BY
 """
 
 sql_goods_purchased_user = """
+(
 SELECT
 	b.nickname,
-	b.headimgurl
+	b.headimgurl,
+	0 AS count
 FROM
 	iuser_genericorder AS a
-LEFT JOIN iuser_userprofile AS b ON a.user_id=b.id
-WHERE 
-	a.goods_id = {goods_id} AND a.`status`=1
+LEFT JOIN iuser_userprofile AS b ON a.user_id = b.id
+WHERE
+	a.goods_id = {goods_id} AND a.`status` = 1
+GROUP BY
+	a.user_id
 {_limit}
+)
+UNION
+(
+SELECT
+	'' AS nickname,
+	'' AS headimgurl,
+	COUNT(DISTINCT user_id) AS count
+FROM
+	iuser_genericorder
+WHERE
+	goods_id = {goods_id}
+)
 """
 
 sql_goods_classify = """
