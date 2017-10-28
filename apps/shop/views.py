@@ -133,12 +133,12 @@ class MerchantClassifyView(APIView):
         _list = dict_fetch_all(cursor)
 
         for item in _list:
-            _list = item['goods_list']\
+            _a = item['goods_list']\
                 .replace('"[', '[')\
                 .replace(']"', ']')\
                 .replace('}"', '}')\
                 .replace('"{', '{')
-            item['goods_list'] = json.loads(_list)
+            item['goods_list'] = json.loads(_a)
 
         data = {
             'classify': info,
