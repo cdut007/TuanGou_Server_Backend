@@ -45,6 +45,7 @@ WHERE
 	a.goods_id = {goods_id} AND a.`status` = 1
 GROUP BY
 	a.user_id
+ORDER BY a.add_time DESC
 {_limit}
 )
 UNION
