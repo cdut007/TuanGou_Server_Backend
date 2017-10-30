@@ -194,7 +194,7 @@ class ProductSearchView(APIView):
         cursor = connection.cursor()
 
         sql_product_search = sql_product_search.format(
-            _image_prefix = 'http://www.ailinkgo.demo/',
+            _image_prefix = image_path(),
             _keyword = request.GET['keyword'] if request.GET['keyword'] != 'all' else ''
         )
 
