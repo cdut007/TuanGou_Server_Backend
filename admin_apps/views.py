@@ -147,7 +147,7 @@ class ImageUploadView(APIView):
         image = request.FILES['image']
         image_path = save_images(image, 'GoodsDetail')
         if image_path:
-            url = image_path_v2() + image_path
+            url = image_path() + image_path
             return Response(format_body(1, 'Success', url))
         return Response(format_body(16, 'Fail', ''))
 
