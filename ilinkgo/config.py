@@ -60,7 +60,7 @@ def image_path():
     if mode == 'PRODUCTION':
         path = ''
     elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
-        path = 'http://www.ailinkgo.com/admin/'
+        path = 'http://www.ailinkgo.com/'
     elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
         path = 'http://www.ailinkgo.com/'
     elif mode == 'HOME':
