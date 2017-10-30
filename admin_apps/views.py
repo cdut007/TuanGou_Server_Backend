@@ -377,12 +377,12 @@ class ClassifyUpdateView(APIView):
             new_icon = save_images(request.data['icon'], 'Classify')
             classify.icon = new_icon
         if not request.data['image']=='undefined':
-            new_image = save_images(request.data['icon'], 'Classify')
+            new_image = save_images(request.data['image'], 'Classify')
             classify.image = new_image
 
         classify.save()
 
-        cursor.execute(sql_classify_list)
+        cursor.execute(sql_classify_list.format(_image_prefix=image_path()))
         classify_list = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'classify_list': classify_list}))
@@ -394,7 +394,19 @@ class ClassifyCreateView(APIView):
         from sqls import sql_classify_list
         cursor = connection.cursor()
 
-        cursor.execute(sql_classify_list)
+        icon = save_images(request.data['icon'], 'Classify')
+        image = save_images(request.data['icon'], 'Classify')
+
+        classify = GoodsClassify(
+            name=request.data['name'],
+            desc=request.data['desc'],
+            icon=icon,
+            image=image
+        )
+
+        classify.save()
+
+        cursor.execute(sql_classify_list.format(_image_prefix=image_path()))
         classify_list = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'classify_list': classify_list}))
