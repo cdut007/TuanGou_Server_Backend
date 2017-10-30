@@ -147,7 +147,7 @@ class ImageUploadView(APIView):
         image = request.FILES['image']
         image_path = save_images(image, 'GoodsDetail')
         if image_path:
-            url = image_path_v2() + image_path
+            url = image_path() + image_path
             return Response(format_body(1, 'Success', url))
         return Response(format_body(16, 'Fail', ''))
 
@@ -194,7 +194,7 @@ class ProductSearchView(APIView):
         cursor = connection.cursor()
 
         sql_product_search = sql_product_search.format(
-            _image_prefix = 'http://www.ailinkgo.demo/',
+            _image_prefix = image_path(),
             _keyword = request.GET['keyword'] if request.GET['keyword'] != 'all' else ''
         )
 

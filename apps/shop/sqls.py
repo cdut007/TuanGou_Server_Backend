@@ -217,7 +217,7 @@ SELECT
 				b.goods_id,
 				'\", ',
 				'\"purchased_user\": \"',
-				b.purchased_user,
+				IFNULL(b.purchased_user, '[]'),
 				'\", ',
 				'\"price\": \"',
 				b.price,
