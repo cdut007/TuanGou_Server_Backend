@@ -246,3 +246,42 @@ FROM
 {_order_by}
 {_limit}
 """
+
+sql_merchant_order_detail = """
+SELECT
+	CONCAT(
+		'[',
+		GROUP_CONCAT(
+			CONCAT(
+				'\"',
+				temp.`name`,
+				' -- ',
+				temp.quantity,
+				'\"'
+			)
+		),
+		']'
+	) AS goods_list,
+	a.nickname
+FROM
+	(
+		SELECT
+			a.user_id,
+			b.price,
+			b.price * a.quantity AS amount,
+			CONCAT(c.`name`, ' (', b.brief_dec, ')') AS NAME,
+			a.quantity,
+			DATE_FORMAT(a.add_time,'%%Y-%%m-%%d %%H:%%i') AS time
+		FROM
+			iuser_genericorder AS a
+		LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+		LEFT JOIN market_goods AS c ON b.goods_id = c.id
+		WHERE
+			a.agent_code = '{merchant_code}'
+		AND a.`status` = 1
+		AND b.group_buy_id = {group_buy_id}
+	) AS temp
+INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
+GROUP BY
+	temp.user_id
+"""

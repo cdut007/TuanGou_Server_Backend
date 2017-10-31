@@ -421,7 +421,7 @@ class UserListView(APIView):
         sql_where = ""
         where_or_and = "WHERE "
         if request.GET['nickname']:
-            sql_where += "{} nickname = '{}'".format(where_or_and, request.GET['nickname'])
+            sql_where += "{} nickname LIKE '{}'".format(where_or_and, request.GET['nickname'])
             where_or_and = " AND "
 
         _sql_user_list = sql_user_list.format(**{
@@ -471,6 +471,22 @@ class GroupBuyingOrderView(APIView):
         sell_summary = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'orders_summary': orders_summary, 'sell_summary': sell_summary}))
+
+class MerchantOrderDetailView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_merchant_order_detail
+        cursor = connection.cursor()
+
+        sql_merchant_order_detail = sql_merchant_order_detail.format(
+            merchant_code=request.GET['merchant_code'],
+            group_buying_id=request.GET['group_buying_id']
+        )
+
+        cursor.execute(sql_merchant_order_detail)
+        order_detail = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'order_detail': order_detail}))
 
 
 
