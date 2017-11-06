@@ -143,11 +143,12 @@ class ProductUpdateView(APIView):
 
 
 class ImageUploadView(APIView):
+    @raise_general_exception
     def post(self, request):
         image = request.FILES['image']
-        image_path = save_images(image, 'GoodsDetail')
+        sub_path = save_images(image, 'GoodsDetail')
         if image_path:
-            url = image_path() + image_path
+            url = image_path() + sub_path
             return Response(format_body(1, 'Success', url))
         return Response(format_body(16, 'Fail', ''))
 
