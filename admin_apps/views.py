@@ -1,12 +1,12 @@
 # _*_ coding:utf-8 _*_
 import json
 from datetime import datetime
-from django.db import connection, OperationalError
+from django.db import connection
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils.common import format_body, dict_fetch_all, raise_general_exception
-from ilinkgo.config import image_path_v2, image_path
+from ilinkgo.config import image_path
 from utils.common import sql_limit, sql_count, save_images
 
 from market.models import Goods, GoodsClassify
@@ -315,7 +315,7 @@ class GroupBuyingUpdateView(APIView):
 
         group_buying_info = request.data['groupbuying_info']
         group_buying_products = request.data['groupbuying_products']
-        del_org_goods = request.data['del_org_goods']
+        del_goods = request.data['del_goods']
 
         GroupBuy.objects.filter(pk=group_buying_info['id']).update(
             goods_classify_id = group_buying_info['classify'],
@@ -328,17 +328,15 @@ class GroupBuyingUpdateView(APIView):
 
         cursor = connection.cursor()
 
-        if del_org_goods:
-            sql = sql_group_buying_goods_delete.format(
-                group_buy_id = group_buying_info['id'],
-                org_goods_id=','.join(del_org_goods)
-            )
+        if del_goods:
+            sql = sql_group_buying_goods_delete.format(goods_id=','.join(del_goods))
             cursor.execute(sql)
 
         if group_buying_products:
             update_values = ""
             for product in group_buying_products:
-                update_values += "({price}, {stock}, '{unit}', {goods_id}, {group_buy_id}),".format(
+                update_values += "({id}, {price}, {stock}, '{unit}', {goods_id}, {group_buy_id}),".format(
+                    id = product['goods_id'],
                     price = product['price'],
                     stock = product['stock'],
                     unit = product['unit'],

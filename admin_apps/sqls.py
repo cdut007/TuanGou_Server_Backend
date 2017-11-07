@@ -75,6 +75,7 @@ LIMIT 1
 
 sql_product_search = """
 SELECT
+    'NULL' AS goods_id,
 	a.id AS org_goods_id,
 	a.`name`,
 	CONCAT(
@@ -217,6 +218,7 @@ VALUES
 
 sql_group_buying_goods_update = """
 REPLACE INTO market_groupbuygoods (
+    id,
 	price,
 	stock,
 	brief_dec,
@@ -228,7 +230,7 @@ VALUES
 """
 
 sql_group_buying_goods_delete = """
-DELETE FROM market_groupbuygoods WHERE group_buy_id={group_buy_id} AND goods_id IN ({org_goods_id})
+DELETE FROM market_groupbuygoods WHERE id IN ({goods_id})
 """
 
 sql_user_list = """
