@@ -176,7 +176,7 @@ class GoodsListingView(APIView):
 
         data = {
             'classify': info,
-            'group_buy_list': group_buying_list,
+            'group_buying_list': group_buying_list,
         }
 
         return Response(format_body(1, 'Success', data))
