@@ -138,66 +138,44 @@ SELECT CONCAT('{image_prefix}', image) AS image, `desc`, name FROM market_goodsc
 
 sql_classify_group_buy_list_with_all_goods = """
 SELECT
-	a.id AS group_buy_id,
-	a.ship_time,
-	DATE_FORMAT(
-		a.end_time,
-		'%%Y-%%m-%%d %%H:%%i:%%s'
-	) AS end_time,
 	CONCAT(
 		'[',
 		GROUP_CONCAT(
+			'{\"goods_id\": \"',
+			a.id,
+			'\", ',
+			'\"unit\": \"',
+			a.brief_dec,
+			'\", ',
+			'\"price\": \"',
+			a.price,
+			'\", ',
+			'\"name\": \"',
+			d.`name`,
+			'\", ',
+			'\"image\": \"',
 			CONCAT(
-				'{\"goods_id\": \"',
-				b.goods_id,
-				'\", ',
-				'\"price\": \"',
-				b.price,
-				'\", ',
-				'\"stock\": \"',
-				b.stock,
-				'\", ',
-				'\"brief_dec\": \"',
-				b.brief_dec,
-				'\", ',
-				'\"name\": \"',
-				b.`name`,
-				'\", ',
-				'\"image\": \"',
-				b.image,
-				'\"}'
-			)
+				'%(image_prefix)s',
+				SUBSTRING_INDEX(c.image, '.', 1),
+				'_thumbnail.',
+				SUBSTRING_INDEX(c.image, '.', - 1)
+			),
+			'\"}'
 		),
-	 ']'
-	) AS goods_list
+		']'
+	) AS goods_list,
+	a.group_buy_id,
+	DATE_FORMAT(b.end_time,'%%Y-%%m-%%d %%H:%%i:%%s') AS end_time,
+	b.ship_time
 FROM
-	market_groupbuy AS a
-LEFT JOIN (
-	SELECT
-		a.group_buy_id,
-		a.id AS goods_id,
-		a.price,
-		a.stock,
-		a.brief_dec,
-		b.`name`,
-		CONCAT(
-			'{image_prefix}',
-			SUBSTRING_INDEX(c.image, '.', 1),
-			'_thumbnail.',
-			SUBSTRING_INDEX(c.image, '.', - 1)
-		) AS image
-	FROM
-		market_groupbuygoods AS a
-	INNER JOIN market_goods AS b ON a.goods_id = b.id
-	INNER JOIN market_goodsgallery AS c ON b.id = c.goods_id
-	AND c.is_primary = 1
-) AS b ON a.id = b.group_buy_id
-WHERE
-	a.goods_classify_id = %(classify_id)s
-AND a.on_sale = 1
-AND a.end_time >= NOW()
-GROUP BY
-	a.id
+	market_groupbuygoods AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
+LEFT JOIN market_goodsgallery AS c ON a.goods_id=c.goods_id AND c.is_primary=1
+LEFT JOIN market_goods AS d ON d.id=a.goods_id
+WHERE b.goods_classify_id = %(classify_id)s
+AND b.end_time > NOW() 
+AND b.on_sale=1
+GROUP BY a.group_buy_id
 """
 
 sql_merchant_classify_group_buy_list_with_all_goods_v2 = """
@@ -205,10 +183,7 @@ SELECT
 	a.id AS group_buy_id,
 	a.ship_time,
 	IFNULL(e.remark,'') AS user_remark,
-	DATE_FORMAT(
-		a.end_time,
-		'%%Y-%%m-%%d %%H:%%i:%%s'
-	) AS end_time,
+	DATE_FORMAT(a.end_time,'%%Y-%%m-%%d %%H:%%i:%%s') AS end_time,
 	CONCAT(
 		'[',
 		GROUP_CONCAT(
@@ -297,6 +272,7 @@ AND d.openid = '%(merchant_code)s'
 GROUP BY
 	a.id
 """
+
 
 
 # abandon

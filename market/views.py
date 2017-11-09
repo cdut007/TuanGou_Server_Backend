@@ -148,9 +148,6 @@ class GroupBuyDetailView(APIView):
 
         goods_serializer = GroupBuyGoodsSerializer(goods, many=True)
 
-        # for goods in goods_serializer.data:
-        #     goods['stock'] -=  GroupBuyGoodsDetail.purchased_amount(goods['id'])
-
         res = group_buy_serializer.data
         res['classify'] = class_serializer.data
         res['group_buy_goods'] = goods_serializer.data

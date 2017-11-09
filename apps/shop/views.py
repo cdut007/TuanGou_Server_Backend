@@ -146,3 +146,37 @@ class MerchantClassifyView(APIView):
         }
 
         return Response(format_body(1, 'Success', data))
+
+
+class ClassifyView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        cursor = connection.cursor()
+
+        from sqls import sql_classify_info
+        from sqls import sql_classify_group_buy_list_with_all_goods
+
+        query = {
+            'classify_id': request.GET['classify_id'],
+            'image_prefix': image_path(),
+        }
+
+        sql_classify_info = sql_classify_info.format(**query)
+        sql_classify_group_buy_list = sql_classify_group_buy_list_with_all_goods % query
+
+        cursor.execute(sql_classify_info)
+        info = dict_fetch_all(cursor)[0]
+
+        cursor.execute("SET SESSION group_concat_max_len = 204800;")
+        cursor.execute(sql_classify_group_buy_list)
+        group_buying_list = dict_fetch_all(cursor)
+
+        for item in group_buying_list:
+            item['goods_list'] = json.loads(item['goods_list'])
+
+        data = {
+            'classify': info,
+            'group_buy_list': group_buying_list,
+        }
+
+        return Response(format_body(1, 'Success', data))
