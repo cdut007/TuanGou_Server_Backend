@@ -148,7 +148,7 @@ class MerchantClassifyView(APIView):
         return Response(format_body(1, 'Success', data))
 
 
-class ClassifyView(APIView):
+class GoodsListingView(APIView):
     @raise_general_exception
     def get(self, request):
         cursor = connection.cursor()

@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'merchant.goods.list', ShopViews.MerchantGoodsListView.as_view(), name='merchant.goods.list'),
     url(r'merchant.classify.group_buy', ShopViews.MerchantClassifyView.as_view(), name='merchant.classify.group_buy'),
     # shop -> app
-    url(r'classify.group_buying', ShopViews.ClassifyView.as_view(), name='classify.group_buying'),
+    url(r'goods.listing', ShopViews.GoodsListingView.as_view(), name='goods.listing'),
 
     # other
     url(r'winxin.js_sdk_config', OtherViews.WeiXinJsSdkConfigView.as_view(), name='winxin.js_sdk_config'),
