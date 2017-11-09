@@ -137,13 +137,13 @@ SELECT CONCAT('{image_prefix}', image) AS image, `desc`, name FROM market_goodsc
 """
 
 sql_goods_detail_app = """
-    SELECT
+SELECT
 	a.price,
 	a.stock,
 	a.brief_dec AS unit,
 	b.`name`,
 	b.`desc`,
-	CONCAT('{image_prefix}', c.image) AS image
+	CONCAT('[', GROUP_CONCAT(CONCAT('\"{image_prefix}', c.image, '\"')), ']') AS images
 FROM
 	market_groupbuygoods AS a
 LEFT JOIN market_goods AS b ON a.goods_id=b.id

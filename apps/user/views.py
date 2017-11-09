@@ -5,7 +5,7 @@ from django.db import connection, OperationalError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body, dict_fetch_all, raise_general_exception
+from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit
 from ilinkgo.config import image_path
 from market.models import GroupBuyGoods
 from iuser.models import GenericOrder
@@ -170,6 +170,32 @@ class ShareGroupBuyingView(APIView):
         data = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'success', data))
+
+
+class UserGroupBuyingView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_user_group_buying
+
+        sql_user_group_buying = sql_user_group_buying.format(
+            user_id=self.get.user_id,
+            image_prefix=image_path(),
+            _limit=sql_limit(request)
+        )
+
+        cursor = connection.cursor()
+
+        cursor.execute(sql_user_group_buying)
+
+        data = dict_fetch_all(cursor)
+
+        for item in data:
+            item['images'] = json.loads(item['images'])
+
+        return Response(format_body(1, 'Success', {'group_buying_list': data}))
+
+
 
 
 

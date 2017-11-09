@@ -179,3 +179,21 @@ ORDER BY
 	a.add_time DESC
 LIMIT 1
 """
+
+sql_user_group_buying = """
+SELECT
+    a.group_buy_id,
+	DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s') AS end_time,
+	c.`desc`,
+	CONCAT('[', GROUP_CONCAT('\"{image_prefix}', e.image, '\"'), ']') AS images
+FROM
+	iuser_agentorder AS a 
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
+LEFT JOIN market_goodsclassify AS c ON c.id=b.goods_classify_id
+LEFT JOIN market_groupbuygoods AS d ON FIND_IN_SET(d.id, SUBSTRING_INDEX(a.goods_ids, ',', 10))
+LEFT JOIN market_goodsgallery AS e ON e.goods_id=d.goods_id AND is_primary=1
+WHERE
+	user_id = {user_id}
+GROUP BY a.group_buy_id
+{_limit}
+"""

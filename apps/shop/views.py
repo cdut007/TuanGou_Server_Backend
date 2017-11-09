@@ -199,6 +199,7 @@ class GoodsDetailView(APIView):
 
         cursor.execute(sql_goods_detail)
         goods_detail = dict_fetch_all(cursor)[0]
+        goods_detail['images'] = json.loads(goods_detail['images'])
 
         cursor.execute(sql_goods_classify)
         classify = dict_fetch_all(cursor)[0]
