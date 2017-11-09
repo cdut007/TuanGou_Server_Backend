@@ -197,3 +197,37 @@ WHERE
 GROUP BY a.group_buy_id
 {_limit}
 """
+
+sql_merchant_notice_consumer_take_goods = """
+SELECT
+	b.openid,
+	b.nickname,
+	CONCAT(GROUP_CONCAT(d.`name`)) AS goods
+FROM
+	iuser_genericorder AS a
+LEFT JOIN iuser_userprofile AS b ON a.user_id=b.id
+LEFT JOIN market_groupbuygoods AS c ON c.id=a.goods_id
+LEFT JOIN market_goods AS d ON d.id=c.goods_id
+WHERE
+	a.agent_code = (
+		SELECT
+			openid
+		FROM
+			iuser_userprofile
+		WHERE
+			id = {user_id}
+	)
+AND FIND_IN_SET(
+	a.goods_id,
+	(
+		SELECT
+			goods_ids
+		FROM
+			iuser_agentorder
+		WHERE
+			user_id = {user_id}
+		AND group_buy_id = {group_buying_id}
+	)
+)
+GROUP BY b.openid
+"""

@@ -1,11 +1,12 @@
 # _*_ coding:utf-8 _*_
-import json
+import json, time
 from datetime import datetime
 from django.db import connection, OperationalError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit
+from utils.winxin import WeiXinAPI
 from ilinkgo.config import image_path
 from market.models import GroupBuyGoods
 from iuser.models import GenericOrder
@@ -185,15 +186,59 @@ class UserGroupBuyingView(APIView):
         )
 
         cursor = connection.cursor()
-
         cursor.execute(sql_user_group_buying)
-
         data = dict_fetch_all(cursor)
 
         for item in data:
             item['images'] = json.loads(item['images'])
 
         return Response(format_body(1, 'Success', {'group_buying_list': data}))
+
+
+class MerchantNoticeConsumerTakeGoodsView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def post(self, request):
+        from sqls import sql_merchant_notice_consumer_take_goods
+        cursor = connection.cursor()
+
+        sql_notice = sql_merchant_notice_consumer_take_goods.format(
+            user_id=self.post.user_id,
+            group_buying_id=request.data['group_buy_id']
+        )
+        cursor.execute(sql_notice)
+        users = dict_fetch_all(cursor)
+
+        for user in users:
+            data = {
+                "touser": user['openid'],
+                "template_id": "2VIBzyWPhU8tmUr0YT3oWtff-kY6jN8VhRWod22OpjE",
+                "data": {
+                    "first": {
+                        "value": "【爱邻购】亲，你买的商品已经到达团长家了，请尽快联系团长把它领回家哦！",
+                        "color": "#173177"
+                    },
+                    "keyword1": {
+                        "value": user['goods'],
+                        "color": "#173177"
+                    },
+                    "keyword2": {
+                        "value": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+                        "color": "#173177"
+                    },
+                    "remark": {
+                        "value": "",
+                        "color": "#173177"
+                    }
+                }
+            }
+            wei_xin = WeiXinAPI()
+            wei_xin.push_notice(data)
+
+        return Response(format_body(1, 'Success', ''))
+
+
+
 
 
 

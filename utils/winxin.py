@@ -128,3 +128,12 @@ class WeiXinAPI:
         config = self.js_api_config(ticket, url)
         return config
 
+    def push_notice(self, data):
+        access_token = self.get_wei_xin_basal_access_token()
+        url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+access_token
+
+        headers = {'Content-Type': 'application/json'}
+        request = urllib2.Request(url=url, headers=headers, data=json.dumps(data))
+        response = urllib2.urlopen(request)
+
+
