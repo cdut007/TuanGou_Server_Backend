@@ -136,6 +136,42 @@ sql_classify_info = """
 SELECT CONCAT('{image_prefix}', image) AS image, `desc`, name FROM market_goodsclassify WHERE id = {classify_id}
 """
 
+sql_goods_detail_app = """
+    SELECT
+	a.price,
+	a.stock,
+	a.brief_dec AS unit,
+	b.`name`,
+	b.`desc`,
+	CONCAT('{image_prefix}', c.image) AS image
+FROM
+	market_groupbuygoods AS a
+LEFT JOIN market_goods AS b ON a.goods_id=b.id
+LEFT JOIN market_goodsgallery AS c ON c.goods_id=b.id AND c.is_primary=1
+WHERE
+	a.id = {goods_id}
+"""
+
+sql_goods_related_app = """
+SELECT
+    a.id as goods_id,
+	a.price,
+	b.`name`,
+    CONCAT(
+        '{image_prefix}',
+        SUBSTRING_INDEX(c.image, '.', 1),
+        '_thumbnail.',
+        SUBSTRING_INDEX(c.image, '.', - 1)
+    ) AS image
+FROM
+	market_groupbuygoods AS a
+LEFT JOIN market_goods AS b ON a.goods_id=b.id
+LEFT JOIN market_goodsgallery AS c ON c.goods_id=b.id AND c.is_primary=1
+WHERE
+	a.group_buy_id=(SELECT group_buy_id FROM market_groupbuygoods WHERE id={goods_id})
+AND a.id!= {goods_id}
+"""
+
 sql_classify_group_buy_list_with_all_goods = """
 SELECT
 	CONCAT(

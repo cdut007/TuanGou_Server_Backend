@@ -180,3 +180,36 @@ class GoodsListingView(APIView):
         }
 
         return Response(format_body(1, 'Success', data))
+
+class GoodsDetailView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        cursor = connection.cursor()
+
+        from sqls import sql_goods_detail_app, sql_goods_related_app, sql_goods_classify
+
+        query = {
+            'goods_id': request.GET['goods_id'],
+            'image_prefix': image_path(),
+        }
+
+        sql_goods_detail = sql_goods_detail_app.format(**query)
+        sql_goods_related = sql_goods_related_app.format(**query)
+        sql_goods_classify = sql_goods_classify.format(**query)
+
+        cursor.execute(sql_goods_detail)
+        goods_detail = dict_fetch_all(cursor)[0]
+
+        cursor.execute(sql_goods_classify)
+        classify = dict_fetch_all(cursor)[0]
+
+        cursor.execute(sql_goods_related)
+        related_goods = dict_fetch_all(cursor)
+
+        data = {
+            'goods_detail': goods_detail,
+            'related_goods': related_goods,
+            'classify': classify
+        }
+
+        return Response(format_body(1, 'Success', data))
