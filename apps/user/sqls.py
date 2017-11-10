@@ -209,6 +209,7 @@ LEFT JOIN market_groupbuygoods AS d ON FIND_IN_SET(d.id, SUBSTRING_INDEX(a.goods
 LEFT JOIN market_goodsgallery AS e ON e.goods_id=d.goods_id AND is_primary=1
 WHERE
 	user_id = {user_id}
+AND b.end_time < NOW()
 GROUP BY a.group_buy_id
 ORDER BY b.ship_time DESC
 {_limit}
