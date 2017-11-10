@@ -64,7 +64,8 @@ WHERE
 sql_goods_classify = """
 SELECT
 	c.`name`,
-	CONCAT('{image_prefix}', c.icon) AS icon
+	CONCAT('{image_prefix}', c.icon) AS icon,
+	a.group_buy_id
 FROM
 	market_groupbuygoods AS a
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
