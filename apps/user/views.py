@@ -50,15 +50,16 @@ class ConsumerOrderView(APIView):
         # 插入订单
         insert_values = ""
         for goods_item in request.data['goods_list']:
-            if int(goods_item['goods_quantity']) > 0:
-                insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}', {5}),\n".format(
-                    request.data['merchant_code'],
-                    datetime.now(),
-                    self.post.user_id,
-                    goods_item['goods_id'],
-                    goods_item['goods_quantity'],
-                    1
-                )
+            if int(goods_item['goods_quantity']) <= 0:
+                continue
+            insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}', {5}),\n".format(
+                request.data['merchant_code'],
+                datetime.now(),
+                self.post.user_id,
+                goods_item['goods_id'],
+                goods_item['goods_quantity'],
+                1
+            )
         sql_create_consumer_order = sql_create_consumer_order % {'values': insert_values[0:-2]}
         cursor.execute(sql_create_consumer_order)
 

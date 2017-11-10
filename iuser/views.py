@@ -223,14 +223,15 @@ class ShoppingCartView(APIView):
         insert_values = ""
         try:
             for goods_item in request.data['goods_list']:
-                if int(goods_item['goods_quantity']) > 0:
-                    insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}'),\n".format(
-                        request.data['agent_code'],
-                        datetime.now(),
-                        self.post.user_id,
-                        goods_item['goods_id'],
-                        goods_item['goods_quantity']
-                    )
+                if int(goods_item['goods_quantity']) <= 0:
+                    continue
+                insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}'),\n".format(
+                    request.data['agent_code'],
+                    datetime.now(),
+                    self.post.user_id,
+                    goods_item['goods_id'],
+                    goods_item['goods_quantity']
+                )
         except KeyError as e:
             return Response(format_body(2, 'Params error', e.message))
 
