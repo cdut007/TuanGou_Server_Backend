@@ -189,7 +189,7 @@ SELECT
         '\"{image_prefix}', 
         SUBSTRING_INDEX(e.image, '.', 1),
         '_thumbnail.',
-        SUBSTRING_INDEX(e.image, '.', -1) 
+        SUBSTRING_INDEX(e.image, '.', -1), 
         '\"'
 	), ']') AS images,
 	1 AS push_notice 
