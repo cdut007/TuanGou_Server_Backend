@@ -192,7 +192,7 @@ SELECT
         SUBSTRING_INDEX(e.image, '.', -1), 
         '\"'
 	), ']') AS images,
-	1 AS push_notice 
+	0 AS notice_pushed 
 FROM
 	iuser_agentorder AS a 
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
