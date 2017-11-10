@@ -188,6 +188,7 @@ class UserGroupBuyingView(APIView):
         )
 
         cursor = connection.cursor()
+        cursor.execute("SET SESSION group_concat_max_len = 204800;")
         cursor.execute(sql_user_group_buying)
         data = dict_fetch_all(cursor)
 
