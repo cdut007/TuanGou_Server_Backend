@@ -222,7 +222,7 @@ class MerchantNoticeConsumerTakeGoodsView(APIView):
                         "color": "#173177"
                     },
                     "keyword1": {
-                        "value": user['goods'] + "\n",
+                        "value": (user['goods'][:15]+"..."+"\n") if len(user['goods']) > 15  else  (user['goods']+"\n"),
                         "color": "#173177"
                     },
                     "keyword2": {
