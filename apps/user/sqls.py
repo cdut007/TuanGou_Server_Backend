@@ -185,7 +185,14 @@ SELECT
     a.group_buy_id,
 	DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s') AS end_time,
 	c.`desc`,
-	CONCAT('[', GROUP_CONCAT('\"{image_prefix}', e.image, '\"'), ']') AS images
+	CONCAT('[', GROUP_CONCAT(
+        '\"{image_prefix}', 
+        SUBSTRING_INDEX(e.image, '.', 1),
+        '_thumbnail.',
+        SUBSTRING_INDEX(e.image, '.', -1) 
+        '\"'
+	), ']') AS images,
+	1 AS push_notice 
 FROM
 	iuser_agentorder AS a 
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
