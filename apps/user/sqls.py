@@ -184,6 +184,7 @@ sql_user_group_buying = """
 SELECT
     a.group_buy_id,
 	DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s') AS end_time,
+	b.ship_time,
 	c.`desc`,
 	IFNULL(
 		CONCAT(
@@ -209,6 +210,7 @@ LEFT JOIN market_goodsgallery AS e ON e.goods_id=d.goods_id AND is_primary=1
 WHERE
 	user_id = {user_id}
 GROUP BY a.group_buy_id
+ORDER BY b.ship_time DESC
 {_limit}
 """
 
