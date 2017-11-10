@@ -185,13 +185,20 @@ SELECT
     a.group_buy_id,
 	DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s') AS end_time,
 	c.`desc`,
-	CONCAT('[', GROUP_CONCAT(
-        '\"{image_prefix}', 
-        SUBSTRING_INDEX(e.image, '.', 1),
-        '_thumbnail.',
-        SUBSTRING_INDEX(e.image, '.', -1), 
-        '\"'
-	), ']') AS images,
+	IFNULL(
+		CONCAT(
+		  '[', 
+          GROUP_CONCAT(
+            '\"{image_prefix}', 
+            SUBSTRING_INDEX(e.image, '.', 1),
+            '_thumbnail.',
+            SUBSTRING_INDEX(e.image, '.', -1), 
+            '\"'
+          ), 
+		  ']'
+		),
+		'[]'
+	) AS images,
 	0 AS notice_pushed 
 FROM
 	iuser_agentorder AS a 
