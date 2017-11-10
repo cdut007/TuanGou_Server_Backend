@@ -218,11 +218,11 @@ class MerchantNoticeConsumerTakeGoodsView(APIView):
                 "template_id": "2VIBzyWPhU8tmUr0YT3oWtff-kY6jN8VhRWod22OpjE",
                 "data": {
                     "first": {
-                        "value": "【爱邻购】亲，你买的商品已经到达团长家了，请尽快联系团长把它领回家哦！",
+                        "value": "【爱邻购】亲，你买的商品已经到达团长家了，请尽快联系团长把它领回家哦！\n",
                         "color": "#173177"
                     },
                     "keyword1": {
-                        "value": user['goods'],
+                        "value": user['goods'] + "\n",
                         "color": "#173177"
                     },
                     "keyword2": {
