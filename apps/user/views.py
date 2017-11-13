@@ -203,6 +203,7 @@ class MerchantNoticeConsumerTakeGoodsView(APIView):
     @raise_general_exception
     def post(self, request):
         from sqls import sql_merchant_notice_consumer_take_goods
+        from models import MerchantPushNoticeLog
         cursor = connection.cursor()
 
         sql_notice = sql_merchant_notice_consumer_take_goods.format(
@@ -237,6 +238,13 @@ class MerchantNoticeConsumerTakeGoodsView(APIView):
             }
             wei_xin = WeiXinAPI()
             wei_xin.push_notice(data)
+
+        log = MerchantPushNoticeLog(
+            group_buying_id=request.data['group_buy_id'],
+            merchant_id=self.post.user_id,
+            add_time=datetime.now()
+        )
+        log.save()
 
         return Response(format_body(1, 'Success', ''))
 

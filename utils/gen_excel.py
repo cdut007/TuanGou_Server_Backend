@@ -33,7 +33,7 @@ title_height = 640
 
 def order_excel(data):
     work_book = xlwt.Workbook(encoding='utf-8')
-    sheet1 = work_book.add_sheet(u'sheet1',cell_overwrite_ok=False)
+    sheet1 = work_book.add_sheet(u'供应商发货清单',cell_overwrite_ok=False)
 
     sheet1.col(0).width = 256 * 20
     sheet1.col(1).width = 256 * 60
@@ -73,7 +73,7 @@ def order_excel(data):
         cur_row1 += 1
 
     #团员购买清单
-    sheet2 = work_book.add_sheet(u'sheet2', cell_overwrite_ok=False)
+    sheet2 = work_book.add_sheet(u'团员订购清单', cell_overwrite_ok=False)
 
     sheet2.col(0).width = 256 * 20
     sheet2.col(1).width = 256 * 20

@@ -200,13 +200,14 @@ SELECT
 		),
 		'[]'
 	) AS images,
-	0 AS notice_pushed 
+	IF(f.id, 1, 0) AS notice_pushed 
 FROM
 	iuser_agentorder AS a 
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
 LEFT JOIN market_goodsclassify AS c ON c.id=b.goods_classify_id
 LEFT JOIN market_groupbuygoods AS d ON FIND_IN_SET(d.id, SUBSTRING_INDEX(a.goods_ids, ',', 10))
 LEFT JOIN market_goodsgallery AS e ON e.goods_id=d.goods_id AND is_primary=1
+LEFT JOIN lg_merchant_push_notice_log AS f ON f.group_buying_id=a.group_buy_id AND user_id={user_id}
 WHERE
 	user_id = {user_id}
 AND b.end_time < NOW()

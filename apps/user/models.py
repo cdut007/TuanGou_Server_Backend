@@ -15,3 +15,13 @@ class ConsumerOrderRemarks(models.Model):
     class Meta:
         db_table = 'lg_consumer_order_remarks'
         unique_together = (("merchant_code", "group_buying_id", "user_id"),)
+
+
+class MerchantPushNoticeLog(models.Model):
+    id = models.AutoField(primary_key=True)
+    group_buying_id = models.PositiveIntegerField()
+    merchant_id = models.PositiveIntegerField()
+    add_time = models.DateTimeField()
+
+    class Meta:
+        db_table = 'lg_merchant_push_notice_log'
