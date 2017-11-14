@@ -185,7 +185,7 @@ SELECT
     a.group_buy_id,
 	DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s') AS end_time,
 	b.ship_time,
-	c.`desc`,
+	b.title AS `desc`,
 	IFNULL(
 		CONCAT(
 		  '[', 
