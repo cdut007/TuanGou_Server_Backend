@@ -33,7 +33,7 @@ class LogInView(APIView):
         if not user.check_password(request.data['password']):
             return Response(format_body(6, 'password wrong', ''))
 
-        token = Authentication.generate_auth_token(user.id, 604800)
+        token = Authentication.generate_auth_token('admin_'+str(user.id), 604800)
         return Response(format_body(1, 'success', {'token': token}))
 
 
@@ -88,22 +88,32 @@ class ProductDetailView(APIView):
 
 
 class ProductCreateView(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def post(self, request):
         from sqls import sql_insert_goods_gallery
 
+        if str(self.post.user_id).startswith('admin_'):
+            owner = self.post.user_id
+        else:
+            owner = 'app_'+ self.post.user_id
+
         goods = Goods(
-            name=request.data['name'],
-            desc=request.data['desc']
+            name = request.data['name'],
+            desc = request.data['desc'],
+            default_price = request.data['default_price'],
+            default_stock = request.data['default_stock'],
+            default_unit = request.data['default_unit'],
+            set = request.data['set'],
+            created_by = owner
         )
         goods.save()
 
         insert_values = ""
-        is_primary = 1
-        for image in sorted(request.FILES):
-            image_path = save_images(request.FILES[image], 'Goods', create_thumbnail=True)
-            insert_values += "('{0}', '{1}', '{2}', '{3}'),\n".format(image_path,is_primary,datetime.now(),goods.id)
-            is_primary = 0
+        for index, image in enumerate(sorted(request.FILES)):
+            is_primary = 1 if index==0 else 0
+            img_path = save_images(request.FILES[image], 'Goods', create_thumbnail=True)
+            insert_values += "('{0}', '{1}', '{2}', '{3}'),\n".format(img_path,is_primary,datetime.now(),goods.id)
 
         sql_insert_goods_gallery = sql_insert_goods_gallery.format(values=insert_values[0:-2])
 
@@ -116,9 +126,13 @@ class ProductCreateView(APIView):
 class ProductUpdateView(APIView):
     @raise_general_exception
     def post(self, request):
-        goods = Goods.objects.get(id=request.data['product_id'])
+        goods = Goods.objects.get(id=request.data['goods_id'])
         goods.name = request.data['name']
         goods.desc = request.data['desc']
+        goods.default_price = request.data['default_price']
+        goods.default_stock = request.data['default_stock']
+        goods.default_unit = request.data['default_unit']
+        goods.set = request.data['set']
         goods.save()
 
         cursor = connection.cursor()
@@ -140,6 +154,68 @@ class ProductUpdateView(APIView):
             cursor.execute(sql_update_gallery_primary)
 
         return Response(format_body(1, 'Success', ''))
+
+
+class ProductSetUpdateView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def post(self, request):
+        from sqls import sql_product_set_update
+
+        sql_product_set_update = sql_product_set_update.format(
+            new_set = request.data['new_set'],
+            old_set = request.data['old_set']
+        )
+        cursor = connection.cursor()
+        cursor.execute(sql_product_set_update)
+
+        return Response(format_body(1, 'Success', ''))
+
+
+class ProductSetListView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_product_set_list
+
+        if str(self.get.user_id).startswith('admin_'):
+            owner = self.get.user_id
+        else:
+            owner = 'app_'+ self.get.user_id
+
+        sql_product_set_list = sql_product_set_list.format(
+            owner = owner,
+            _image_prefix = image_path(),
+            _limit = sql_limit(request)
+        )
+        cursor = connection.cursor()
+        cursor.execute(sql_product_set_list)
+        data = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'set_list': data}))
+
+
+class ProductSetGoodsView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_product_set_goods
+
+        if str(self.get.user_id).startswith('admin_'):
+            owner = self.get.user_id
+        else:
+            owner = 'app_'+ self.get.user_id
+
+        sql_product_set_goods = sql_product_set_goods.format(
+            owner = owner,
+            _image_prefix=image_path(),
+            set = request.GET['set']
+        )
+        cursor = connection.cursor()
+        cursor.execute(sql_product_set_goods)
+        data = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'goods_list': data}))
 
 
 class ImageUploadView(APIView):
@@ -470,6 +546,7 @@ class GroupBuyingOrderView(APIView):
         sell_summary = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'orders_summary': orders_summary, 'sell_summary': sell_summary}))
+
 
 class MerchantOrderDetailView(APIView):
     @raise_general_exception

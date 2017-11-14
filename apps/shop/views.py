@@ -5,10 +5,11 @@ from django.db import connection
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit
+from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit, save_images
 from ilinkgo.config import image_path
 
 from iuser.Authentication import Authentication
+from market.models import Goods
 
 
 class MerchantGoodsDetailView(APIView):
@@ -181,6 +182,7 @@ class GoodsListingView(APIView):
 
         return Response(format_body(1, 'Success', data))
 
+
 class GoodsDetailView(APIView):
     @raise_general_exception
     def get(self, request):
@@ -214,3 +216,5 @@ class GoodsDetailView(APIView):
         }
 
         return Response(format_body(1, 'Success', data))
+
+

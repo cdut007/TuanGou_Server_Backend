@@ -21,6 +21,10 @@ SELECT
 	a.id AS goods_id,
 	a.`desc`,
 	a.name,
+	a.default_price,
+	a.default_stock,
+	a.default_unit,
+	a.set,
 	CONCAT(
 		'[',
 		GROUP_CONCAT(
@@ -286,4 +290,54 @@ FROM
 INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
 GROUP BY
 	temp.user_id
+"""
+
+sql_product_set_update = """
+UPDATE market_goods SET `set`='{new_set}' WHERE `set`='{old_set}'
+"""
+
+sql_product_set_list = """
+SELECT
+	a.`set`,
+	IFNULL(
+        CONCAT(
+        '{_image_prefix}', 
+        SUBSTRING_INDEX(b.image, '.', 1),
+        '_thumbnail.',
+        SUBSTRING_INDEX(b.image, '.', -1)
+        ), 
+        ''
+	) AS image,
+	COUNT(DISTINCT a.id) AS count
+FROM
+	market_goods AS a
+LEFT JOIN market_goodsgallery AS b ON a.id=b.goods_id AND is_primary=1
+WHERE
+	a.created_by = '{owner}'
+GROUP BY a.`set`
+{_limit}
+"""
+
+sql_product_set_goods = """
+SELECT
+	a.id,
+	a.`name`,
+	a.default_price,
+	a.default_stock,
+	a.default_unit,
+	IFNULL(
+        CONCAT(
+        '{_image_prefix}', 
+        SUBSTRING_INDEX(b.image, '.', 1),
+        '_thumbnail.',
+        SUBSTRING_INDEX(b.image, '.', -1)
+        ), 
+        ''
+	) AS image
+FROM
+	market_goods AS a 
+LEFT JOIN market_goodsgallery AS b ON a.id=b.goods_id AND is_primary=1
+WHERE
+	a.created_by = 'admin_1'
+AND a.`set` = '6'
 """

@@ -59,6 +59,11 @@ class GroupBuy(models.Model):
 class Goods(models.Model):
     name = models.CharField(max_length=32, verbose_name=u'名称')
     desc = models.TextField(verbose_name='描述', default='')
+    default_price = models.FloatField(default=0)
+    default_stock =  models.PositiveIntegerField(default=0)
+    default_unit = models.CharField(max_length=64, default='')
+    created_by = models.CharField(max_length=64, default='')
+    set = models.CharField(max_length=64, default='')
 
     class Meta:
         verbose_name = u'商品'
