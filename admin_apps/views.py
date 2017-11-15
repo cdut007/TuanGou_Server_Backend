@@ -105,6 +105,7 @@ class ProductCreateView(APIView):
             default_stock = request.data['default_stock'],
             default_unit = request.data['default_unit'],
             set = request.data['set'],
+            brief_desc = request.data['brief_desc'],
             created_by = owner
         )
         goods.save()
@@ -133,6 +134,7 @@ class ProductUpdateView(APIView):
         goods.default_stock = request.data['default_stock']
         goods.default_unit = request.data['default_unit']
         goods.set = request.data['set']
+        goods.brief_desc = request.data['brief_desc']
         goods.save()
 
         cursor = connection.cursor()

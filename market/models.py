@@ -64,6 +64,7 @@ class Goods(models.Model):
     default_unit = models.CharField(max_length=64, default='')
     created_by = models.CharField(max_length=64, default='')
     set = models.CharField(max_length=64, default='')
+    brief_desc = models.CharField(max_length=128, default='')
 
     class Meta:
         verbose_name = u'商品'

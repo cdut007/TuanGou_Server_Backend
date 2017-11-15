@@ -25,6 +25,7 @@ SELECT
 	a.default_stock,
 	a.default_unit,
 	a.set,
+	a.brief_desc,
 	CONCAT(
 		'[',
 		GROUP_CONCAT(
