@@ -43,7 +43,10 @@ class UserView(APIView):
 
         serializer = UserProfileSerializer(data=request.data)
         if serializer.is_valid():
-            user_record = UserProfile.objects.filter(unionid=serializer.validated_data['unionid']).first()
+            user_record = UserProfile.objects.filter(
+                unionid=serializer.validated_data['unionid'],
+                openid=serializer.validated_data['openid']
+            ).first()
             if user_record:
                 token = Authentication.generate_auth_token(user_record.id)
                 return Response(format_body(1, 'Success', {'token': token}))
@@ -164,7 +167,9 @@ class AgentOrderView(APIView):
             agent_order['group_buy'] =GroupBuySerializer(group_buy).data
             agent_order['goods'] = goods_serializer.data
 
-        return Response(format_body(1, 'Success', {'order': orders_serializer.data}))
+        data = sorted(orders_serializer.data, key=lambda v: v['group_buy']['ship_time'], reverse=True)
+
+        return Response(format_body(1, 'Success', {'order': data}))
 
     @Authentication.token_required
     def post(self, request):
