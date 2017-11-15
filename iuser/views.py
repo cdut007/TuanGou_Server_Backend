@@ -1,4 +1,7 @@
 # _*_ coding:utf-8 _*_
+import time, os
+from ilinkgo.config import excel_save_base_path
+from utils.common import dict_fetch_all, random_str, raise_general_exception
 from datetime import datetime
 from django.db.models import Sum
 from django.db import connection
@@ -385,38 +388,41 @@ class GenericOrderView(APIView):
 
 
 class SendEmailView(APIView):
-    @Authentication.token_required
+    # @Authentication.token_required
+    @raise_general_exception
     def post(self, request):
-        import os
-        from ilinkgo.settings import BASE_DIR
-        from utils.common import dict_fetch_all
         from utils.gen_excel import order_excel
+        from apps.user.models import MerchantPushLog
         from sql import sql1, sql2
 
         #https://docs.google.com/gview?embedded=true&url=http://www.ailinkgo.com:3000/excel/18502808546_2017-08-01.xlsx
-        user_id = self.post.user_id
+        user_id = 4
         group_buy_id = request.data['group_buy_id'] or 1
         email_to = request.data['email']
 
-        try:
-            user_info = UserProfile.objects.get(id=user_id)
-        except UserProfile.DoesNotExist:
-            return Response(format_body(0, 'User does not exist', ''))
+        user_info = UserProfile.objects.get(id=user_id)
+        group_buy = GroupBuy.objects.get(id=group_buy_id)
+        send_record = MerchantPushLog.objects.filter(
+            group_buying_id=group_buy_id,
+            merchant_id=user_id,
+            is_send_excel = 1
+        )
 
-        try:
-            group_buy = GroupBuy.objects.get(id=group_buy_id)
-        except GroupBuy.DoesNotExist:
-            return Response(format_body(0, 'GroupBuy does not exist', ''))
+        if send_record:
+            _file= excel_save_base_path() + send_record[0].excel_path
+        else:
+            excel_name = str(int(time.time())) + '_' + random_str(4) + '.xlsx'
+            file_path = excel_save_base_path() + excel_name
 
-        file_path = BASE_DIR + '/excel/' + user_info.phone_num + '_' + group_buy.__unicode__() + '.xlsx'
-
-        if not os.path.exists(file_path):
             cursor = connection.cursor()
+
             sql1 = sql1 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
             cursor.execute(sql1)
             order_list = dict_fetch_all(cursor)
+
             if not order_list:
                 return Response(format_body(7, 'Generic order empty', ''))
+
             sql2 = sql2 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
             cursor.execute(sql2)
             ship_list = dict_fetch_all(cursor)
@@ -432,10 +438,13 @@ class SendEmailView(APIView):
                 'order_list': order_list,
                 'file_path': file_path
             }
-
             order_excel(data)
-
-        _file = file_path
+            MerchantPushLog.insert_send_excel_log(
+                group_buying_id=group_buy_id,
+                merchant_id=user_id,
+                excel_path=excel_name
+            )
+            _file = file_path
 
         subject =  u"类别（%(classify)s）订单详情" % {
             'classify': group_buy.goods_classify.name
@@ -446,7 +455,6 @@ class SendEmailView(APIView):
             'day': group_buy.ship_time.day
         }
         from_email = u'爱邻购 <ilinkgo@ultralinked.com>'
-
         message = EmailMessage(
             subject=subject,
             body=body,

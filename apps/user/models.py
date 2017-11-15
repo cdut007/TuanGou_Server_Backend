@@ -17,11 +17,41 @@ class ConsumerOrderRemarks(models.Model):
         unique_together = (("merchant_code", "group_buying_id", "user_id"),)
 
 
-class MerchantPushNoticeLog(models.Model):
+class MerchantPushLog(models.Model):
     id = models.AutoField(primary_key=True)
     group_buying_id = models.PositiveIntegerField()
     merchant_id = models.PositiveIntegerField()
-    add_time = models.DateTimeField()
+    is_send_take_goods_notification = models.SmallIntegerField(default=0)
+    is_send_excel = models.SmallIntegerField(default=0)
+    excel_path = models.CharField(max_length=96, default='')
+
+    @staticmethod
+    def insert_send_excel_log(group_buying_id, merchant_id, excel_path):
+        push_log = MerchantPushLog.objects.filter(group_buying_id=group_buying_id, merchant_id=merchant_id)
+        if push_log:
+            push_log[0].is_send_excel = 1
+            push_log[0].excel_path = excel_path
+            push_log[0].save()
+        else:
+            MerchantPushLog.objects.create(
+                group_buying_id = group_buying_id,
+                merchant_id = merchant_id,
+                is_send_excel = 1,
+                excel_path = excel_path
+            )
+
+    @staticmethod
+    def insert_send_take_goods_notification(group_buying_id, merchant_id):
+        push_log = MerchantPushLog.objects.filter(group_buying_id=group_buying_id, merchant_id=merchant_id)
+        if push_log:
+            push_log[0].is_send_take_goods_notification = 1
+            push_log[0].save()
+        else:
+            MerchantPushLog.objects.create(
+                group_buying_id = group_buying_id,
+                merchant_id = merchant_id,
+                is_send_take_goods_notification = 1
+            )
 
     class Meta:
-        db_table = 'lg_merchant_push_notice_log'
+        db_table = 'lg_merchant_push_log'

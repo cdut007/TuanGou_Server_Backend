@@ -1,9 +1,5 @@
 # _*_ coding:utf-8 _*_
-import urllib
-import urllib2
-import json
-import hashlib
-import time
+import urllib, urllib2, json, hashlib, time
 from datetime import datetime
 from common import random_str
 from apps.other.models import WinXinCache

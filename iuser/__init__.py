@@ -1,1 +1,1 @@
-default_app_config = 'iuser.apps.IuserConfig'
+default_app_config = 'iuser.appsConfig.IuserConfig'

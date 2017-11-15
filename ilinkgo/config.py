@@ -104,6 +104,22 @@ def images_save_base_path():
         path = '/usr/local/nginx/html/ilinkgo/admin/images/'
     return path
 
+def excel_save_base_path():
+    mode = os.environ.get('MODE', '')
+    dir_name = os.getcwd().split('/')[-1]
+
+    if mode == 'PRODUCTION':
+        path = ''
+    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
+        path = '/var/www/html/ailinkgo/admin/excels/'
+    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
+        path = '/var/www/html/ailinkgo/adminTesting/excels/'
+    elif mode == 'HOME':
+        path = '/usr/local/nginx_1.10.3/html/ailinkgo/admin/excels/'
+    else:
+        path = '/usr/local/nginx/html/ilinkgo/admin/excels/'
+    return path
+
 def web_link():
     return 'http://www.ailinkgo.com/'
 
