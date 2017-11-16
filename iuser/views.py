@@ -393,7 +393,7 @@ class GenericOrderView(APIView):
 
 
 class SendEmailView(APIView):
-    # @Authentication.token_required
+    @Authentication.token_required
     @raise_general_exception
     def post(self, request):
         from utils.gen_excel import order_excel
@@ -401,7 +401,7 @@ class SendEmailView(APIView):
         from sql import sql1, sql2
 
         #https://docs.google.com/gview?embedded=true&url=http://www.ailinkgo.com:3000/excel/18502808546_2017-08-01.xlsx
-        user_id = 4
+        user_id = self.post.user_id
         group_buy_id = request.data['group_buy_id'] or 1
         email_to = request.data['email']
 
