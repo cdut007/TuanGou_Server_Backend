@@ -63,6 +63,7 @@ WHERE
 
 sql_goods_classify = """
 SELECT
+    c.id AS classify_id,
 	c.`name`,
 	CONCAT('{image_prefix}', c.icon) AS icon,
 	a.group_buy_id
@@ -186,6 +187,9 @@ SELECT
 			'\", ',
 			'\"price\": \"',
 			a.price,
+			'\", ',
+			'\"stock\": \"',
+			a.stock,
 			'\", ',
 			'\"name\": \"',
 			d.`name`,
