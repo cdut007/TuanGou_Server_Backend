@@ -183,7 +183,7 @@ class ProductSetListView(APIView):
         if str(self.get.user_id).startswith('admin_'):
             owner = self.get.user_id
         else:
-            owner = 'app_'+ self.get.user_id
+            owner = 'app_'+ str(self.get.user_id)
 
         sql_product_set_list = sql_product_set_list.format(
             owner = owner,
@@ -206,7 +206,7 @@ class ProductSetGoodsView(APIView):
         if str(self.get.user_id).startswith('admin_'):
             owner = self.get.user_id
         else:
-            owner = 'app_'+ self.get.user_id
+            owner = 'app_'+ str(self.get.user_id)
 
         sql_product_set_goods = sql_product_set_goods.format(
             owner = owner,
