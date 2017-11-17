@@ -83,6 +83,9 @@ SELECT
     'NULL' AS goods_id,
 	a.id AS org_goods_id,
 	a.`name`,
+	a.default_price AS price,
+	a.default_stock AS stock,
+	a.default_unit AS unit,
 	CONCAT(
 	'{_image_prefix}', 
 	SUBSTRING_INDEX(b.image, '.', 1),
