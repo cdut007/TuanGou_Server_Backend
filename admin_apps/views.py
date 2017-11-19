@@ -514,7 +514,7 @@ class UserListView(APIView):
         sql_where = ""
         where_or_and = "WHERE "
         if request.GET['nickname']:
-            sql_where += "{} nickname LIKE '{}'".format(where_or_and, request.GET['nickname'])
+            sql_where += "{} nickname LIKE '%{}%'".format(where_or_and, request.GET['nickname'])
             where_or_and = " AND "
 
         _sql_user_list = sql_user_list.format(**{
