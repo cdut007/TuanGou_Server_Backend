@@ -160,6 +160,7 @@ FROM
 sql_merchant_order_summary = """
 SELECT
   a.id AS user_id,
+  a.openid AS merchant_code,
   a.nickname,
   CONCAT(
     '[',
@@ -289,7 +290,7 @@ FROM
 		WHERE
 			a.agent_code = '{merchant_code}'
 		AND a.`status` = 1
-		AND b.group_buy_id = {group_buy_id}
+		AND b.group_buy_id = {group_buying_id}
 	) AS temp
 INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
 GROUP BY

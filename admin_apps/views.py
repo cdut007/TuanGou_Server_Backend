@@ -562,9 +562,12 @@ class MerchantOrderDetailView(APIView):
             merchant_code=request.GET['merchant_code'],
             group_buying_id=request.GET['group_buying_id']
         )
-
+        cursor.execute("SET SESSION group_concat_max_len = 204800;")
         cursor.execute(sql_merchant_order_detail)
         order_detail = dict_fetch_all(cursor)
+
+        for item in order_detail:
+            item['goods_list'] = json.loads(item['goods_list'])
 
         return Response(format_body(1, 'Success', {'order_detail': order_detail}))
 
