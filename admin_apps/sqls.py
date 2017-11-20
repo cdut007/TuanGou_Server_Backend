@@ -1,7 +1,11 @@
 sql_goods_list = """
 SELECT
 	a.id AS goods_id,
-	a.name, 
+	a.name,
+	a.default_price,
+	a.default_stock,
+	a.default_unit,
+	a.set,
 	CONCAT(
 	'{_image_prefix}', 
 	SUBSTRING_INDEX(b.image, '.', 1),
@@ -95,8 +99,7 @@ SELECT
 FROM
 	market_goods AS a
 LEFT JOIN market_goodsgallery AS b ON a.id=b.goods_id AND b.is_primary=1
-WHERE
-	a.`name` LIKE '%{_keyword}%'
+{_where}
 """
 
 sql_group_buying_list = """

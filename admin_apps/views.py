@@ -43,15 +43,23 @@ class ProductListView(APIView):
     def get(self, request):
         from sqls import sql_goods_list
 
+        sql_where = ""
+        where_and = "WHERE "
+        if request.GET['product']:
+            sql_where = " {where_and} a.name LIKE '%{product}%' ".format(where_and=where_and, product=request.GET['product'])
+            where_and = "AND"
+        elif request.GET['set']:
+            sql_where = " {where_and} a.set LIKE '%{set}%' ".format(where_and=where_and, set=request.GET['set'])
+
         _sql_goods_list = sql_goods_list.format(**{
             '_image_prefix': image_path(),
-            '_where': '',
+            '_where': sql_where,
             '_order_by': 'ORDER BY a.id DESC',
             '_limit': sql_limit(request)
         })
         _sql_goods_list_count = sql_count(sql_goods_list.format(**{
             '_image_prefix': image_path(),
-            '_where': '',
+            '_where': sql_where,
             '_order_by': '',
             '_limit': ''
         }))
@@ -271,12 +279,18 @@ class ProductSearchView(APIView):
         from sqls import sql_product_search
 
         cursor = connection.cursor()
+        keyword = request.GET['keyword']
 
-
+        if keyword == 'all':
+            sql_where = ""
+        elif str(keyword).startswith('set_'):
+            sql_where = "WHERE a.`set` LIKE '%{_keyword}%'".format(_keyword=keyword[4:])
+        else:
+            sql_where = "WHERE a.`name` LIKE '%{_keyword}%'".format(_keyword=keyword)
 
         sql_product_search = sql_product_search.format(
             _image_prefix = image_path(),
-            _keyword = request.GET['keyword'] if request.GET['keyword'] != 'all' else ''
+            _where = sql_where
         )
 
         cursor.execute(sql_product_search)
@@ -500,7 +514,7 @@ class UserListView(APIView):
         sql_where = ""
         where_or_and = "WHERE "
         if request.GET['nickname']:
-            sql_where += "{} nickname LIKE '{}'".format(where_or_and, request.GET['nickname'])
+            sql_where += "{} nickname LIKE '%{}%'".format(where_or_and, request.GET['nickname'])
             where_or_and = " AND "
 
         _sql_user_list = sql_user_list.format(**{
