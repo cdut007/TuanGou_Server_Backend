@@ -39,7 +39,7 @@ class SendOrderInfoView(APIView):
 
         # https://docs.google.com/gview?embedded=true&url=http://www.ailinkgo.com:3000/excel/18502808546_2017-08-01.xlsx
         user_id = self.post.user_id
-        group_buy_id = request.data['group_buy_id'] or 1
+        group_buy_id = request.data['group_buy_id']
 
         user_info = UserProfile.objects.get(id=user_id)
         group_buy = GroupBuy.objects.get(id=group_buy_id)

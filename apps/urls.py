@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'merchant.order', UserViews.MerchantOrderView.as_view(), name='merchant.order'),
     url(r'merchant.group_buying.list', UserViews.UserGroupBuyingView.as_view(), name='merchant.group_buying.list'),
     url(r'merchant.notice.take_goods', UserViews.MerchantNoticeConsumerTakeGoodsView.as_view(), name='merchant.notice.take_goods'),
+    url(r'merchant.mc.end', UserViews.MerchantMcEnd.as_view(), name='merchant.mc.end'),
 
     # shop -> web
     url(r'merchant.index.page', ShopViews.MerchantIndexPageView.as_view(), name='merchant.index.page'),
