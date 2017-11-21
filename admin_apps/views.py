@@ -554,6 +554,7 @@ class GroupBuyingOrderView(APIView):
     def get(self, request):
         from sqls import sql_merchant_order_summary, sql_group_buying_sell_summary
         cursor = connection.cursor()
+        cursor.execute("SET SESSION group_concat_max_len = 204800;")
 
         sql_merchant_order_summary = sql_merchant_order_summary % ({'group_buy_id': request.GET['groupbuying_id']})
         cursor.execute(sql_merchant_order_summary)
