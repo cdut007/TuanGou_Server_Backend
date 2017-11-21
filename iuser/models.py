@@ -50,7 +50,7 @@ class AgentOrder(models.Model):
     user = models.ForeignKey(UserProfile, verbose_name='团长')
     goods_ids = models.CharField(max_length=256, verbose_name='商品')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='申请时间')
-    mc_end = models.BooleanField(default=False)
+    mc_end = models.BooleanField(default=0)
 
     class Meta:
         verbose_name = u'团长订单'
