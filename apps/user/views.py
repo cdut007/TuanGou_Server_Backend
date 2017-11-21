@@ -22,7 +22,7 @@ class ConsumerOrderView(APIView):
         from sqls import sql_get_consumer_order
 
         if request.GET['group_buy_is_over'] == 1:
-            is_end = " AND (e.end_time < NOW())"
+            is_end = "AND e.end_time < NOW()"
         else:
             is_end = "AND e.end_time > NOW()"
 
