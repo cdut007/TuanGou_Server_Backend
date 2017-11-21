@@ -110,7 +110,8 @@ class SendOrderInfoView(APIView):
 
         if request.data['send_type'] == 'weixin':
             excel_url = 'www.ailinkgo.com/admin/excels/'+ send_record[0].excel_path
-            return Response(format_body(1, 'Success', {'excel_url': excel_url}))
+            title = group_buy.title
+            return Response(format_body(1, 'Success', {'excel_url': excel_url, 'title': title}))
 
         else:
             return Response(format_body(1, 'Success', ''))
