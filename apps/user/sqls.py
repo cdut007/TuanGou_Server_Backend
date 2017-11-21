@@ -64,7 +64,6 @@ FROM
 		AND a.agent_code = '%(merchant_code)s'
 	) AS temp
 LEFT JOIN market_groupbuy AS e ON temp.group_buy_id=e.id
-LEFT JOIN iuser_agentorder AS agent_order ON agent_order.group_buy_id = e.id AND agent_order.user_id=%(merchant_id)s
 LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
 LEFT JOIN lg_consumer_order_remarks AS g ON temp.group_buy_id=g.group_buying_id AND g.user_id=%(consumer_id)s AND g.merchant_code='%(merchant_code)s'
 WHERE 

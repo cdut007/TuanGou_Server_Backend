@@ -22,15 +22,14 @@ class ConsumerOrderView(APIView):
         from sqls import sql_get_consumer_order
 
         if request.GET['group_buy_is_over'] == 1:
-            is_end = "AND e.end_time < NOW()"
+            is_end = " AND e.end_time < NOW() "
         else:
-            is_end = "AND e.end_time > NOW()"
+            is_end = " AND e.end_time > NOW() "
 
         merchant = UserProfile.objects.get(openid=request.GET['merchant_code'])
 
         sql_get_consumer_order = sql_get_consumer_order % {
             'consumer_id': self.get.user_id,
-            'merchant_id': merchant.id,
             'merchant_code': request.GET['merchant_code'],
             'image_prefix': image_path(),
             '_is_end': is_end
