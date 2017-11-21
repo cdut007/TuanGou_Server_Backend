@@ -14,6 +14,24 @@ GROUP BY a.goods_classify_id
 ORDER BY a.add_time DESC
 """
 
+sql_web_index_page = """
+SELECT
+	CONCAT('{image_prefix}', c.image) AS image,
+	c.id AS classify_id,
+	c.`name`,
+	CONCAT('{image_prefix}', c.icon) AS icon
+FROM
+	iuser_agentorder AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+LEFT JOIN market_goodsclassify AS c ON c.id = b.goods_classify_id
+WHERE
+	b.end_time > NOW()
+AND b.on_sale = 1
+AND a.user_id = {user_id}
+GROUP BY b.goods_classify_id
+ORDER BY b.add_time DESC
+"""
+
 sql_goods_detail = """
 SELECT
 	a.id AS goods_id,

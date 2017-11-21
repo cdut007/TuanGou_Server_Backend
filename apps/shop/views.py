@@ -219,6 +219,7 @@ class GoodsDetailView(APIView):
 
 
 class IndexPageView(APIView):
+    @raise_general_exception
     def get(self, request):
         from sqls import sql_app_index_page
         cursor = connection.cursor()
@@ -228,6 +229,20 @@ class IndexPageView(APIView):
 
         return Response(format_body(1, 'Success', data))
 
+class MerchantIndexPageView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_web_index_page
+        cursor = connection.cursor()
+
+        cursor.execute(sql_web_index_page.format(
+            image_prefix = image_path(),
+            user_id = self.get.user_id
+        ))
+        data = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', data))
 
 
 

@@ -8,13 +8,14 @@ from other import views as OtherViews
 urlpatterns = [
     # user -> web
     url(r'consumer.order', UserViews.ConsumerOrderView.as_view(), name='consumer.order'),
-    url(r'merchant.order', UserViews.MerchantOrderView.as_view(), name='merchant.order'),
     url(r'merchant.groupbuying.share', UserViews.ShareGroupBuyingView.as_view(), name='merchant.groupbuying.share'),
     # user -> app
+    url(r'merchant.order', UserViews.MerchantOrderView.as_view(), name='merchant.order'),
     url(r'merchant.group_buying.list', UserViews.UserGroupBuyingView.as_view(), name='merchant.group_buying.list'),
     url(r'merchant.notice.take_goods', UserViews.MerchantNoticeConsumerTakeGoodsView.as_view(), name='merchant.notice.take_goods'),
 
     # shop -> web
+    url(r'merchant.index.page', ShopViews.MerchantIndexPageView.as_view(), name='merchant.index.page'),
     url(r'merchant.goods.detail', ShopViews.MerchantGoodsDetailView.as_view(), name='merchant.goods.detail'),
     url(r'merchant.goods.purchased.user', ShopViews.MerchantGoodsPurchasedUserView.as_view(), name='goods.purchased.user'),
     url(r'merchant.goods.list', ShopViews.MerchantGoodsListView.as_view(), name='merchant.goods.list'),
