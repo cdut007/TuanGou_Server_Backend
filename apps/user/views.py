@@ -9,7 +9,7 @@ from utils.common import format_body, dict_fetch_all, raise_general_exception, s
 from utils.winxin import WeiXinAPI
 from ilinkgo.config import image_path
 from market.models import GroupBuyGoods
-from iuser.models import GenericOrder
+from iuser.models import GenericOrder, UserProfile
 from  MySQLdb import escape_string
 
 from iuser.Authentication import Authentication
@@ -26,8 +26,11 @@ class ConsumerOrderView(APIView):
         else:
             is_end = "AND e.end_time > NOW()"
 
+        merchant = UserProfile.objects.get(openid=request.GET['merchant_code'])
+
         sql_get_consumer_order = sql_get_consumer_order % {
             'consumer_id': self.get.user_id,
+            'merchant_id': merchant.id,
             'merchant_code': request.GET['merchant_code'],
             'image_prefix': image_path(),
             'id_end': is_end
