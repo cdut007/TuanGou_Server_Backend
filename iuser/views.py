@@ -44,8 +44,7 @@ class UserView(APIView):
         serializer = UserProfileSerializer(data=request.data)
         if serializer.is_valid():
             user_record = UserProfile.objects.filter(
-                unionid=serializer.validated_data['unionid'],
-                openid=serializer.validated_data['openid']
+                unionid=serializer.validated_data['unionid']
             ).first()
             if user_record:
                 token = Authentication.generate_auth_token(user_record.id)
