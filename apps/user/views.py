@@ -24,7 +24,7 @@ class ConsumerOrderView(APIView):
         if request.GET['group_buy_is_over'] == 1:
             is_end = " AND (e.end_time < NOW() OR agent_order.mc_end=1)"
         else:
-            is_end = "AND e.end_time > NOW()"
+            is_end = "AND e.end_time > NOW() AND agent_order.mc_end!=1"
 
         merchant = UserProfile.objects.get(openid=request.GET['merchant_code'])
 
@@ -33,7 +33,7 @@ class ConsumerOrderView(APIView):
             'merchant_id': merchant.id,
             'merchant_code': request.GET['merchant_code'],
             'image_prefix': image_path(),
-            'id_end': is_end
+            '_is_end': is_end
         }
 
         cursor = connection.cursor()
