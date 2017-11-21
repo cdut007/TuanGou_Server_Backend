@@ -21,12 +21,12 @@ class ConsumerOrderView(APIView):
     def get(self, request):
         from sqls import sql_get_consumer_order
 
-        if request.GET['group_buy_is_over'] == 1:
+        if request.GET['group_buy_is_over'] == '1':
             is_end = " AND e.end_time < NOW() "
         else:
             is_end = " AND e.end_time > NOW() "
 
-        merchant = UserProfile.objects.get(openid=request.GET['merchant_code'])
+        # merchant = UserProfile.objects.get(openid=request.GET['merchant_code'])
 
         sql_get_consumer_order = sql_get_consumer_order % {
             'consumer_id': self.get.user_id,
