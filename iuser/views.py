@@ -3,7 +3,7 @@ import time, os
 from ilinkgo.config import excel_save_base_path
 from utils.common import dict_fetch_all, random_str, raise_general_exception
 from datetime import datetime
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.db import connection
 from django.core.mail import EmailMessage
 from rest_framework.response import Response
@@ -153,7 +153,7 @@ class AgentOrderView(APIView):
         if status == '0':
             agent_orders = agent_orders.filter(group_buy__end_time__gte=datetime.now(), mc_end=0)
         elif status == '1':
-            agent_orders = agent_orders.filter(group_buy__end_time__lt=datetime.now())
+            agent_orders = agent_orders.filter(Q(group_buy__end_time__lt=datetime.now()) | Q(mc_end=1))
 
         orders_serializer = AgentOrderSerializer(agent_orders, many=True)
         for agent_order in orders_serializer.data:
