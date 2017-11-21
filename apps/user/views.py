@@ -21,11 +21,16 @@ class ConsumerOrderView(APIView):
     def get(self, request):
         from sqls import sql_get_consumer_order
 
+        if request.GET['group_buy_is_over'] == 1:
+            is_end = " AND (e.end_time < NOW() OR agent_order.mc_end=1)"
+        else:
+            is_end = "AND e.end_time > NOW()"
+
         sql_get_consumer_order = sql_get_consumer_order % {
             'consumer_id': self.get.user_id,
             'merchant_code': request.GET['merchant_code'],
             'image_prefix': image_path(),
-            'group_buy_is_over': '>=' if request.GET['group_buy_is_over'] == '0' else '<='
+            'id_end': is_end
         }
 
         cursor = connection.cursor()
@@ -245,6 +250,22 @@ class MerchantNoticeConsumerTakeGoodsView(APIView):
         )
 
         return Response(format_body(1, 'Success', ''))
+
+
+class MerchantMcEnd(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def post(self, request):
+        from iuser.models import AgentOrder
+
+        order = AgentOrder.objects.get(
+            user_id=self.post.user_id,
+            group_buy_id=request.data['group_buying_id']
+        )
+        order.mc_end = 1
+        order.save()
+        return Response(format_body(1, 'Success', ''))
+
 
 
 

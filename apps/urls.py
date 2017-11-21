@@ -27,4 +27,5 @@ urlpatterns = [
 
     # other
     url(r'winxin.js_sdk_config', OtherViews.WeiXinJsSdkConfigView.as_view(), name='winxin.js_sdk_config'),
+    url(r'send.order.info', OtherViews.SendOrderInfoView.as_view(), name='send.order.info'),
 ]

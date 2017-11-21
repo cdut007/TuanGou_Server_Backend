@@ -151,7 +151,7 @@ class AgentOrderView(APIView):
         agent_orders = AgentOrder.objects.filter(user=self.get.user_id)
         user = UserProfile.objects.get(id=self.get.user_id)
         if status == '0':
-            agent_orders = agent_orders.filter(group_buy__end_time__gte=datetime.now())
+            agent_orders = agent_orders.filter(group_buy__end_time__gte=datetime.now(), mc_end=0)
         elif status == '1':
             agent_orders = agent_orders.filter(group_buy__end_time__lt=datetime.now())
 

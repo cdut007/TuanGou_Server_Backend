@@ -79,6 +79,7 @@ class AgentHomePageList(APIView):
             classify = GoodsClassify.objects.get(pk=classify['goods_classify'])
             classify_serializer = GoodsClassifySerializer(classify)
             group_buy = GroupBuy.objects.filter(agentorder__user=agent_user.id,
+                                                agent_order__mc_end=0,
                                                 end_time__gt=datetime.now(),
                                                 on_sale=True,
                                                 goods_classify=classify.id).order_by('-add_time').first()
