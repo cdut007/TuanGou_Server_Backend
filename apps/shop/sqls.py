@@ -1,3 +1,19 @@
+sql_app_index_page = """
+SELECT
+	CONCAT('{image_prefix}', b.image) AS image,
+	b.id AS classify_id,
+	b.`name`,
+	CONCAT('{image_prefix}', b.icon) AS icon
+FROM
+	market_groupbuy AS a
+LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
+WHERE
+	a.end_time > NOW()
+AND on_sale = 1
+GROUP BY a.goods_classify_id
+ORDER BY a.add_time DESC
+"""
+
 sql_goods_detail = """
 SELECT
 	a.id AS goods_id,

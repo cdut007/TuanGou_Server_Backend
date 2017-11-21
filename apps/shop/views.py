@@ -218,3 +218,16 @@ class GoodsDetailView(APIView):
         return Response(format_body(1, 'Success', data))
 
 
+class IndexPageView(APIView):
+    def get(self, request):
+        from sqls import sql_app_index_page
+        cursor = connection.cursor()
+
+        cursor.execute(sql_app_index_page.format(image_prefix=image_path()))
+        data = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', data))
+
+
+
+

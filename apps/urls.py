@@ -6,7 +6,7 @@ from shop import views as ShopViews
 from other import views as OtherViews
 
 urlpatterns = [
-    # user
+    # user -> web
     url(r'consumer.order', UserViews.ConsumerOrderView.as_view(), name='consumer.order'),
     url(r'merchant.order', UserViews.MerchantOrderView.as_view(), name='merchant.order'),
     url(r'merchant.groupbuying.share', UserViews.ShareGroupBuyingView.as_view(), name='merchant.groupbuying.share'),
@@ -22,6 +22,7 @@ urlpatterns = [
     # shop -> app
     url(r'goods.listing', ShopViews.GoodsListingView.as_view(), name='goods.listing'),
     url(r'goods.detail', ShopViews.GoodsDetailView.as_view(), name='goods.detail'),
+    url(r'index.page', ShopViews.IndexPageView.as_view(), name='index.page'),
 
     # other
     url(r'winxin.js_sdk_config', OtherViews.WeiXinJsSdkConfigView.as_view(), name='winxin.js_sdk_config'),
