@@ -68,7 +68,7 @@ LEFT JOIN iuser_agentorder AS agent_order ON agent_order.group_buy_id = e.id AND
 LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
 LEFT JOIN lg_consumer_order_remarks AS g ON temp.group_buy_id=g.group_buying_id AND g.user_id=%(consumer_id)s AND g.merchant_code='%(merchant_code)s'
 WHERE 
-	e.on_sale = 1 {_is_end}
+	e.on_sale = 1 %(_is_end)s
 GROUP BY 
 	temp.group_buy_id
 """
