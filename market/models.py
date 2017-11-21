@@ -42,6 +42,7 @@ class GroupBuy(models.Model):
     end_time = models.DateTimeField(default=datetime.now, verbose_name='结束时间')
     ship_time = models.DateField(default=datetime.now, verbose_name='发货时间')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
+    eyu = models.CharField(max_length=64, default='')
 
     class Meta:
         verbose_name = u'团购'

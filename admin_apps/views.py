@@ -379,7 +379,8 @@ class GroupBuyingCreateView(APIView):
             end_time = group_buying_info['end_time'],
             ship_time = group_buying_info['ship_time'],
             add_time = datetime.now(),
-            on_sale = group_buying_info['on_sale']
+            on_sale = group_buying_info['on_sale'],
+            eyu = group_buying_info['eyu']
         )
         new_goupy_buying.save()
 
@@ -417,7 +418,8 @@ class GroupBuyingUpdateView(APIView):
             end_time = group_buying_info['end_time'],
             ship_time = group_buying_info['ship_time'],
             add_time = datetime.now(),
-            on_sale = group_buying_info['on_sale']
+            on_sale = group_buying_info['on_sale'],
+            eyu = group_buying_info['eyu']
         )
 
         cursor = connection.cursor()

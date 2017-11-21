@@ -125,6 +125,7 @@ SELECT
   DATE_FORMAT(a.end_time, '%Y-%m-%d %h:%i:%s') AS end_time,
   a.title,
   a.on_sale,
+  a.eyu,
   b.id AS classify
 FROM
   market_groupbuy AS a
@@ -348,4 +349,40 @@ LEFT JOIN market_goodsgallery AS b ON a.id=b.goods_id AND is_primary=1
 WHERE
 	a.created_by = 'admin_1'
 AND a.`set` = '6'
+"""
+
+sql_merchant_orders = """
+SELECT
+	temp2.group_buy_id,
+	CONCAT(GROUP_CONCAT(c.`name`, temp2.quantity)) AS order_summary
+FROM
+	(
+		SELECT
+			temp1.morder_id,
+			temp1.group_buy_id,
+			a.goods_id,
+			SUM(a.quantity) AS quantity,
+			temp1.add_time
+		FROM
+			(
+				SELECT
+					id AS morder_id,
+					goods_ids,
+					group_buy_id,
+					add_time
+				FROM
+					iuser_agentorder
+				WHERE
+					user_id = 206
+				ORDER BY
+					add_time DESC
+				LIMIT 0,5
+			) AS temp1
+		LEFT JOIN iuser_genericorder AS a ON FIND_IN_SET(a.goods_id, temp1.goods_ids)
+		GROUP BY temp1.morder_id, a.goods_id
+	) AS temp2
+LEFT JOIN market_groupbuygoods AS b ON b.id=temp2.goods_id
+LEFT JOIN market_goods AS c ON b.goods_id=c.id
+GROUP BY temp2.morder_id
+ORDER BY temp2.add_time DESC
 """

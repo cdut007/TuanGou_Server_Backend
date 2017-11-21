@@ -207,7 +207,8 @@ SELECT
 	) AS goods_list,
 	a.group_buy_id,
 	DATE_FORMAT(b.end_time,'%%Y-%%m-%%d %%H:%%i:%%s') AS end_time,
-	b.ship_time
+	b.ship_time,
+	b.eyu
 FROM
 	market_groupbuygoods AS a
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
@@ -223,6 +224,7 @@ sql_merchant_classify_group_buy_list_with_all_goods_v2 = """
 SELECT
 	a.id AS group_buy_id,
 	a.ship_time,
+	a.eyu,
 	IFNULL(e.remark,'') AS user_remark,
 	DATE_FORMAT(a.end_time,'%%Y-%%m-%%d %%H:%%i:%%s') AS end_time,
 	CONCAT(
