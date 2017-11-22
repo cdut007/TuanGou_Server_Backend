@@ -180,7 +180,8 @@ SELECT
       '\"}'
     ),
     ']'
-  ) AS hgh
+  ) AS hgh,
+  SUM(temp1.money) AS total_money
 FROM
   (
     SELECT
