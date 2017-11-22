@@ -181,7 +181,8 @@ SELECT
     ),
     ']'
   ) AS hgh,
-  SUM(temp1.money) AS total_money
+  SUM(temp1.money) AS total_money,
+  SUM(temp1.quantity) AS total_quantity
 FROM
   (
     SELECT
