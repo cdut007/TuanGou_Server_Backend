@@ -62,7 +62,7 @@ class SendOrderInfoView(APIView):
             order_list = dict_fetch_all(cursor)
 
             if not order_list:
-                return Response(format_body(7, 'Generic order empty', ''))
+                return Response(format_body(17, 'Generic order empty', ''))
 
             sql2 = sql2 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
             cursor.execute(sql2)
@@ -109,7 +109,7 @@ class SendOrderInfoView(APIView):
             return Response(format_body(1, 'Success', ''))
 
         if request.data['send_type'] == 'weixin':
-            excel_url = 'www.ailinkgo.com/admin/excels/'+ send_record[0].excel_path
+            excel_url = 'https://docs.google.com/gview?embedded=true&url=' + 'www.ailinkgo.com/admin/excels/' + send_record[0].excel_path
             title = group_buy.title
             return Response(format_body(1, 'Success', {'excel_url': excel_url, 'title': title}))
 

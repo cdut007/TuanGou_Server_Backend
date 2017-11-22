@@ -18,6 +18,7 @@ class StatusCode():
     IndexError = 14
     JsApiConfigError = 15
     SaveImageFail = 16
+    orderEmpty = 17
 
 
 def mysql_config():
