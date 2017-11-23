@@ -122,7 +122,7 @@ sql_group_buying_detail = """
 SELECT
   a.id,
   DATE_FORMAT(a.ship_time, '%Y-%m-%d') AS ship_time,
-  DATE_FORMAT(a.end_time, '%Y-%m-%d %h:%i:%s') AS end_time,
+  DATE_FORMAT(a.end_time, '%Y/%m/%d %h:%i:%s') AS end_time,
   a.title,
   a.on_sale,
   a.eyu,
