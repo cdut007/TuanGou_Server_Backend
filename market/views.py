@@ -263,7 +263,7 @@ class MerchantIndexPage(APIView):
         from sql import sql_web_index_page_old
 
         cursor = connection.cursor()
-
+        cursor.execute("SET SESSION group_concat_max_len = 204800;")
         cursor.execute(sql_web_index_page_old % {
             'image_prefix' :image_path(),
             'user_id' : self.get.user_id
