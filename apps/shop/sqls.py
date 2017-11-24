@@ -32,6 +32,51 @@ GROUP BY b.goods_classify_id
 ORDER BY b.add_time DESC
 """
 
+sql_web_index_page_old = """
+SELECT
+	CONVERT(CONCAT(
+			'\{"id\": \"',
+			e.id,
+			'\", ',
+			'\"name\": \"',
+			e.`name`,
+			'\", ',
+			'\"desc\": \"',
+			e.`desc`,
+			'\", ',
+			'\"icon\": \"',
+			e.icon,
+			'\", ',
+			'\"image\": \"',
+			e.image,
+			'\"}'
+	) USING utf8)  AS classify,
+	CONCAT(
+		'[',
+		GROUP_CONCAT(
+			'\{"goods_id\": \"',
+			c.id,
+			'\", ',
+			'\"image\": \"',
+			d.image,
+			'\"}'
+		),
+		']'
+	) AS goods_list
+FROM
+	iuser_agentorder AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+LEFT JOIN market_groupbuygoods AS c ON FIND_IN_SET(c.id, a.goods_ids)
+LEFT JOIN market_goodsgallery AS d ON c.goods_id=d.goods_id AND d.is_primary=1
+LEFT JOIN market_goodsclassify AS e ON e.id=b.goods_classify_id
+WHERE
+	user_id = 172
+AND b.end_time > NOW()
+AND a.mc_end = 0
+GROUP BY
+	a.group_buy_id
+"""
+
 sql_goods_detail = """
 SELECT
 	a.id AS goods_id,

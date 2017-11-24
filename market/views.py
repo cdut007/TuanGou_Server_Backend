@@ -1,4 +1,4 @@
-
+import json
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -9,6 +9,8 @@ from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
 from ilinkgo.config import image_path
 from iuser.models import AgentOrder, UserProfile, GenericOrder
+from iuser.Authentication import Authentication
+from utils.common import raise_general_exception, dict_fetch_all
 
 # Create your views here.
 
@@ -79,7 +81,6 @@ class AgentHomePageList(APIView):
             classify = GoodsClassify.objects.get(pk=classify['goods_classify'])
             classify_serializer = GoodsClassifySerializer(classify)
             group_buy = GroupBuy.objects.filter(agentorder__user=agent_user.id,
-                                                agent_order__mc_end=0,
                                                 end_time__gt=datetime.now(),
                                                 on_sale=True,
                                                 goods_classify=classify.id).order_by('-add_time').first()
@@ -252,3 +253,25 @@ class FileManagerView(APIView):
             'file_list': file_list
         }
         return Response(data)
+
+
+class MerchantIndexPage(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from django.db import connection
+        from sql import sql_web_index_page_old
+
+        cursor = connection.cursor()
+
+        cursor.execute(sql_web_index_page_old % {
+            'image_prefix' :image_path(),
+            'user_id' : self.get.user_id
+        })
+        data = dict_fetch_all(cursor)
+        for item in data:
+            item['classify'] = json.loads(item['classify'])
+            item['goods'] = json.loads(item['goods'])
+
+        return Response(format_body(1, 'Success', data))
+

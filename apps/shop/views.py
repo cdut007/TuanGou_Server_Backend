@@ -229,6 +229,7 @@ class IndexPageView(APIView):
 
         return Response(format_body(1, 'Success', data))
 
+
 class MerchantIndexPageView(APIView):
     @Authentication.token_required
     @raise_general_exception
