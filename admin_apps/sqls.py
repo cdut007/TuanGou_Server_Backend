@@ -161,7 +161,7 @@ FROM
 	market_goodsclassify
 """
 
-sql_merchant_order_summary = """
+sql_group_buying_orders = """
 SELECT
   a.id AS user_id,
   a.openid AS merchant_code,
@@ -303,6 +303,64 @@ GROUP BY
 	temp.user_id
 """
 
+sql_merchant_order_summary = """
+SELECT
+	temp2.group_buy_id,
+	d.title,
+	SUM(temp2.quantity) AS total_quantity,
+	SUM(b.price*temp2.quantity) AS total_money,
+	CONCAT(
+		'[',
+		GROUP_CONCAT(
+		'{\"name\": \"',
+		CONCAT(c.`name`, ' $', b.price, ' ', b.brief_dec), 
+		'\", ',
+		'\"quantity\": \"',	
+		temp2.quantity,
+		'\", ',
+		'\"money\": \"',	
+		b.price*temp2.quantity,
+		'\"}'
+		),
+		']'
+	) AS order_goods
+FROM
+	(
+		SELECT
+			temp1.morder_id,
+			temp1.group_buy_id,
+			a.goods_id,
+			SUM(a.quantity) AS quantity,
+			temp1.add_time
+		FROM
+			(
+				SELECT
+					id AS morder_id,
+					goods_ids,
+					group_buy_id,
+					add_time
+				FROM
+					iuser_agentorder
+				WHERE
+					user_id = %(user_id)s
+				ORDER BY
+					add_time DESC
+				LIMIT %(start)s, 5
+			) AS temp1
+		LEFT JOIN iuser_genericorder AS a ON FIND_IN_SET(a.goods_id, temp1.goods_ids)
+		GROUP BY
+			temp1.morder_id,
+			a.goods_id
+	) AS temp2
+LEFT JOIN market_groupbuygoods AS b ON b.id = temp2.goods_id
+LEFT JOIN market_goods AS c ON b.goods_id = c.id
+LEFT JOIN market_groupbuy AS d ON temp2.group_buy_id=d.id
+GROUP BY
+	temp2.morder_id
+ORDER BY
+	temp2.add_time DESC
+"""
+
 sql_product_set_update = """
 UPDATE market_goods SET `set`='{new_set}' WHERE `set`='{old_set}'
 """
@@ -353,38 +411,4 @@ WHERE
 AND a.`set` = '6'
 """
 
-sql_merchant_orders = """
-SELECT
-	temp2.group_buy_id,
-	CONCAT(GROUP_CONCAT(c.`name`, temp2.quantity)) AS order_summary
-FROM
-	(
-		SELECT
-			temp1.morder_id,
-			temp1.group_buy_id,
-			a.goods_id,
-			SUM(a.quantity) AS quantity,
-			temp1.add_time
-		FROM
-			(
-				SELECT
-					id AS morder_id,
-					goods_ids,
-					group_buy_id,
-					add_time
-				FROM
-					iuser_agentorder
-				WHERE
-					user_id = 206
-				ORDER BY
-					add_time DESC
-				LIMIT 0,5
-			) AS temp1
-		LEFT JOIN iuser_genericorder AS a ON FIND_IN_SET(a.goods_id, temp1.goods_ids)
-		GROUP BY temp1.morder_id, a.goods_id
-	) AS temp2
-LEFT JOIN market_groupbuygoods AS b ON b.id=temp2.goods_id
-LEFT JOIN market_goods AS c ON b.goods_id=c.id
-GROUP BY temp2.morder_id
-ORDER BY temp2.add_time DESC
-"""
+

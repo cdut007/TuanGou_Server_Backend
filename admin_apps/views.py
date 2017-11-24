@@ -552,12 +552,12 @@ class UserProfileUpdateView(APIView):
 class GroupBuyingOrderView(APIView):
     @raise_general_exception
     def get(self, request):
-        from sqls import sql_merchant_order_summary, sql_group_buying_sell_summary
+        from sqls import sql_group_buying_orders, sql_group_buying_sell_summary
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
 
-        sql_merchant_order_summary = sql_merchant_order_summary % ({'group_buy_id': request.GET['groupbuying_id']})
-        cursor.execute(sql_merchant_order_summary)
+        sql_group_buying_orders = sql_group_buying_orders % ({'group_buy_id': request.GET['groupbuying_id']})
+        cursor.execute(sql_group_buying_orders)
         orders_summary = dict_fetch_all(cursor)
         for item in orders_summary:
             item['hgh'] = json.loads(item['hgh'])
@@ -567,6 +567,34 @@ class GroupBuyingOrderView(APIView):
         sell_summary = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'orders_summary': orders_summary, 'sell_summary': sell_summary}))
+
+
+class MerchantOrderSummaryView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_merchant_order_summary
+        cursor = connection.cursor()
+        cursor.execute("SET SESSION group_concat_max_len = 204800;")
+
+        query = {
+            'user_id': request.GET['user_id'],
+            'start': (int(request.GET['cur_page'])-1)*5
+        }
+
+        sql_merchant_order_summary = sql_merchant_order_summary % query
+        cursor.execute(sql_merchant_order_summary)
+        orders = dict_fetch_all(cursor)
+
+        for item in orders:
+            if item['order_goods']:
+                item['order_goods'] = json.loads(item['order_goods'])
+
+        sql_more = "SELECT id FROM iuser_agentorder WHERE user_id = %(user_id)s ORDER BY add_time DESC LIMIT %(start)s, 5" % query
+        cursor.execute(sql_more)
+        data = dict_fetch_all(cursor)
+        more = 1 if data else 0
+
+        return Response(format_body(1, 'Success', {'order_summary': orders, 'more': more}))
 
 
 class MerchantOrderDetailView(APIView):
