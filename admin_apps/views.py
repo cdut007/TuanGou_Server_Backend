@@ -576,12 +576,10 @@ class MerchantOrderSummaryView(APIView):
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
 
-        query = {
+        sql_merchant_order_summary = sql_merchant_order_summary % {
             'user_id': request.GET['user_id'],
             'start': (int(request.GET['cur_page'])-1)*5
         }
-
-        sql_merchant_order_summary = sql_merchant_order_summary % query
         cursor.execute(sql_merchant_order_summary)
         orders = dict_fetch_all(cursor)
 
@@ -589,7 +587,10 @@ class MerchantOrderSummaryView(APIView):
             if item['order_goods']:
                 item['order_goods'] = json.loads(item['order_goods'])
 
-        sql_more = "SELECT id FROM iuser_agentorder WHERE user_id = %(user_id)s ORDER BY add_time DESC LIMIT %(start)s, 5" % query
+        sql_more = "SELECT id FROM iuser_agentorder WHERE user_id = %(user_id)s ORDER BY add_time DESC LIMIT %(start)s, 5" % {
+            'user_id': request.GET['user_id'],
+            'start': int(request.GET['cur_page'])*5
+        }
         cursor.execute(sql_more)
         data = dict_fetch_all(cursor)
         more = 1 if data else 0
