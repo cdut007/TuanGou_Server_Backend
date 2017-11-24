@@ -490,7 +490,7 @@ class ClassifyCreateView(APIView):
         cursor = connection.cursor()
 
         icon = save_images(request.data['icon'], 'Classify')
-        image = save_images(request.data['icon'], 'Classify')
+        image = save_images(request.data['image'], 'Classify')
 
         classify = GoodsClassify(
             name=request.data['name'],
