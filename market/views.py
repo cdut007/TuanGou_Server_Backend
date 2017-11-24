@@ -262,11 +262,13 @@ class MerchantIndexPage(APIView):
         from django.db import connection
         from sql import sql_web_index_page_old
 
+        agent_user = UserProfile.objects.get(openid=request.GET['agent_code'])
+
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
         cursor.execute(sql_web_index_page_old % {
             'image_prefix' :image_path(),
-            'user_id' : self.get.user_id
+            'user_id' : agent_user.id
         })
         data = dict_fetch_all(cursor)
         for item in data:
