@@ -104,7 +104,7 @@ class ProductCreateView(APIView):
         if str(self.post.user_id).startswith('admin_'):
             owner = self.post.user_id
         else:
-            owner = 'app_'+ self.post.user_id
+            owner = 'app_'+ str(self.post.user_id)
 
         goods = Goods(
             name = request.data['name'],
