@@ -51,10 +51,10 @@ SELECT
 			e.`desc`,
 			'\", ',
 			'\"icon\": \"',
-			CONCAT('%(image_prefix)s', e.icon)
+			CONCAT('%(image_prefix)s', e.icon),
 			'\", ',
 			'\"image\": \"',
-			CONCAT('%(image_prefix)s', e.image)
+			CONCAT('%(image_prefix)s', e.image),
 			'\"}'
 	) USING utf8)  AS classify,
 	CONCAT(
