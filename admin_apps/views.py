@@ -576,8 +576,10 @@ class MerchantOrderSummaryView(APIView):
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
 
+        merchant = UserProfile.objects.get(id=request.GET['user_id'])
         sql_merchant_order_summary = sql_merchant_order_summary % {
             'user_id': request.GET['user_id'],
+            'merchant_code': merchant.openid,
             'start': (int(request.GET['cur_page'])-1)*5
         }
         cursor.execute(sql_merchant_order_summary)

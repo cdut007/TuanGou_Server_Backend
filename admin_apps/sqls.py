@@ -347,7 +347,7 @@ FROM
 					add_time DESC
 				LIMIT %(start)s, 5
 			) AS temp1
-		LEFT JOIN iuser_genericorder AS a ON FIND_IN_SET(a.goods_id, temp1.goods_ids)
+		LEFT JOIN iuser_genericorder AS a ON FIND_IN_SET(a.goods_id, temp1.goods_ids) AND a.agent_code='%(merchant_code)s'                                         
 		GROUP BY
 			temp1.morder_id,
 			a.goods_id
