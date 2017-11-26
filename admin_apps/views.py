@@ -584,15 +584,16 @@ class UserProfileUpdateView(APIView):
 class GroupBuyingOrderView(APIView):
     @raise_general_exception
     def get(self, request):
-        from sqls import sql_group_buying_orders, sql_group_buying_sell_summary
+        from sqls import sql_group_buying_orders_v2, sql_group_buying_sell_summary
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
 
-        sql_group_buying_orders = sql_group_buying_orders % ({'group_buy_id': request.GET['groupbuying_id']})
+        sql_group_buying_orders = sql_group_buying_orders_v2 % ({'group_buy_id': request.GET['groupbuying_id']})
         cursor.execute(sql_group_buying_orders)
         orders_summary = dict_fetch_all(cursor)
         for item in orders_summary:
-            item['hgh'] = json.loads(item['hgh'])
+            if item['goods_list']:
+                item['goods_list'] = json.loads(item['goods_list'])
 
         sql_group_buying_sell_summary = sql_group_buying_sell_summary.format(group_buy_id=request.GET['groupbuying_id'])
         cursor.execute(sql_group_buying_sell_summary)
@@ -608,8 +609,10 @@ class MerchantOrderSummaryView(APIView):
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
 
+        merchant = UserProfile.objects.get(id=request.GET['user_id'])
         sql_merchant_order_summary = sql_merchant_order_summary % {
             'user_id': request.GET['user_id'],
+            'merchant_code': merchant.openid,
             'start': (int(request.GET['cur_page'])-1)*5
         }
         cursor.execute(sql_merchant_order_summary)

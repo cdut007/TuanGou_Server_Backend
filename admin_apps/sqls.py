@@ -224,6 +224,61 @@ GROUP BY
   temp1.agent_code
 """
 
+sql_group_buying_orders_v2 = """
+SELECT
+    temp1.merchant_id,
+    temp1.merchant_code,
+	CONVERT(CONCAT(temp1.merchant_id, '  ', c.nickname) USING utf8) AS merchant_name,
+	SUM(temp2.quantity) AS total_quantity,
+	SUM(a.price*temp2.quantity) AS total_money,
+	CONCAT(
+	'[',
+	GROUP_CONCAT(
+		'{\"name\": \"',
+		CONCAT(b.`name`, ' $', a.price, ' ', a.brief_dec),
+		'\", ',
+		'\"quantity\": \"',
+		temp2.quantity,
+		'\", ',
+		'\"money\": \"',
+		ROUND(a.price*temp2.quantity, 2),
+		'\"}'
+	),
+	']'
+	) AS goods_list
+FROM
+	(
+		SELECT
+			a.id AS aorder_id,
+			a.group_buy_id,
+			a.user_id AS merchant_id,
+			b.openid AS merchant_code
+		FROM
+			iuser_agentorder AS a
+		LEFT JOIN iuser_userprofile AS b ON a.user_id = b.id
+		WHERE
+			group_buy_id = %(group_buy_id)s
+	) AS temp1
+LEFT JOIN (
+	SELECT
+		a.user_id AS consumer_id,
+		a.agent_code,
+		SUM(a.quantity) AS quantity,
+		a.goods_id,
+		b.group_buy_id
+	FROM
+		iuser_genericorder AS a
+	LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+	WHERE
+		b.group_buy_id = %(group_buy_id)s
+	GROUP BY a.agent_code, a.goods_id
+) AS temp2 ON temp1.group_buy_id=temp2.group_buy_id AND temp1.merchant_code=temp2.agent_code
+LEFT JOIN market_groupbuygoods AS a ON temp2.goods_id=a.id
+LEFT JOIN market_goods AS b ON b.id=a.goods_id
+LEFT JOIN iuser_userprofile AS c ON temp1.merchant_id=c.id
+GROUP BY temp1.merchant_id
+"""
+
 sql_group_buying_sell_summary = """
 SELECT
 	CONCAT(b.`name`,' $', a.price,' ', a.brief_dec) AS goods,
@@ -275,6 +330,7 @@ SELECT
 	address,
 	phone_num,
 	is_agent,
+	headimgurl,
     IF (is_agent, openid, '') AS merchant_code
 FROM
 	iuser_userprofile
@@ -366,7 +422,7 @@ FROM
 					add_time DESC
 				LIMIT %(start)s, 5
 			) AS temp1
-		LEFT JOIN iuser_genericorder AS a ON FIND_IN_SET(a.goods_id, temp1.goods_ids)
+		LEFT JOIN iuser_genericorder AS a ON FIND_IN_SET(a.goods_id, temp1.goods_ids) AND a.agent_code='%(merchant_code)s'                                         
 		GROUP BY
 			temp1.morder_id,
 			a.goods_id
