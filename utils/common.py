@@ -80,8 +80,17 @@ def sql_limit(request):
 
     return _limit
 
+
 def sql_count(sql):
     return "SELECT COUNT(*) AS count FROM(" + sql + ") AS temp"
+
+
+def get_owner(user_id):
+    if str(user_id).startswith('admin_'):
+        owner = user_id
+    else:
+        owner = 'app_' + str(user_id)
+    return owner
 
 
 def save_images(image_file, destination='Goods', create_thumbnail=False):

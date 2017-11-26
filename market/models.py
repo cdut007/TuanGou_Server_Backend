@@ -25,6 +25,7 @@ class GoodsClassify(models.Model):
     desc = models.CharField(max_length=256, verbose_name='描述',default='')
     icon = models.ImageField(upload_to='images/Classify', verbose_name='图标', default='')
     image = models.ImageField(upload_to='images/Classify', verbose_name='图片', default='')
+    created_by = models.CharField(max_length=64, default='')
 
     class Meta:
         verbose_name = u'商品类别'
@@ -43,6 +44,7 @@ class GroupBuy(models.Model):
     ship_time = models.DateField(default=datetime.now, verbose_name='发货时间')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
     eyu = models.CharField(max_length=64, default='')
+    created_by = models.CharField(max_length=64, default='')
 
     class Meta:
         verbose_name = u'团购'

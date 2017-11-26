@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from utils.common import format_body, dict_fetch_all, raise_general_exception
 from ilinkgo.config import image_path
-from utils.common import sql_limit, sql_count, save_images
+from utils.common import sql_limit, sql_count, save_images, get_owner
 
 from market.models import Goods, GoodsClassify
 from iuser.models import UserProfile
@@ -101,11 +101,6 @@ class ProductCreateView(APIView):
     def post(self, request):
         from sqls import sql_insert_goods_gallery
 
-        if str(self.post.user_id).startswith('admin_'):
-            owner = self.post.user_id
-        else:
-            owner = 'app_'+ str(self.post.user_id)
-
         goods = Goods(
             name = request.data['name'],
             desc = request.data['desc'],
@@ -114,7 +109,7 @@ class ProductCreateView(APIView):
             default_unit = request.data['default_unit'],
             set = request.data['set'],
             brief_desc = request.data['brief_desc'],
-            created_by = owner
+            created_by = get_owner(self.post.user_id)
         )
         goods.save()
 
@@ -188,13 +183,8 @@ class ProductSetListView(APIView):
     def get(self, request):
         from sqls import sql_product_set_list
 
-        if str(self.get.user_id).startswith('admin_'):
-            owner = self.get.user_id
-        else:
-            owner = 'app_'+ str(self.get.user_id)
-
         sql_product_set_list = sql_product_set_list.format(
-            owner = owner,
+            _owner = get_owner(self.get.user_id),
             _image_prefix = image_path(),
             _limit = sql_limit(request)
         )
@@ -211,15 +201,10 @@ class ProductSetGoodsView(APIView):
     def get(self, request):
         from sqls import sql_product_set_goods
 
-        if str(self.get.user_id).startswith('admin_'):
-            owner = self.get.user_id
-        else:
-            owner = 'app_'+ str(self.get.user_id)
-
         sql_product_set_goods = sql_product_set_goods.format(
-            owner = owner,
+            _owner = get_owner(self.get.user_id),
             _image_prefix=image_path(),
-            set = request.GET['set']
+            _set = request.GET['set']
         )
         cursor = connection.cursor()
         cursor.execute(sql_product_set_goods)
@@ -343,7 +328,27 @@ class GroupBuyingListView(APIView):
         }))
 
 
+class MerchantGroupBuyingListView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from  sqls import sql_merchant_group_buying_list
+
+        cursor = connection.cursor()
+
+        _sql_group_buying_list = sql_merchant_group_buying_list.format(
+            _owner = 'admin_1',
+            _image_prefix = image_path(),
+            _limit = sql_limit(request)
+        )
+        cursor.execute(_sql_group_buying_list)
+        data = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'groupbuying_list': data}))
+
+
 class GroupBuyingDetailView(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def get(self, request):
         from sqls import sql_group_buying_detail, sql_group_buying_products
@@ -365,6 +370,7 @@ class GroupBuyingDetailView(APIView):
 
 
 class GroupBuyingCreateView(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def post(self, request):
         from market.models import GroupBuy
@@ -373,14 +379,21 @@ class GroupBuyingCreateView(APIView):
         group_buying_info = request.data['groupbuying_info']
         group_buying_products = request.data['groupbuying_products']
 
+        if str(self.post.user_id).startswith('admin_'):
+            title = group_buying_info['title']
+        else:
+            merchant = UserProfile.objects.get(pk=self.post.user_id)
+            title = '【团长-'+str(merchant.nickname)+'】 '+str(group_buying_info['eyu'])
+
         new_goupy_buying = GroupBuy(
             goods_classify_id = group_buying_info['classify'],
-            title = group_buying_info['title'],
+            title = title,
             end_time = group_buying_info['end_time'],
             ship_time = group_buying_info['ship_time'],
             add_time = datetime.now(),
             on_sale = group_buying_info['on_sale'],
-            eyu = group_buying_info['eyu']
+            eyu = group_buying_info['eyu'],
+            created_by = get_owner(self.post.user_id)
         )
         new_goupy_buying.save()
 
@@ -403,6 +416,7 @@ class GroupBuyingCreateView(APIView):
 
 
 class GroupBuyingUpdateView(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def post(self, request):
         from market.models import GroupBuy
@@ -414,13 +428,14 @@ class GroupBuyingUpdateView(APIView):
 
         GroupBuy.objects.filter(pk=group_buying_info['id']).update(
             goods_classify_id = group_buying_info['classify'],
-            title = group_buying_info['title'],
             end_time = group_buying_info['end_time'],
             ship_time = group_buying_info['ship_time'],
             add_time = datetime.now(),
             on_sale = group_buying_info['on_sale'],
             eyu = group_buying_info['eyu']
         )
+        if str(self.post.user_id).startswith('admin_'):
+            GroupBuy.objects.filter(pk=group_buying_info['id']).update(title=group_buying_info['title'])
 
         cursor = connection.cursor()
 
@@ -446,12 +461,16 @@ class GroupBuyingUpdateView(APIView):
 
 
 class ClassifyListView(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def get(self, request):
         from sqls import sql_classify_list
         cursor = connection.cursor()
 
-        sql_classify_list = sql_classify_list.format(_image_prefix=image_path())
+        sql_classify_list = sql_classify_list.format(
+            _image_prefix=image_path(),
+            _owner=get_owner(self.get.user_id)
+        )
         cursor.execute(sql_classify_list)
         classify_list = dict_fetch_all(cursor)
 
@@ -459,6 +478,7 @@ class ClassifyListView(APIView):
 
 
 class ClassifyUpdateView(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def post(self, request):
         from sqls import sql_classify_list
@@ -468,40 +488,52 @@ class ClassifyUpdateView(APIView):
         classify.name = request.data['name']
         classify.desc = request.data['desc']
 
-        if not request.data['icon']=='undefined':
+        if request.data.has_key('icon') and (not request.data['icon']=='undefined'):
             new_icon = save_images(request.data['icon'], 'Classify')
             classify.icon = new_icon
-        if not request.data['image']=='undefined':
+        if request.data.has_key('image') and not request.data['image']=='undefined':
             new_image = save_images(request.data['image'], 'Classify')
             classify.image = new_image
 
         classify.save()
 
-        cursor.execute(sql_classify_list.format(_image_prefix=image_path()))
+        cursor.execute(sql_classify_list.format(
+            _image_prefix=image_path(),
+            _owner=get_owner(self.post.user_id)
+        ))
         classify_list = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'classify_list': classify_list}))
 
 
 class ClassifyCreateView(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def post(self, request):
         from sqls import sql_classify_list
         cursor = connection.cursor()
 
-        icon = save_images(request.data['icon'], 'Classify')
-        image = save_images(request.data['image'], 'Classify')
+        if str(self.post.user_id).startswith('admin_'):
+            icon = save_images(request.data['icon'], 'Classify')
+            image = save_images(request.data['image'], 'Classify')
+        else:
+            icon = '123'
+            image = '456'
 
         classify = GoodsClassify(
             name=request.data['name'],
             desc=request.data['desc'],
             icon=icon,
-            image=image
+            image=image,
+            created_by=get_owner(self.post.user_id)
         )
 
         classify.save()
 
-        cursor.execute(sql_classify_list.format(_image_prefix=image_path()))
+        cursor.execute(sql_classify_list.format(
+            _image_prefix=image_path(),
+            _owner=get_owner(self.post.user_id)
+        ))
         classify_list = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'classify_list': classify_list}))

@@ -118,6 +118,24 @@ INNER JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
 {_limit}
 """
 
+sql_merchant_group_buying_list = """
+SELECT
+	a.id AS group_buy_id,
+	DATE_FORMAT(a.end_time, '%Y-%m-%d %H:%i:%s') AS end_time,
+	b.`name`,
+	CONCAT('{_image_prefix}', d.image) AS image
+FROM
+	market_groupbuy AS a
+LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id=b.id
+LEFT JOIN market_groupbuygoods AS c ON c.group_buy_id=a.id
+LEFT JOIN market_goodsgallery AS d ON d.goods_id=c.goods_id AND d.is_primary=1
+WHERE
+	a.created_by = '{_owner}'
+GROUP BY a.id
+ORDER BY a.id DESC
+{_limit}
+"""
+
 sql_group_buying_detail = """
 SELECT
   a.id,
@@ -159,6 +177,7 @@ SELECT
 	CONCAT('{_image_prefix}', image) AS image
 FROM
 	market_goodsclassify
+WHERE created_by='{_owner}'
 """
 
 sql_group_buying_orders = """
@@ -382,7 +401,7 @@ FROM
 	market_goods AS a
 LEFT JOIN market_goodsgallery AS b ON a.id=b.goods_id AND is_primary=1
 WHERE
-	a.created_by = '{owner}'
+	a.created_by = '{_owner}'
 GROUP BY a.`set`
 {_limit}
 """
@@ -407,8 +426,8 @@ FROM
 	market_goods AS a 
 LEFT JOIN market_goodsgallery AS b ON a.id=b.goods_id AND is_primary=1
 WHERE
-	a.created_by = 'admin_1'
-AND a.`set` = '6'
+	a.created_by = '{_owner}'
+AND a.`set` = '{_set}'
 """
 
 
