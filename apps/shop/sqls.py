@@ -9,7 +9,7 @@ FROM
 LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
 WHERE
 	a.end_time > NOW()
-AND on_sale = 1
+AND a.on_sale = 1 AND LEFT(a.created_by, 5)='admin'
 GROUP BY a.goods_classify_id
 ORDER BY a.add_time DESC
 """
