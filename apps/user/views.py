@@ -288,16 +288,16 @@ class MerchantShareJieLong(APIView):
         return Response(format_body(1, 'Success', data))
 
 
-class MerchantCheckJieLong(APIView):
+class MerchantCheckJieLongDoing(APIView):
     @Authentication.token_required
     @raise_general_exception
     def get(self, request):
-        from sqls import sql_merchant_check_jie_long
+        from sqls import sql_merchant_check_jie_long_doing
         cursor = connection.cursor()
 
         cursor.execute("SET SESSION group_concat_max_len = 20480;")
         merchant = UserProfile.objects.get(pk=self.get.user_id)
-        sql_merchant_check_jie_long = sql_merchant_check_jie_long % {
+        sql_merchant_check_jie_long = sql_merchant_check_jie_long_doing % {
             '_merchant_id': self.get.user_id,
             '_merchant_code': merchant.openid,
             '_image_prefix': image_path()
@@ -308,6 +308,35 @@ class MerchantCheckJieLong(APIView):
         for item in data:
             if item['headimages']:
                 item['headimages'] = json.loads(item['headimages'])
+            else:
+                item['headimages'] = []
+
+        return Response(format_body(1, 'Success', data))
+
+
+class MerchantCheckJieLongDone(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_merchant_check_jie_long_done
+        cursor = connection.cursor()
+
+        cursor.execute("SET SESSION group_concat_max_len = 20480;")
+        merchant = UserProfile.objects.get(pk=self.get.user_id)
+        sql_merchant_check_jie_long = sql_merchant_check_jie_long_done % {
+            '_merchant_id': self.get.user_id,
+            '_merchant_code': merchant.openid,
+            '_image_prefix': image_path(),
+            '_limit': sql_limit(request)
+        }
+        cursor.execute(sql_merchant_check_jie_long)
+        data = dict_fetch_all(cursor)
+
+        for item in data:
+            if item['headimages']:
+                item['headimages'] = json.loads(item['headimages'])
+            else:
+                item['headimages'] = []
 
         return Response(format_body(1, 'Success', data))
 

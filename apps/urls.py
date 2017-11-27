@@ -15,7 +15,8 @@ urlpatterns = [
     url(r'merchant.notice.take_goods', UserViews.MerchantNoticeConsumerTakeGoodsView.as_view(), name='merchant.notice.take_goods'),
     url(r'merchant.mc.end', UserViews.MerchantMcEnd.as_view(), name='merchant.mc.end'),
     url(r'merchant.share.jielong', UserViews.MerchantShareJieLong.as_view(), name='merchant.share.jielong'),
-    url(r'merchant.check.jielong', UserViews.MerchantCheckJieLong.as_view(), name='merchant.check.jielong'),
+    url(r'merchant.check.jielong.dong', UserViews.MerchantCheckJieLongDoing.as_view(), name='merchant.check.jielong.doing'),
+    url(r'merchant.check.jielong.done', UserViews.MerchantCheckJieLongDone.as_view(), name='merchant.check.jielong.done'),
 
     # shop -> web
     url(r'merchant.index.page', ShopViews.MerchantIndexPageView.as_view(), name='merchant.index.page'),

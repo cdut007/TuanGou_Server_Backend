@@ -273,7 +273,7 @@ ORDER BY
 {_limit}
 """
 
-sql_merchant_check_jie_long = """
+sql_merchant_check_jie_long_doing = """
 SELECT
 	a.group_buy_id,
 	c.`name` AS classify_name,
@@ -303,4 +303,36 @@ AND b.end_time > NOW()
 GROUP BY a.group_buy_id
 ORDER BY
 	a.add_time DESC
+"""
+
+sql_merchant_check_jie_long_done = """
+SELECT
+	a.group_buy_id,
+	c.`name` AS classify_name,
+	CONCAT('%(_image_prefix)s', c.icon) AS icon,
+	COUNT(temp1.headimgurl) AS purchased_count,
+	CONCAT('[', SUBSTRING_INDEX(GROUP_CONCAT('\"', temp1.headimgurl, '\"'),',',10), ']') AS headimages
+FROM
+	iuser_agentorder AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+LEFT JOIN market_goodsclassify AS c ON b.goods_classify_id = c.id
+LEFT JOIN (
+	SELECT
+		b.group_buy_id,
+		c.headimgurl
+	FROM
+		iuser_genericorder AS a
+	LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+	LEFT JOIN iuser_userprofile AS c ON a.user_id=c.id
+	WHERE agent_code = '%(_merchant_code)s'
+	GROUP BY a.user_id
+	ORDER BY a.add_time DESC
+) AS temp1 ON a.group_buy_id=temp1.group_buy_id
+WHERE
+	a.user_id = %(_merchant_id)s
+AND (a.mc_end = 1 OR b.end_time < NOW())
+GROUP BY a.group_buy_id
+ORDER BY
+	a.add_time DESC
+%(_limit)s
 """
