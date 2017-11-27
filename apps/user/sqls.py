@@ -253,9 +253,10 @@ GROUP BY b.openid
 
 sql_merchant_share_jie_long = """
 SELECT
+    a.group_buy_id,
 	b.ship_time,
 	c.`name` AS classify_name,
-	CONCAT('{_image_prefix}', e.image) AS goods_image,
+	CONCAT('{_image_prefix}', e.image) AS goods_image
 FROM
 	iuser_agentorder AS a
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
@@ -266,6 +267,7 @@ WHERE
 	a.user_id = {_user_id}
 AND a.mc_end = 0
 AND b.end_time > NOW()
+GROUP BY a.group_buy_id
 ORDER BY
 	a.add_time DESC
 {_limit}

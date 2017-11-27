@@ -295,17 +295,19 @@ class MerchantCheckJieLong(APIView):
         from sqls import sql_merchant_check_jie_long
         cursor = connection.cursor()
 
+        cursor.execute("SET SESSION group_concat_max_len = 20480;")
         merchant = UserProfile.objects.get(pk=self.get.user_id)
-        sql_merchant_check_jie_long = sql_merchant_check_jie_long.format(
-            _merchant_id = self.get.user_id,
-            _merchant_code = merchant.openid,
-            _image_prefix = image_path()
-        )
+        sql_merchant_check_jie_long = sql_merchant_check_jie_long % {
+            '_merchant_id': self.get.user_id,
+            '_merchant_code': merchant.openid,
+            '_image_prefix': image_path()
+        }
         cursor.execute(sql_merchant_check_jie_long)
         data = dict_fetch_all(cursor)
 
         for item in data:
-            item['headimages'] = json.loads(item['headimages'])
+            if item['headimages']:
+                item['headimages'] = json.loads(item['headimages'])
 
         return Response(format_body(1, 'Success', data))
 
