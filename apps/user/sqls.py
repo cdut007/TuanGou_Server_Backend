@@ -250,3 +250,55 @@ AND FIND_IN_SET(
 )
 GROUP BY b.openid
 """
+
+sql_merchant_share_jie_long = """
+SELECT
+	b.ship_time,
+	c.`name` AS classify_name,
+	CONCAT('{_image_prefix}', e.image) AS goods_image,
+FROM
+	iuser_agentorder AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
+LEFT JOIN market_goodsclassify AS c ON b.goods_classify_id=c.id
+LEFT JOIN market_groupbuygoods AS d ON SUBSTRING_INDEX(a.goods_ids,',',1)=d.id
+LEFT JOIN market_goodsgallery AS e ON d.goods_id=e.goods_id
+WHERE
+	a.user_id = {_user_id}
+AND a.mc_end = 0
+AND b.end_time > NOW()
+ORDER BY
+	a.add_time DESC
+{_limit}
+"""
+
+sql_merchant_check_jie_long = """
+SELECT
+	a.group_buy_id,
+	c.`name` AS classify_name,
+	CONCAT('%(_image_prefix)s', c.icon) AS icon,
+	COUNT(temp1.headimgurl) AS purchased_count,
+	CONCAT('[', SUBSTRING_INDEX(GROUP_CONCAT('\"', temp1.headimgurl, '\"'),',',10), ']') AS headimages
+FROM
+	iuser_agentorder AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+LEFT JOIN market_goodsclassify AS c ON b.goods_classify_id = c.id
+LEFT JOIN (
+	SELECT
+		b.group_buy_id,
+		c.headimgurl
+	FROM
+		iuser_genericorder AS a
+	LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+	LEFT JOIN iuser_userprofile AS c ON a.user_id=c.id
+	WHERE agent_code = '%(_merchant_code)s'
+	GROUP BY a.user_id
+	ORDER BY a.add_time DESC
+) AS temp1 ON a.group_buy_id=temp1.group_buy_id
+WHERE
+	a.user_id = %(_merchant_id)s
+AND a.mc_end = 0
+AND b.end_time > NOW()
+GROUP BY a.group_buy_id
+ORDER BY
+	a.add_time DESC
+"""

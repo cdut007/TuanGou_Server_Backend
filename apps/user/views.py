@@ -270,6 +270,45 @@ class MerchantMcEnd(APIView):
         return Response(format_body(1, 'Success', ''))
 
 
+class MerchantShareJieLong(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_merchant_share_jie_long
+        cursor = connection.cursor()
+
+        sql_merchant_share_jie_long = sql_merchant_share_jie_long.format(
+            _user_id = self.get.user_id,
+            _image_prefix = image_path(),
+            _limit = sql_limit(request)
+        )
+        cursor.execute(sql_merchant_share_jie_long)
+        data = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', data))
+
+
+class MerchantCheckJieLong(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_merchant_check_jie_long
+        cursor = connection.cursor()
+
+        merchant = UserProfile.objects.get(pk=self.get.user_id)
+        sql_merchant_check_jie_long = sql_merchant_check_jie_long.format(
+            _merchant_id = self.get.user_id,
+            _merchant_code = merchant.openid,
+            _image_prefix = image_path()
+        )
+        cursor.execute(sql_merchant_check_jie_long)
+        data = dict_fetch_all(cursor)
+
+        for item in data:
+            item['headimages'] = json.loads(item['headimages'])
+
+        return Response(format_body(1, 'Success', data))
+
 
 
 
