@@ -10,7 +10,7 @@ from ilinkgo.config import image_path
 from utils.common import sql_limit, sql_count, save_images, get_owner
 
 from market.models import Goods, GoodsClassify
-from iuser.models import UserProfile
+from iuser.models import UserProfile, AgentOrder
 from iuser.Authentication import Authentication
 
 
@@ -383,9 +383,9 @@ class GroupBuyingCreateView(APIView):
             title = group_buying_info['title']
         else:
             merchant = UserProfile.objects.get(pk=self.post.user_id)
-            title = '【团长-'+str(merchant.nickname)+'】 '+str(group_buying_info['eyu'])
+            title = u'【团长-'+str(merchant.id)+u'】 '+str(group_buying_info['eyu'])
 
-        new_goupy_buying = GroupBuy(
+        new_group_buying = GroupBuy(
             goods_classify_id = group_buying_info['classify'],
             title = title,
             end_time = group_buying_info['end_time'],
@@ -395,7 +395,7 @@ class GroupBuyingCreateView(APIView):
             eyu = group_buying_info['eyu'],
             created_by = get_owner(self.post.user_id)
         )
-        new_goupy_buying.save()
+        new_group_buying.save()
 
         insert_values = ""
         for product in group_buying_products:
@@ -404,13 +404,36 @@ class GroupBuyingCreateView(APIView):
                 stock = product['stock'],
                 unit = product['unit'],
                 goods_id = product['org_goods_id'],
-                group_buy_id = new_goupy_buying.id
+                group_buy_id = new_group_buying.id
             )
 
         sql = sql_group_buying_goods_create % {'values': insert_values[0:-1]}
 
         cursor = connection.cursor()
         cursor.execute(sql)
+
+        if not str(self.post.user_id).startswith('admin_'):
+            sql_get_goods_ids = """
+            SELECT
+                CONCAT(GROUP_CONCAT(id)) AS goods_ids
+            FROM
+                market_groupbuygoods
+            WHERE
+                group_buy_id = {_id}
+            GROUP BY
+                group_buy_id
+            """.format(_id=new_group_buying.id)
+            cursor.execute(sql_get_goods_ids)
+            goods_ids = dict_fetch_all(cursor)
+            goods_ids = goods_ids[0]['goods_ids']
+
+            AgentOrder.objects.create(
+                goods_ids = goods_ids,
+                add_time = datetime.now(),
+                user_id = self.post.user_id,
+                group_buy_id = new_group_buying.id,
+                mc_end = 0
+            )
 
         return Response(format_body(1, 'Success', ''))
 
