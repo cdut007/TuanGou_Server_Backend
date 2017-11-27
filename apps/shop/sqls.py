@@ -296,6 +296,7 @@ LEFT JOIN market_goods AS d ON d.id=a.goods_id
 WHERE b.goods_classify_id = %(classify_id)s
 AND b.end_time > NOW() 
 AND b.on_sale=1
+AND LEFT(b.created_by, 5)='admin'
 GROUP BY a.group_buy_id
 """
 
