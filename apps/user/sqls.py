@@ -340,6 +340,7 @@ ORDER BY
 sql_merchant_jie_long_purchased_user = """
 SELECT
 	temp2.nickname,
+	temp2.headimgurl,
 	CONCAT(
 		'[',
 		GROUP_CONCAT(
@@ -372,7 +373,8 @@ SELECT
 	b.group_buy_id,
 	CONCAT(c.`name`, ' $', b.price, ' ', b.brief_dec) AS goods_name,
 	a.quantity,
-	CONVERT(d.nickname USING utf8) AS nickname
+	CONVERT(d.nickname USING utf8) AS nickname,
+	d.headimgurl
 FROM
 	iuser_genericorder AS a
 LEFT JOIN market_groupbuygoods AS b ON a.goods_id=b.id
