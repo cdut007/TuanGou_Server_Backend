@@ -440,6 +440,28 @@ class MerchantCheckJieLongDone(APIView):
         return Response(format_body(1, 'Success', data))
 
 
+class MerchantJieLongConsView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_merchant_jie_long_purchased_user
+        cursor = connection.cursor()
+
+        cursor.execute("SET SESSION group_concat_max_len = 20480;")
+        merchant = UserProfile.objects.filter(merchant_code=request.GET['merchant_code']).first()
+        sql_merchant_jie_long_purchased_user = sql_merchant_jie_long_purchased_user % {
+            '_merchant_code': merchant.merchant_code,
+            '_merchant_id': merchant.id,
+            '_limit': sql_limit(request)
+        }
+        cursor.execute(sql_merchant_jie_long_purchased_user)
+        data = dict_fetch_all(cursor)
+
+        for item in data:
+            item['goods_list'] = json.loads(item['goods_list'])
+
+        return Response(format_body(1, 'Success', data))
+
+
 
 
 

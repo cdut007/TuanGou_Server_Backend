@@ -336,3 +336,51 @@ ORDER BY
 	a.add_time DESC
 %(_limit)s
 """
+
+sql_merchant_jie_long_purchased_user = """
+SELECT
+	temp2.nickname,
+	CONCAT(
+		'[',
+		GROUP_CONCAT(
+			'{\"name": \"',
+			temp2.goods_name,
+			'\", ',
+			'\"quantity\": \"',
+			temp2.quantity,
+			'\"}'
+		),
+		']'
+	) AS goods_list
+FROM
+	(
+		SELECT
+			c.merchant_code,
+			a.group_buy_id
+		FROM
+			iuser_agentorder AS a
+		LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+		LEFT JOIN iuser_userprofile AS c ON c.id = a.user_id
+		WHERE
+			user_id = %(_merchant_id)s
+		AND a.mc_end = 0
+		AND b.end_time > NOW()
+	) AS temp1
+LEFT JOIN (
+SELECT
+	a.user_id AS consumer_id,
+	b.group_buy_id,
+	CONCAT(c.`name`, ' $', b.price, ' ', b.brief_dec) AS goods_name,
+	a.quantity,
+	CONVERT(d.nickname USING utf8) AS nickname
+FROM
+	iuser_genericorder AS a
+LEFT JOIN market_groupbuygoods AS b ON a.goods_id=b.id
+LEFT JOIN market_goods AS c ON c.id=b.goods_id
+LEFT JOIN iuser_userprofile AS d ON a.user_id=d.id
+WHERE
+	agent_code = '%(_merchant_code)s'
+) AS temp2 ON temp1.group_buy_id = temp2.group_buy_id
+GROUP BY temp2.consumer_id
+%(_limit)s
+"""
