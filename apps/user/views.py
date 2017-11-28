@@ -38,7 +38,8 @@ class UserLoginView(APIView):
             user.openid_web = request.data['openid']
 
         user.save()
-        return Response(format_body(1, 'Success', ''))
+        token = Authentication.generate_auth_token(user.id)
+        return Response(format_body(1, 'Success', {'token': token}))
 
 
 class ConsumerOrderView(APIView):
