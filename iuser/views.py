@@ -160,7 +160,7 @@ class AgentOrderView(APIView):
             all_goods = GroupBuyGoods.objects.filter(id__in=str(agent_order['goods_ids']).split(','))
             goods_serializer = GroupBuyGoodsSerializer(all_goods, many=True)
             for single_goods in  goods_serializer.data:
-                generic_orders = GenericOrder.objects.filter(agent_code=user.openid, goods=single_goods['id'], status=1)
+                generic_orders = GenericOrder.objects.filter(agent_code=user.merchant_code, goods=single_goods['id'], status=1)
                 single_goods['purchased'] =  generic_orders.aggregate(Sum('quantity'))['quantity__sum'] if generic_orders.aggregate(Sum('quantity'))['quantity__sum'] else 0
             agent_order['classify'] = GoodsClassifySerializer(group_buy.goods_classify).data
             agent_order['group_buy'] =GroupBuySerializer(group_buy).data
@@ -189,10 +189,10 @@ class AgentOrderView(APIView):
             classify_info = dict_fetch_all(cursor)
 
             if order_record:
-                return Response(format_body(4, 'The user already applied this group_buy', {'agent_url': web_link() + '?agent_code=' + user.openid, 'group_buy_info': classify_info}))
+                return Response(format_body(4, 'The user already applied this group_buy', {'agent_url': web_link() + '?agent_code=' + user.merchant_code, 'group_buy_info': classify_info}))
 
             serializer.save()
-            return Response(format_body(1, 'Success', {'agent_url': web_link() + '?agent_code=' + user.openid, 'group_buy_info': classify_info}))
+            return Response(format_body(1, 'Success', {'agent_url': web_link() + '?agent_code=' + user.merchant_code, 'group_buy_info': classify_info}))
 
         return Response(format_body(2, serializer.errors, ''))
 
@@ -420,14 +420,14 @@ class SendEmailView(APIView):
 
             cursor = connection.cursor()
 
-            sql1 = sql1 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
+            sql1 = sql1 % {'agent_code': user_info.merchant_code, 'group_buy_id': group_buy_id}
             cursor.execute(sql1)
             order_list = dict_fetch_all(cursor)
 
             if not order_list:
                 return Response(format_body(7, 'Generic order empty', ''))
 
-            sql2 = sql2 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
+            sql2 = sql2 % {'agent_code': user_info.merchant_code, 'group_buy_id': group_buy_id}
             cursor.execute(sql2)
             ship_list = dict_fetch_all(cursor)
 

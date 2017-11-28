@@ -15,21 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from django.views.static import serve
-
-from ilinkgo.settings import IMAGES_ROOT
 
 urlpatterns = [
-    url(r'images/(?P<path>.*)', serve, {'document_root': IMAGES_ROOT}),
-    url(r'excel/(?P<path>.*)', serve, {'document_root': 'excel'}),
     url(r'^api/v1/', include('market.urls')),
     url(r'^api/v1/', include('iuser.urls')),
-    url(r'^admin/', admin.site.urls),
-    url(r'admin/custom/market/', include('market.admin_urls')),
+    # url(r'^admin/', admin.site.urls),
+    # url(r'admin/custom/market/', include('market.admin_urls')),
 
     # v2
     url(r'^v2/api.', include('apps.urls')),
-
     # admin api
     url(r'v2/admin.', include('admin_apps.urls'))
 ]

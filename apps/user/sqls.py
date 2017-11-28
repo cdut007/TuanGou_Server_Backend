@@ -219,7 +219,7 @@ ORDER BY b.ship_time DESC
 
 sql_merchant_notice_consumer_take_goods = """
 SELECT
-	b.openid,
+	b.merchant_code,
 	b.nickname,
 	CONCAT(GROUP_CONCAT(d.`name`)) AS goods
 FROM
@@ -248,7 +248,7 @@ AND FIND_IN_SET(
 		AND group_buy_id = {group_buying_id}
 	)
 )
-GROUP BY b.openid
+GROUP BY b.merchant_code
 """
 
 sql_merchant_share_jie_long = """

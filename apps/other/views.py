@@ -57,14 +57,14 @@ class SendOrderInfoView(APIView):
 
             cursor = connection.cursor()
 
-            sql1 = sql1 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
+            sql1 = sql1 % {'agent_code': user_info.merchant_code, 'group_buy_id': group_buy_id}
             cursor.execute(sql1)
             order_list = dict_fetch_all(cursor)
 
             if not order_list:
                 return Response(format_body(17, 'Generic order empty', ''))
 
-            sql2 = sql2 % {'agent_code': user_info.openid, 'group_buy_id': group_buy_id}
+            sql2 = sql2 % {'agent_code': user_info.merchant_code, 'group_buy_id': group_buy_id}
             cursor.execute(sql2)
             ship_list = dict_fetch_all(cursor)
 

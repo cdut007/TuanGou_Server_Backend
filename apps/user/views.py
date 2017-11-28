@@ -14,6 +14,32 @@ from  MySQLdb import escape_string
 
 from iuser.Authentication import Authentication
 
+class UserLoginView(APIView):
+    @raise_general_exception
+    def post(self, request):
+        record = UserProfile.objects.filter(unionid=request.data['unionid']).first()
+        if record:
+            user = record
+        else:
+            user = UserProfile()
+            user.unionid = request.data['unionid']
+            user.sex = request.data['sex']
+            user.province = request.data['province']
+            user.city = request.data['city']
+            user.country = request.data['country']
+            user.privilege = request.data['privilege']
+
+        user.nickname = request.data['nickname']
+        user.headimgurl = request.data['headimgurl']
+
+        if request.data['login_from'] == 'app' and not user.openid_app:
+            user.openid_app = request.data['openid']
+        elif request.data['login_from'] == 'web' and not user.openid_web:
+            user.openid_web = request.data['openid']
+
+        user.save()
+        return Response(format_body(1, 'Success', ''))
+
 
 class ConsumerOrderView(APIView):
     @Authentication.token_required
@@ -299,7 +325,7 @@ class MerchantCheckJieLongDoing(APIView):
         merchant = UserProfile.objects.get(pk=self.get.user_id)
         sql_merchant_check_jie_long = sql_merchant_check_jie_long_doing % {
             '_merchant_id': self.get.user_id,
-            '_merchant_code': merchant.openid,
+            '_merchant_code': merchant.merchant_code,
             '_image_prefix': image_path()
         }
         cursor.execute(sql_merchant_check_jie_long)
@@ -325,7 +351,7 @@ class MerchantCheckJieLongDone(APIView):
         merchant = UserProfile.objects.get(pk=self.get.user_id)
         sql_merchant_check_jie_long = sql_merchant_check_jie_long_done % {
             '_merchant_id': self.get.user_id,
-            '_merchant_code': merchant.openid,
+            '_merchant_code': merchant.merchant_code,
             '_image_prefix': image_path(),
             '_limit': sql_limit(request)
         }

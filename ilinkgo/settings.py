@@ -39,8 +39,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'suit',
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -189,33 +188,6 @@ CORS_ALLOW_HEADERS = (
     'x-requested-with',
     'Pragma',
 )
-
-SUIT_CONFIG = {
-    'ADMIN_NAME': u'Ilinkgo',
-    'CONFIRM_UNSAVED_CHANGES': False,
-    'SEARCH_URL': '',
-    'MENU': (
-        {
-            'app': 'iuser',
-            'label': u'用户管理',
-            'icon': 'icon-briefcase',
-            'models': (
-                {'model': 'UserProfile', 'label': u'用户'},
-                {'model': 'AgentOrder', 'label': u'团长订单'}
-            )
-        },
-        {
-            'app': 'market',
-            'label': u'团购管理',
-            'icon': 'icon-briefcase',
-            'models': (
-                {'model': 'Banner', 'label': u'轮播图'},
-                {'model': 'Goods', 'label': u'仓库'},
-                {'model': 'GroupBuy', 'label': u'发布团购'}
-            )
-        }
-    )
-}
 
 EMAIL_HOST = 'smtp.exmail.qq.com'
 EMAIL_PORT = 465

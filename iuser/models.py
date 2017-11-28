@@ -10,7 +10,9 @@ from market.models import GroupBuy, GroupBuyGoods
 
 class UserProfile(models.Model):
     nickname = models.CharField(max_length=1024, verbose_name=u'昵称')
-    openid = models.CharField(max_length=256, verbose_name='openId')
+    openid_web = models.CharField(max_length=256, default='')
+    openid_app = models.CharField(max_length=256, default='')
+    merchant_code = models.CharField(max_length=256, default='')
     unionid = models.CharField(max_length=256, verbose_name='unionid')
     sex = models.CharField(max_length=2, choices=(('0', u'无'), ('1', u'男'), ('2', u'女')), default='1', verbose_name='性别')
     province = models.CharField(max_length=32, verbose_name='省份', blank=True)

@@ -210,7 +210,7 @@ WHERE
 			id = {goods_id}
 	)
 AND a.id != {goods_id}
-AND e.openid='{merchant_code}'
+AND e.merchant_code='{merchant_code}'
 """
 
 sql_classify_info = """
@@ -391,7 +391,7 @@ WHERE
 	a.goods_classify_id = %(classify_id)s
 AND a.on_sale = 1
 AND a.end_time >= NOW()
-AND d.openid = '%(merchant_code)s'
+AND d.merchant_code = '%(merchant_code)s'
 GROUP BY
 	a.id
 """
@@ -498,7 +498,7 @@ WHERE
 	a.goods_classify_id = %(classify_id)s
 AND a.on_sale = 1
 AND a.end_time >= NOW()
-AND d.openid = '%(merchant_code)s'
+AND d.merchant_code = '%(merchant_code)s'
 GROUP BY
 	a.id
 """

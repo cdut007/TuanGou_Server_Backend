@@ -183,7 +183,7 @@ WHERE created_by='{_owner}'
 sql_group_buying_orders = """
 SELECT
   a.id AS user_id,
-  a.openid AS merchant_code,
+  a.merchant_code AS merchant_code,
   a.nickname,
   CONCAT(
     '[',
@@ -219,7 +219,7 @@ FROM
       a.agent_code,
       a.goods_id
   ) AS temp1
-LEFT JOIN iuser_userprofile AS a ON temp1.agent_code=a.openid
+LEFT JOIN iuser_userprofile AS a ON temp1.agent_code=a.merchant_code
 GROUP BY
   temp1.agent_code
 """
@@ -252,7 +252,7 @@ FROM
 			a.id AS aorder_id,
 			a.group_buy_id,
 			a.user_id AS merchant_id,
-			b.openid AS merchant_code
+			b.merchant_code AS merchant_code
 		FROM
 			iuser_agentorder AS a
 		LEFT JOIN iuser_userprofile AS b ON a.user_id = b.id
@@ -331,7 +331,7 @@ SELECT
 	phone_num,
 	is_agent,
 	headimgurl,
-    IF (is_agent, openid, '') AS merchant_code
+    IF (is_agent, merchant_code, '') AS merchant_code
 FROM
 	iuser_userprofile
 {_where}

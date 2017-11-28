@@ -1,5 +1,5 @@
 # _*_ coding:utf-8 _*_
-import json
+import json, uuid
 from datetime import datetime
 from django.db import connection
 from rest_framework.response import Response
@@ -599,6 +599,8 @@ class UserProfileUpdateView(APIView):
     def post(self, request):
         user = UserProfile.objects.get(pk=request.data['user_id'])
         user.is_agent = request.data['role']
+        if not user.merchant_code:
+            user.merchant_code = uuid.uuid3(uuid.NAMESPACE_DNS, 'vbx_ads')
         user.save()
 
         return Response(format_body(1, 'Success', ''))
@@ -635,7 +637,7 @@ class MerchantOrderSummaryView(APIView):
         merchant = UserProfile.objects.get(id=request.GET['user_id'])
         sql_merchant_order_summary = sql_merchant_order_summary % {
             'user_id': request.GET['user_id'],
-            'merchant_code': merchant.openid,
+            'merchant_code': merchant.merchant_code,
             'start': (int(request.GET['cur_page'])-1)*5
         }
         cursor.execute(sql_merchant_order_summary)
