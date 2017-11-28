@@ -250,7 +250,7 @@ class MerchantNoticeConsumerTakeGoodsView(APIView):
 
         for user in users:
             data = {
-                "touser": user['openid'],
+                "touser": user['openid_web'],
                 "template_id": "2VIBzyWPhU8tmUr0YT3oWtff-kY6jN8VhRWod22OpjE",
                 "data": {
                     "first": {

@@ -219,7 +219,7 @@ ORDER BY b.ship_time DESC
 
 sql_merchant_notice_consumer_take_goods = """
 SELECT
-	b.merchant_code,
+	b.openid_web,
 	b.nickname,
 	CONCAT(GROUP_CONCAT(d.`name`)) AS goods
 FROM
