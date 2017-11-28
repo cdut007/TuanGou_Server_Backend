@@ -367,7 +367,7 @@ FROM
 		AND a.mc_end = 0
 		AND b.end_time > NOW()
 	) AS temp1
-LEFT JOIN (
+INNER JOIN (
 SELECT
 	a.user_id AS consumer_id,
 	b.group_buy_id,
