@@ -6,7 +6,8 @@ from shop import views as ShopViews
 from other import views as OtherViews
 
 urlpatterns = [
-    url(r'user.login', UserViews.UserLoginView.as_view(), name='user.login'),
+    url(r'user.login.app', UserViews.UserLoginFromAppView.as_view(), name='user.login.app'),
+    url(r'user.login.web', UserViews.UserLoginFromWebView.as_view(), name='user.login.web'),
     url(r'user.info', UserViews.UserInfoView.as_view(), name='user.info'),
     # user -> web
     url(r'consumer.order', UserViews.ConsumerOrderView.as_view(), name='consumer.order'),

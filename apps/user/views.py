@@ -14,31 +14,47 @@ from  MySQLdb import escape_string
 
 from iuser.Authentication import Authentication
 
-class UserLoginView(APIView):
+class UserLoginFromAppView(APIView):
     @raise_general_exception
     def post(self, request):
-        record = UserProfile.objects.filter(unionid=request.data['unionid']).first()
+        user_id = self.save_wei_xin_user(request.data, 'app')
+        token = Authentication.generate_auth_token(user_id)
+        return Response(format_body(1, 'Success', {'token': token}))
+
+    @staticmethod
+    def save_wei_xin_user(info, login_from):
+        record = UserProfile.objects.filter(unionid=info['unionid']).first()
         if record:
             user = record
         else:
             user = UserProfile()
-            user.unionid = request.data['unionid']
-            user.sex = request.data['sex']
-            user.province = request.data['province']
-            user.city = request.data['city']
-            user.country = request.data['country']
-            user.privilege = request.data['privilege']
+            user.unionid = info['unionid']
+            user.sex = info['sex']
+            user.province = info['province']
+            user.city = info['city']
+            user.country = info['country']
+            user.privilege = info['privilege']
 
-        user.nickname = request.data['nickname']
-        user.headimgurl = request.data['headimgurl']
+        user.nickname = info['nickname']
+        user.headimgurl = info['headimgurl']
 
-        if request.data['login_from'] == 'app' and not user.openid_app:
-            user.openid_app = request.data['openid']
-        elif request.data['login_from'] == 'web' and not user.openid_web:
-            user.openid_web = request.data['openid']
-
+        if login_from == 'app' and not user.openid_app:
+            user.openid_app = info['openid']
+        elif login_from == 'web' and not  user.openid_web:
+            user.openid_web = info['openid']
         user.save()
-        token = Authentication.generate_auth_token(user.id)
+        return user.id
+
+
+class UserLoginFromWebView(APIView):
+    @raise_general_exception
+    def get(self,request):
+        wei_xin= WeiXinAPI()
+        authorization_info = wei_xin.website_authorization_access_token(request.GET['code'])
+        user_info = wei_xin.website_user_info(authorization_info['access_token'], authorization_info['openid'])
+
+        user_id = UserLoginFromAppView.save_wei_xin_user(user_info, 'web')
+        token = Authentication.generate_auth_token(user_id)
         return Response(format_body(1, 'Success', {'token': token}))
 
 
