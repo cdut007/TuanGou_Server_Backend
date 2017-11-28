@@ -10,13 +10,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
     privilege = serializers.ListField()
     class Meta:
         model = UserProfile
-        fields = ('id','nickname', 'openid', 'sex', 'province', 'city', 'country',
+        fields = ('id','nickname', 'merchant_code', 'sex', 'province', 'city', 'country',
                   'headimgurl', 'privilege', 'unionid', 'address')
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
-        data['agent_url'] = web_link() + '?agent_code=' + data['openid'] if instance.is_agent else ''
-        data.pop('openid')
+        data['agent_url'] = web_link() + '?agent_code=' + data['merchant_code'] if instance.is_agent else ''
         data.pop('unionid')
         data.pop('privilege')
         return data

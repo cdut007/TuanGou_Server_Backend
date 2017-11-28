@@ -42,6 +42,22 @@ class UserLoginView(APIView):
         return Response(format_body(1, 'Success', {'token': token}))
 
 
+class UserInfoView(APIView):
+    @Authentication.token_required
+    def get(self, request):
+        user = UserProfile.objects.get(pk=self.get.user_id)
+        data = {
+            'nickname': user.nickname,
+            'headimgurl': user.headimgurl,
+            'address_set': {
+                'address': user.address,
+                'phone_num': user.phone_num
+            },
+        }
+
+        return Response(format_body(1, 'Success', {'user_profile': data}))
+
+
 class ConsumerOrderView(APIView):
     @Authentication.token_required
     @raise_general_exception

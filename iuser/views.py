@@ -92,7 +92,7 @@ class AgentInfoView(APIView):
     def get(self, request):
         code = request.GET.get('agent_code', '')
         try:
-            user_profile = UserProfile.objects.get(openid=code)
+            user_profile = UserProfile.objects.get(merchant_code=code)
         except UserProfile.DoesNotExist:
             return Response(format_body(0, 'Object does not exist', ''))
         serializer = UserProfileSerializer(user_profile)

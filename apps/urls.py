@@ -7,6 +7,7 @@ from other import views as OtherViews
 
 urlpatterns = [
     url(r'user.login', UserViews.UserLoginView.as_view(), name='user.login'),
+    url(r'user.info', UserViews.UserInfoView.as_view(), name='user.info'),
     # user -> web
     url(r'consumer.order', UserViews.ConsumerOrderView.as_view(), name='consumer.order'),
     url(r'merchant.groupbuying.share', UserViews.ShareGroupBuyingView.as_view(), name='merchant.groupbuying.share'),
