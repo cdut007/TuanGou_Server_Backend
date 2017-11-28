@@ -256,7 +256,6 @@ class FileManagerView(APIView):
 
 
 class MerchantIndexPage(APIView):
-    @Authentication.token_required
     @raise_general_exception
     def get(self, request):
         from django.db import connection
