@@ -262,7 +262,7 @@ class MerchantIndexPage(APIView):
         from django.db import connection
         from sql import sql_web_index_page_old
 
-        agent_user = UserProfile.objects.get(openid=request.GET['agent_code'])
+        agent_user = UserProfile.objects.get(merchant_code=request.GET['agent_code'])
 
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
