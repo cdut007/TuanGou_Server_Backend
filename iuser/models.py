@@ -84,6 +84,7 @@ class GenericOrder(models.Model):
     quantity = models.PositiveIntegerField(default=1, verbose_name='数量')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='购买时间')
     status = models.BooleanField(default=True, verbose_name='取消状态')
+    anonymity = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = u'普通订单'
