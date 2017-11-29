@@ -144,7 +144,8 @@ SELECT
   a.title,
   a.on_sale,
   a.eyu,
-  b.id AS classify
+  b.id AS classify,
+  b.`name` AS classify_name
 FROM
   market_groupbuy AS a
 LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id=b.id
