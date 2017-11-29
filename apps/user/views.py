@@ -177,7 +177,7 @@ class ConsumerOrderView(APIView):
         cursor.execute("COMMIT;")
 
         #给团长发送微信通知
-        merchent = UserProfile.objects.filter(merchant_code=request.data['merchant_code']).first()
+        merchant = UserProfile.objects.filter(merchant_code=request.data['merchant_code']).first()
         consumer = UserProfile.objects.get(pk=self.post.user_id)
         sql_get_goods = """
         SELECT
@@ -192,7 +192,7 @@ class ConsumerOrderView(APIView):
         goods_name = dict_fetch_all(cursor)
         goods_name = goods_name[0]['name'] if len(request.data['goods_list'])==1 else str(goods_name[0]['name'])+'等'
         data = {
-            "touser": merchent['openid_web'],
+            "touser": merchant.openid_web,
             "template_id": "gvE4aH7C9LD51v1VkgQ98jlKWec5VLxk1cxnYN6LGl4",
             "data": {
                 "first": {
