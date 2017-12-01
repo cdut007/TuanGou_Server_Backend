@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'image.clean', views.CleanImages.as_view(), name='image.clean'),
     url(r'goods.search', views.ProductSearchView.as_view(), name='goods.search'),
     # app admin
-    url(r'goods.list.set', views.ProductSetGoodsView.as_view(), name='product.list.set'),
+    url(r'set.goods.list', views.ProductSetGoodsView.as_view(), name='set.product.list'),
     url(r'goods.set$', views.ProductSetListView.as_view(), name='product.set'),
     url(r'merchant.groupbuying.list', views.MerchantGroupBuyingListView.as_view(), name='merchant.groupbuying.list'),
 

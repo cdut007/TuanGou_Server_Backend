@@ -465,7 +465,8 @@ GROUP BY a.`set`
 
 sql_product_set_goods = """
 SELECT
-	a.id,
+    'NULL' AS goods_id,
+	a.id AS org_goods_id,
 	a.`name`,
 	a.default_price,
 	a.default_stock,
