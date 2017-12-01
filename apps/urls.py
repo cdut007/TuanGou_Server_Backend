@@ -10,10 +10,11 @@ urlpatterns = [
     url(r'user.login.web', UserViews.UserLoginFromWebView.as_view(), name='user.login.web'),
     url(r'user.info', UserViews.UserInfoView.as_view(), name='user.info'),
     # user -> web
-    url(r'consumer.order', UserViews.ConsumerOrderView.as_view(), name='consumer.order'),
+    url(r'consumer.order$', UserViews.ConsumerOrderView.as_view(), name='consumer.order'),
     url(r'merchant.groupbuying.share', UserViews.ShareGroupBuyingView.as_view(), name='merchant.groupbuying.share'),
     url(r'merchant.jielong.cons', UserViews.MerchantJieLongConsView.as_view(), name='merchnat.jielong.cons'),
     url(r'consumer.order.list', UserViews.GetConsumerOrderView.as_view(), name='consumer.order.list'),
+    url(r'consumer.order.detail', UserViews.ConsumerOrderDetailView.as_view(), name='consumer.order.detail'),
     # user -> app
     url(r'merchant.order', UserViews.MerchantOrderView.as_view(), name='merchant.order'),
     url(r'merchant.group_buying.list', UserViews.UserGroupBuyingView.as_view(), name='merchant.group_buying.list'),

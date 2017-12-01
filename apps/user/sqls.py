@@ -423,3 +423,61 @@ FROM
     LEFT JOIN iuser_userprofile AS a ON FIND_IN_SET(a.id, temp1.consumer_ids)
     GROUP BY temp1.merchant_code,temp1.group_buy_id
 """
+
+sql_consumer_order_detail = """
+SELECT
+	temp1.total_money,
+	temp1.total_quantity,
+	temp1.goods_list,
+	DATE_FORMAT(temp1.add_time, '%%Y-%%m-%%d %%H:%%i:%%s') AS time,
+	'%(_merchant_code)s' AS merchant_code,
+	'%(_group_buying_id)s' AS group_buy_id,
+	a.remark
+FROM
+	(
+		SELECT
+			b.group_buy_id,
+			SUM(a.quantity) AS total_quantity,
+			SUM(a.quantity*b.price) AS total_money,
+			a.add_time,
+			CONCAT(
+				'[',
+				GROUP_CONCAT(
+					'{\"name\": \"',
+					c.`name`,
+					'\", ',
+					'\"image\": \"',
+                    CONCAT(
+                        '%(_image_prefix)s',
+                        SUBSTRING_INDEX(d.image, '.', 1),
+                        '_thumbnail.',
+                        SUBSTRING_INDEX(d.image, '.', -1)
+                    ),
+					'\", ',
+					'\"price\": \"',
+					b.price,
+					'\", ',
+					'\"quantity\": \"',
+					a.quantity,
+					'\", ',
+					'\"unit\": \"',
+					b.brief_dec,
+					'\"}'
+				),
+				']'
+			) AS goods_list
+		FROM
+			iuser_genericorder AS a
+		LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+		LEFT JOIN market_goods AS c ON b.goods_id = c.id
+		LEFT JOIN market_goodsgallery AS d ON d.goods_id = b.goods_id
+		AND d.is_primary = 1
+		WHERE
+			user_id = %(_consumer_id)s
+		AND agent_code = '%(_merchant_code)s'
+		AND b.group_buy_id = '%(_group_buying_id)s'
+		GROUP BY b.group_buy_id
+	) AS temp1
+LEFT JOIN lg_consumer_order_remarks AS a 
+ON a.group_buying_id='%(_group_buying_id)s' AND a.merchant_code='%(_merchant_code)s' AND user_id=%(_consumer_id)s
+"""
