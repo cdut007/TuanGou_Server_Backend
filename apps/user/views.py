@@ -462,6 +462,36 @@ class MerchantJieLongConsView(APIView):
         return Response(format_body(1, 'Success', data))
 
 
+class GetConsumerOrderView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_consumer_order_web
+        cursor = connection.cursor()
+
+        if request.GET['status'] == 'done':
+            _doing_or_done = ' d.mc_end=1 OR e.end_time < NOW() '
+            _limit = sql_limit(request)
+        else:
+            _doing_or_done = ' d.mc_end=0 AND e.end_time > NOW() '
+            _limit = ''
+
+        cursor.execute("SET SESSION group_concat_max_len = 20480;")
+        sql_consumer_order_web = sql_consumer_order_web % {
+            '_image_prefix': image_path(),
+            '_doing_or_done': _doing_or_done,
+            '_consumer_id': self.get.user_id,
+            '_limit': _limit
+        }
+        cursor.execute(sql_consumer_order_web)
+        data = dict_fetch_all(cursor)
+
+        for item in data:
+            item['consumers'] = json.loads(item['consumers'])
+
+        return Response(format_body(1, 'Success', data))
+
+
 
 
 
