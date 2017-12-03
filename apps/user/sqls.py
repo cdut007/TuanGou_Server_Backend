@@ -256,6 +256,7 @@ sql_merchant_share_jie_long = """
 SELECT
     a.group_buy_id,
 	b.ship_time,
+	DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s') AS end_time,
 	c.`name` AS classify_name,
 	CONCAT('{_image_prefix}', e.image) AS goods_image
 FROM
