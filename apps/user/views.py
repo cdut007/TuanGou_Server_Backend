@@ -125,7 +125,8 @@ class ConsumerOrderView(APIView):
                 self.post.user_id,
                 goods_item['goods_id'],
                 goods_item['goods_quantity'],
-                1
+                1,
+                request.data['anonymity']
             )
         sql_create_consumer_order = sql_create_consumer_order % {'values': insert_values[0:-2]}
         cursor.execute(sql_create_consumer_order)

@@ -80,7 +80,8 @@ INSERT INTO iuser_genericorder (
 	user_id,
 	goods_id,
 	quantity,
-	status
+	status,
+	anonymity
 )
 VALUES
 %(values)s
