@@ -119,7 +119,7 @@ class ConsumerOrderView(APIView):
         for goods_item in request.data['goods_list']:
             if int(goods_item['goods_quantity']) <= 0:
                 continue
-            insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}', {5}),\n".format(
+            insert_values += "('{0}', '{1}', '{2}', '{3}', '{4}', {5}, {6}),\n".format(
                 request.data['merchant_code'],
                 datetime.now(),
                 self.post.user_id,
