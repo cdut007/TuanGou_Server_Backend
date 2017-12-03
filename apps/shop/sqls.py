@@ -114,8 +114,8 @@ GROUP BY
 sql_goods_purchased_user = """
 (
 SELECT
-	b.nickname,
-	IF(a.anonymity, 'anonymity', b.headimgurl) AS headimgurl,
+	IF(a.anonymity, '猜猜我是谁？', b.nickname) AS nickname,
+	IF(a.anonymity, 'http://www.ailinkgo.com/adminTesting/images/Default/anonymity.png', b.headimgurl) AS headimgurl,
 	0 AS count
 FROM
 	iuser_genericorder AS a
@@ -374,8 +374,8 @@ LEFT JOIN (
 	LEFT JOIN (
 		SELECT
 			DISTINCT ig1.goods_id,
-			iu2.nickname,
-			IF(ig1.anonymity, 'anonymity', iu2.headimgurl) AS headimgurl
+			IF(ig1.anonymity, '猜猜我是谁？', iu2.nickname) AS nickname,
+			IF(ig1.anonymity, 'http://www.ailinkgo.com/adminTesting/images/Default/anonymity.png', iu2.headimgurl) AS headimgurl
 		FROM
 			iuser_genericorder AS ig1
 		LEFT JOIN iuser_userprofile AS iu2 ON ig1.user_id = iu2.id
