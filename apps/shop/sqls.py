@@ -1,3 +1,5 @@
+# _*_ coding:utf-8 _*_
+
 sql_app_index_page = """
 SELECT
 	CONCAT('{image_prefix}', b.image) AS image,
