@@ -121,7 +121,7 @@ SELECT
 	0 AS count
 FROM
 	iuser_genericorder AS a
-LEFT JOIN iuser_userprofile AS b ON a.user_id = b.id
+INNER JOIN iuser_userprofile AS b ON a.user_id = b.id
 WHERE
 	a.goods_id = {goods_id} AND a.`status` = 1
 GROUP BY
@@ -380,7 +380,7 @@ LEFT JOIN (
 			IF(ig1.anonymity, 'http://www.ailinkgo.com/adminTesting/images/Default/anonymity.png', iu2.headimgurl) AS headimgurl
 		FROM
 			iuser_genericorder AS ig1
-		LEFT JOIN iuser_userprofile AS iu2 ON ig1.user_id = iu2.id
+		INNER JOIN iuser_userprofile AS iu2 ON ig1.user_id = iu2.id
 		ORDER BY ig1.add_time DESC
 	) AS e ON e.goods_id=a.id
 	GROUP BY
