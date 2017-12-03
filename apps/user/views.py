@@ -515,6 +515,27 @@ class ConsumerOrderDetailView(APIView):
         return Response(format_body(1, 'Success', data))
 
 
+class ConsumerOrderErtView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from sqls import sql_consumer_order_ert
+        cursor = connection.cursor()
+
+        cursor.execute("SET SESSION group_concat_max_len = 20480;")
+        sql_consumer_order_ert = sql_consumer_order_ert % {
+            'merchant_code': request.GET['merchant_code'],
+            'group_buying_id': request.GET['group_buying_id']
+        }
+        cursor.execute(sql_consumer_order_ert)
+        data = dict_fetch_all(cursor)
+
+        for item in data:
+            item['goods_list'] = json.loads(item['goods_list'])
+
+        return Response(format_body(1, 'Success', data))
+
+
 
 
 

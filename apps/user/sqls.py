@@ -481,3 +481,42 @@ FROM
 LEFT JOIN lg_consumer_order_remarks AS a 
 ON a.group_buying_id='%(_group_buying_id)s' AND a.merchant_code='%(_merchant_code)s' AND user_id=%(_consumer_id)s
 """
+
+sql_consumer_order_ert = """
+SELECT
+	CONCAT(
+		'[',
+		GROUP_CONCAT(
+			'{\"name\": \"',
+			temp.`NAME`,
+			'\", ',
+			'\"quantity\": \"',
+			temp.quantity,
+			'\"}'
+		),
+		']'
+	) AS goods_list,
+	a.nickname,
+	a.headimgurl
+FROM
+	(
+		SELECT
+			a.user_id,
+			b.price,
+			b.price * a.quantity AS amount,
+			CONCAT(c.`name`) AS NAME,
+			a.quantity,
+			DATE_FORMAT(a.add_time,'%%Y-%%m-%%d %%H:%%i') AS time
+		FROM
+			iuser_genericorder AS a
+		LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+		LEFT JOIN market_goods AS c ON b.goods_id = c.id
+		WHERE
+			a.agent_code = '%(merchant_code)s'
+		AND a.`status` = 1
+		AND b.group_buy_id = %(group_buying_id)s
+	) AS temp
+INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
+GROUP BY
+	temp.user_id
+"""

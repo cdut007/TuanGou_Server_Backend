@@ -4,7 +4,6 @@ from django.conf.urls import url, include
 
 from views import BannerList, GroupBuyList, HomePageList,GroupBuyGoodsDetail, GroupBuyDetailView, AgentHomePageList
 from views import UploadImageView, FileManagerView, MerchantIndexPage
-from admin_views import GroupBuyAdminView
 
 
 urlpatterns = [

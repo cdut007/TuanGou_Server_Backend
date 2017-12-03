@@ -1,3 +1,0 @@
-  "goods_list": [{"goods_id": 4, "goods_quantity": 1}, {"goods_id": 6, "goods_quantity": 1}],
-  "merchant_code": "1234567a",
-  "clear_cart": 0
