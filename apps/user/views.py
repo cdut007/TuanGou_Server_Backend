@@ -525,8 +525,9 @@ class ConsumerOrderErtView(APIView):
 
         cursor.execute("SET SESSION group_concat_max_len = 20480;")
         sql_consumer_order_ert = sql_consumer_order_ert % {
-            'merchant_code': request.GET['merchant_code'],
-            'group_buying_id': request.GET['group_buying_id']
+            '_merchant_code': request.GET['merchant_code'],
+            '_group_buying_id': request.GET['group_buying_id'],
+            '_limit': sql_limit(request)
         }
         cursor.execute(sql_consumer_order_ert)
         data = dict_fetch_all(cursor)

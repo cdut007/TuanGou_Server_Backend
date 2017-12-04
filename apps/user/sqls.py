@@ -514,11 +514,12 @@ FROM
 		LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
 		LEFT JOIN market_goods AS c ON b.goods_id = c.id
 		WHERE
-			a.agent_code = '%(merchant_code)s'
+			a.agent_code = '%(_merchant_code)s'
 		AND a.`status` = 1
-		AND b.group_buy_id = %(group_buying_id)s
+		AND b.group_buy_id = %(_group_buying_id)s
 	) AS temp
 INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
 GROUP BY
 	temp.user_id
+%(_limit)s
 """
