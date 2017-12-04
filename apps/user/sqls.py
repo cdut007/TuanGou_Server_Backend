@@ -392,6 +392,7 @@ GROUP BY temp2.consumer_id
 sql_consumer_order_web = """
 SELECT
     temp1.merchant_code,
+    temp1.merchant_name,
     temp1.group_buy_id,
     temp1.consumer_count,
     temp1.classify_name,
