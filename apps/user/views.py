@@ -512,12 +512,11 @@ class ConsumerOrderDetailView(APIView):
         }
         cursor.execute(sql_consumer_order_detail)
         data = dict_fetch_all(cursor)
-        data = data[0]
 
         for item in data:
             item['goods_list'] = json.loads(item['goods_list'])
 
-        return Response(format_body(1, 'Success', data))
+        return Response(format_body(1, 'Success', data[0]))
 
 
 class ConsumerOrderErtView(APIView):
