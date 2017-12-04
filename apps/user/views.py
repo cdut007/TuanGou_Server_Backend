@@ -490,6 +490,8 @@ class GetConsumerOrderView(APIView):
         for item in data:
             if item['consumers']:
                 item['consumers'] = json.loads(item['consumers'])
+            else:
+                item['consumers'] = []
 
         return Response(format_body(1, 'Success', data))
 
