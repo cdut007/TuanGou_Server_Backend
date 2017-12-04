@@ -488,7 +488,8 @@ class GetConsumerOrderView(APIView):
         data = dict_fetch_all(cursor)
 
         for item in data:
-            item['consumers'] = json.loads(item['consumers'])
+            if item['consumers']:
+                item['consumers'] = json.loads(item['consumers'])
 
         return Response(format_body(1, 'Success', data))
 
