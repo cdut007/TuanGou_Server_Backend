@@ -389,7 +389,7 @@ LEFT JOIN (
                 WHEN 1 THEN 'http://www.ailinkgo.com/admin/images/Defalut/boy_icon.png'
                 WHEN 2 THEN 'http://www.ailinkgo.com/admin/images/Defalut/girl_icon.png' END), 
                 b.headimgurl
-            ) AS headimgurl,
+            ) AS headimgurl
 		FROM
 			iuser_genericorder AS ig1
 		INNER JOIN iuser_userprofile AS iu2 ON ig1.user_id = iu2.id
