@@ -463,6 +463,9 @@ FROM
 					'\"quantity\": \"',
 					a.quantity,
 					'\", ',
+					'\"corder_id\": \"',
+					a.id,
+					'\", ',
 					'\"unit\": \"',
 					b.brief_dec,
 					'\"}'
