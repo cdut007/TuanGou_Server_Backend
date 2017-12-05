@@ -514,7 +514,10 @@ class ConsumerOrderDetailView(APIView):
         data = dict_fetch_all(cursor)
 
         for item in data:
-            item['goods_list'] = json.loads(item['goods_list'])
+            if item['goods_list']:
+                item['goods_list'] = json.loads(item['goods_list'])
+            else:
+                item['goods_list'] = []
 
         return Response(format_body(1, 'Success', data[0]))
 
