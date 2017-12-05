@@ -384,11 +384,11 @@ LEFT JOIN (
 			DISTINCT ig1.goods_id,
 			IF(ig1.anonymity, '猜猜我是谁...', iu2.nickname) AS nickname,
 			IF(
-                a.anonymity,
-                (CASE b.sex WHEN 0 THEN 'http://www.ailinkgo.com/admin/images/Defalut/other_icon.png' 
+                ig1.anonymity,
+                (CASE iu2.sex WHEN 0 THEN 'http://www.ailinkgo.com/admin/images/Defalut/other_icon.png' 
                 WHEN 1 THEN 'http://www.ailinkgo.com/admin/images/Defalut/boy_icon.png'
                 WHEN 2 THEN 'http://www.ailinkgo.com/admin/images/Defalut/girl_icon.png' END), 
-                b.headimgurl
+                iu2.headimgurl
             ) AS headimgurl
 		FROM
 			iuser_genericorder AS ig1
