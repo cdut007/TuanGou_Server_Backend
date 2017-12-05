@@ -116,8 +116,14 @@ GROUP BY
 sql_goods_purchased_user = """
 (
 SELECT
-	IF(a.anonymity, '猜猜我是谁？', b.nickname) AS nickname,
-	IF(a.anonymity, 'http://www.ailinkgo.com/adminTesting/images/Default/anonymity.png', b.headimgurl) AS headimgurl,
+	IF(a.anonymity, '猜猜我是谁...', b.nickname) AS nickname,
+	IF(
+        a.anonymity,
+        (CASE b.sex WHEN 0 THEN 'http://www.ailinkgo.com/admin/images/Defalut/other_icon.png' 
+        WHEN 1 THEN 'http://www.ailinkgo.com/admin/images/Defalut/boy_icon.png'
+        WHEN 2 THEN 'http://www.ailinkgo.com/admin/images/Defalut/girl_icon.png' END), 
+        b.headimgurl
+	) AS headimgurl,
 	0 AS count
 FROM
 	iuser_genericorder AS a
@@ -376,8 +382,14 @@ LEFT JOIN (
 	LEFT JOIN (
 		SELECT
 			DISTINCT ig1.goods_id,
-			IF(ig1.anonymity, '猜猜我是谁？', iu2.nickname) AS nickname,
-			IF(ig1.anonymity, 'http://www.ailinkgo.com/adminTesting/images/Default/anonymity.png', iu2.headimgurl) AS headimgurl
+			IF(ig1.anonymity, '猜猜我是谁...', iu2.nickname) AS nickname,
+			IF(
+                a.anonymity,
+                (CASE b.sex WHEN 0 THEN 'http://www.ailinkgo.com/admin/images/Defalut/other_icon.png' 
+                WHEN 1 THEN 'http://www.ailinkgo.com/admin/images/Defalut/boy_icon.png'
+                WHEN 2 THEN 'http://www.ailinkgo.com/admin/images/Defalut/girl_icon.png' END), 
+                b.headimgurl
+            ) AS headimgurl,
 		FROM
 			iuser_genericorder AS ig1
 		INNER JOIN iuser_userprofile AS iu2 ON ig1.user_id = iu2.id
