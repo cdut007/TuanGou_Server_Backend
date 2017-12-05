@@ -514,12 +514,11 @@ class ConsumerOrderDetailView(APIView):
         data = dict_fetch_all(cursor)
 
         for item in data:
-            if item['goods_list']:
-                item['goods_list'] = json.loads(item['goods_list'])
-            else:
-                item['goods_list'] = []
+            item['goods_list'] = json.loads(item['goods_list'])
 
-        return Response(format_body(1, 'Success', data[0]))
+        data = data[0] if data else {}
+
+        return Response(format_body(1, 'Success', data))
 
 
 class ConsumerOrderErtView(APIView):
