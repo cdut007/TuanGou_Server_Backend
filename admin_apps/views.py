@@ -679,7 +679,7 @@ class MerchantOrderDetailView(APIView):
 
 
 class ProductDeleteView(APIView):
-    @Authentication
+    @Authentication.token_required
     @raise_general_exception
     def post(self, request):
         goods = Goods.objects.get(id=request.data['org_goods_id'])
