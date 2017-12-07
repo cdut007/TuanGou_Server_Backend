@@ -678,6 +678,18 @@ class MerchantOrderDetailView(APIView):
         return Response(format_body(1, 'Success', {'order_detail': order_detail}))
 
 
+class ProductDeleteView(APIView):
+    @Authentication
+    @raise_general_exception
+    def post(self, request):
+        goods = Goods.objects.get(id=request.data['org_goods_id'])
+        goods.created_by = 'deleted_' + str(goods.created_by)
+        goods.save()
+
+        return Response(format_body(1, 'Success', ''))
+
+
+
 
 
 

@@ -19,6 +19,7 @@ urlpatterns = [
     # app admin
     url(r'^set.goods.list$', views.ProductSetGoodsView.as_view(), name='set.product.list'),
     url(r'^goods.set$', views.ProductSetListView.as_view(), name='product.set'),
+    url(r'^goods.delete', views.ProductDeleteView.as_view(), name='product.delete'),
     url(r'^merchant.groupbuying.list$', views.MerchantGroupBuyingListView.as_view(), name='merchant.groupbuying.list'),
 
     # classify
