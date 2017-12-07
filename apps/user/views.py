@@ -471,10 +471,10 @@ class GetConsumerOrderView(APIView):
         cursor = connection.cursor()
 
         if request.GET['status'] == 'done':
-            _doing_or_done = ' d.mc_end=1 OR e.end_time < NOW() '
+            _doing_or_done = ' d.mc_end=1 OR e.end_time < NOW() OR e.on_sale=0 '
             _limit = sql_limit(request)
         else:
-            _doing_or_done = ' d.mc_end=0 AND e.end_time > NOW() '
+            _doing_or_done = ' d.mc_end=0 AND e.end_time > NOW() AND e.on_sale=1'
             _limit = ''
 
         cursor.execute("SET SESSION group_concat_max_len = 20480;")
