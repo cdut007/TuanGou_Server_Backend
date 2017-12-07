@@ -367,6 +367,7 @@ FROM
 		WHERE
 			user_id = %(_merchant_id)s
 		AND a.mc_end = 0
+		AND b.on_sale = 1
 		AND b.end_time > NOW()
 	) AS temp1
 INNER JOIN (
