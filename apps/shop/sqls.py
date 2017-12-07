@@ -381,7 +381,7 @@ LEFT JOIN (
 	LEFT JOIN market_goodsgallery AS c ON b.id = c.goods_id AND c.is_primary = 1
 	LEFT JOIN (
 		SELECT
-			DISTINCT ig1.goods_id,
+			ig1.goods_id,
 			IF(ig1.anonymity, '猜猜我是谁...', iu2.nickname) AS nickname,
 			IF(
                 ig1.anonymity,
@@ -393,6 +393,7 @@ LEFT JOIN (
 		FROM
 			iuser_genericorder AS ig1
 		INNER JOIN iuser_userprofile AS iu2 ON ig1.user_id = iu2.id
+		GROUP BY ig1.goods_id, ig1.user_id
 		ORDER BY ig1.add_time DESC
 	) AS e ON e.goods_id=a.id
 	GROUP BY
