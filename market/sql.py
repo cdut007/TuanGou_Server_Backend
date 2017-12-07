@@ -83,6 +83,7 @@ LEFT JOIN market_goodsclassify AS e ON e.id=b.goods_classify_id
 WHERE
 	user_id = %(user_id)s
 AND b.end_time > NOW()
+AND b.on_sale = 1
 AND a.mc_end = 0
 GROUP BY
 	a.group_buy_id
