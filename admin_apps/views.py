@@ -38,18 +38,27 @@ class LogInView(APIView):
 
 
 class ProductListView(APIView):
-    # @Authentication.token_required
-    # @raise_general_exception
+    @Authentication.token_required
+    @raise_general_exception
     def get(self, request):
         from sqls import sql_goods_list
 
         sql_where = ""
         where_and = "WHERE "
         if request.GET['product']:
-            sql_where = " {where_and} a.name LIKE '%{product}%' ".format(where_and=where_and, product=request.GET['product'])
+            sql_where += " {where_and} a.name LIKE '%{product}%' ".format(where_and=where_and, product=request.GET['product'])
             where_and = "AND"
-        elif request.GET['set']:
-            sql_where = " {where_and} a.set LIKE '%{set}%' ".format(where_and=where_and, set=request.GET['set'])
+        if request.GET['set']:
+            sql_where += " {where_and} a.set LIKE '%{set}%' ".format(where_and=where_and, set=request.GET['set'])
+            where_and = "AND"
+        if request.GET['owner'] != '':
+            if request.GET['owner'] == '_admin_':
+                sql_where += " {where_and} LEFT(a.created_by, 5)='admin' ".format(where_and=where_and)
+            elif request.GET['owner'] == '_merchant_':
+                sql_where += " {where_and} LEFT(a.created_by, 3)='app' ".format(where_and=where_and)
+            else:
+                sql_where += " {where_and} c.owner LIKE '%{owner}%' ".format(where_and=where_and, owner=request.GET['owner'])
+            where_and = "AND"
 
         _sql_goods_list = sql_goods_list.format(**{
             '_image_prefix': image_path(),
@@ -305,6 +314,15 @@ class GroupBuyingListView(APIView):
             where_or_and = " AND "
         if request.GET['classify']:
             sql_where += "{} b.name LIKE '%{}%'".format(where_or_and, request.GET['classify'])
+            where_or_and = " AND "
+        if request.GET['owner'] != '':
+            if request.GET['owner'] == '_admin_':
+                sql_where += " {where_and} LEFT(a.created_by, 5)='admin' ".format(where_and=where_or_and)
+            elif request.GET['owner'] == '_merchant_':
+                sql_where += " {where_and} LEFT(a.created_by, 3)='app' ".format(where_and=where_or_and)
+            else:
+                sql_where += " {where_and} c.owner LIKE '%{owner}%' ".format(where_and=where_or_and, owner=request.GET['owner'])
+            where_and = "AND"
 
         _sql_group_buying_list = sql_group_buying_list.format(
             _where = sql_where,
@@ -572,6 +590,12 @@ class UserListView(APIView):
         where_or_and = "WHERE "
         if request.GET['nickname']:
             sql_where += "{} nickname LIKE '%{}%'".format(where_or_and, request.GET['nickname'])
+            where_or_and = " AND "
+        if request.GET['role'] == 'merchant':
+            sql_where += "{} is_agent=1 ".format(where_or_and)
+            where_or_and = " AND "
+        if request.GET['role'] == 'consumer':
+            sql_where += "{} is_agent=0 ".format(where_or_and)
             where_or_and = " AND "
 
         _sql_user_list = sql_user_list.format(**{

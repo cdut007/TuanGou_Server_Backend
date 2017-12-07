@@ -1,5 +1,6 @@
 sql_goods_list = """
 SELECT
+	c.owner,
 	a.id AS goods_id,
 	a.name,
 	a.default_price,
@@ -15,6 +16,19 @@ SELECT
 FROM
 	market_goods AS a
 LEFT JOIN market_goodsgallery AS b ON a.id = b.goods_id AND b.is_primary=1
+LEFT JOIN (
+	SELECT
+		CONCAT('admin_', id) AS 'owner_id',
+		username AS 'owner'
+	FROM
+		auth_user
+UNION
+	SELECT
+		CONCAT('app_', id) AS 'owner_id',
+		nickname AS 'owner'
+	FROM
+		iuser_userprofile
+) AS c ON c.owner_id = a.created_by
 {_where}
 {_order_by}
 {_limit}
@@ -105,6 +119,7 @@ LEFT JOIN market_goodsgallery AS b ON a.id=b.goods_id AND b.is_primary=1
 sql_group_buying_list = """
 SELECT
   a.id,
+  c.`owner`,
   a.end_time,
   a.title,
   DATE_FORMAT(a.ship_time, '%d  %b  %y') AS ship_time,
@@ -113,6 +128,19 @@ SELECT
 FROM
   market_groupbuy AS a
 INNER JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
+LEFT JOIN (
+	SELECT
+		CONCAT('admin_', id) AS 'owner_id',
+		username AS 'owner'
+	FROM
+		auth_user
+UNION
+	SELECT
+		CONCAT('app_', id) AS 'owner_id',
+		nickname AS 'owner'
+	FROM
+		iuser_userprofile
+) AS c ON c.owner_id = a.created_by
 {_where}
 {_order_by}
 {_limit}
