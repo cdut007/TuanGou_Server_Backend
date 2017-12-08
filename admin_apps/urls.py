@@ -2,10 +2,14 @@
 from django.conf.urls import url
 
 import views
+import views_dashboard as ViewsDashBoard
 
 
 urlpatterns = [
     url(r'login', views.LogInView.as_view(), name='login'),
+
+    #dashboard
+    url(r'^groupbuying.doing$', ViewsDashBoard.GroupBuyingDoingView.as_view(), name='groupbuying.doing'),
 
     # goods
     url(r'^goods.list$', views.ProductListView.as_view(), name='product.list'),
