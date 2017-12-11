@@ -151,6 +151,7 @@ SELECT
 	a.id AS group_buy_id,
 	DATE_FORMAT(a.end_time, '%Y-%m-%d %H:%i:%s') AS end_time,
 	b.`name`,
+	b.`desc`,
 	CONCAT('{_image_prefix}', d.image) AS image
 FROM
 	market_groupbuy AS a
