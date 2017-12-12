@@ -47,10 +47,10 @@ class SendOrderInfoView(APIView):
             group_buying_id=group_buy_id,
             merchant_id=user_id,
             is_send_excel=1
-        )
+        ).first()
 
         if send_record:
-            _file = excel_save_base_path() + send_record[0].excel_path
+            _file = excel_save_base_path() + send_record.excel_path
         else:
             excel_name = str(int(time.time())) + '_' + random_str(4) + '.xlsx'
             file_path = excel_save_base_path() + excel_name
