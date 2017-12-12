@@ -22,7 +22,7 @@ class UserLoginFromAppView(APIView):
         return Response(format_body(1, 'Success', {'token': token}))
 
     @staticmethod
-    def save_wei_xin_user(info, login_from):
+    def save_wei_xin_user(info, login_from, join_way=1):
         record = UserProfile.objects.filter(unionid=info['unionid']).first()
         if record:
             user = record
@@ -34,6 +34,7 @@ class UserLoginFromAppView(APIView):
             user.city = info['city']
             user.country = info['country']
             user.privilege = info['privilege']
+            user.join_way = join_way
 
         user.nickname = info['nickname']
         user.headimgurl = info['headimgurl']
@@ -53,7 +54,7 @@ class UserLoginFromWebView(APIView):
         authorization_info = wei_xin.website_authorization_access_token(request.GET['code'])
         user_info = wei_xin.website_user_info(authorization_info['access_token'], authorization_info['openid'])
 
-        user_id = UserLoginFromAppView.save_wei_xin_user(user_info, 'web')
+        user_id = UserLoginFromAppView.save_wei_xin_user(user_info, 'web', request.GET['join_way'])
         token = Authentication.generate_auth_token(user_id)
         return Response(format_body(1, 'Success', {'token': token}))
 

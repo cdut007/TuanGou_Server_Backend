@@ -1,6 +1,6 @@
 # _*_ coding: utf-8 _*_
 from __future__ import unicode_literals
-
+from datetime import datetime
 from django.db import models
 
 
@@ -57,8 +57,13 @@ class MerchantPushLog(models.Model):
         db_table = 'lg_merchant_push_log'
 
 
-class ConsumerOrderSharingSummary(models.Model):
+class UnpackRedPacketsLog(models.Model):
     id = models.AutoField(primary_key=True)
-    sharing_code = models.CharField(max_length=128, default='')
+    owner = models.PositiveIntegerField()
+    unpack_user = models.PositiveIntegerField()
     group_buying_id = models.PositiveIntegerField()
-    consumer_bought_count = models.PositiveSmallIntegerField()
+    money = models.DecimalField(max_digits=4, decimal_places=2)
+    add_time = models.DateTimeField(default=datetime.now)
+
+    class Meta:
+        db_table = 'lg_unpack_red_packets_log'

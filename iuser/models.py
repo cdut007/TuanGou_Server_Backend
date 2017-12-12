@@ -25,6 +25,7 @@ class UserProfile(models.Model):
     phone_num = models.CharField(max_length=15, verbose_name='联系电话', default='')
     is_agent = models.BooleanField(default=False, verbose_name='代理商')
     join_time = models.DateTimeField(default=datetime.now, verbose_name='加入时间')
+    join_way = models.CharField(max_length=8, default='1')
 
     class Meta:
         verbose_name = u'用户'

@@ -407,6 +407,7 @@ FROM
 INNER JOIN iuser_userprofile AS a on temp.user_id=a.id
 GROUP BY
 	temp.user_id
+ORDER BY temp.order_time DESC
 """
 
 sql_merchant_order_summary = """
