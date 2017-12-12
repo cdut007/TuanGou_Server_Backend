@@ -355,7 +355,7 @@ class MerchantGroupBuyingListView(APIView):
         cursor = connection.cursor()
 
         _sql_group_buying_list = sql_merchant_group_buying_list.format(
-            _owner = 'admin_1',
+            _owner = get_owner(self.get.user_id),
             _image_prefix = image_path(),
             _limit = sql_limit(request)
         )
