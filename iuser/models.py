@@ -13,6 +13,7 @@ class UserProfile(models.Model):
     openid_web = models.CharField(max_length=256, default='')
     openid_app = models.CharField(max_length=256, default='')
     merchant_code = models.CharField(max_length=256, default='')
+    sharing_code = models.CharField(max_length=256, default='')
     unionid = models.CharField(max_length=256, verbose_name='unionid')
     sex = models.CharField(max_length=2, choices=(('0', u'无'), ('1', u'男'), ('2', u'女')), default='1', verbose_name='性别')
     province = models.CharField(max_length=32, verbose_name='省份', blank=True)
@@ -79,7 +80,8 @@ class ShoppingCart(models.Model):
 
 class GenericOrder(models.Model):
     user = models.ForeignKey(UserProfile, verbose_name='购买人')
-    agent_code = models.CharField(max_length=256, verbose_name='代理人code')
+    agent_code = models.CharField(max_length=128, verbose_name='代理人code')
+    sharing_code = models.CharField(max_length=128, default='')
     goods = models.ForeignKey(GroupBuyGoods, verbose_name='商品', default=1)
     quantity = models.PositiveIntegerField(default=1, verbose_name='数量')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='购买时间')

@@ -27,11 +27,11 @@ class MerchantPushLog(models.Model):
 
     @staticmethod
     def insert_send_excel_log(group_buying_id, merchant_id, excel_path):
-        push_log = MerchantPushLog.objects.filter(group_buying_id=group_buying_id, merchant_id=merchant_id)
+        push_log = MerchantPushLog.objects.filter(group_buying_id=group_buying_id, merchant_id=merchant_id).first()
         if push_log:
-            push_log[0].is_send_excel = 1
-            push_log[0].excel_path = excel_path
-            push_log[0].save()
+            push_log.is_send_excel = 1
+            push_log.excel_path = excel_path
+            push_log.save()
         else:
             MerchantPushLog.objects.create(
                 group_buying_id = group_buying_id,
@@ -42,10 +42,10 @@ class MerchantPushLog(models.Model):
 
     @staticmethod
     def insert_send_take_goods_notification(group_buying_id, merchant_id):
-        push_log = MerchantPushLog.objects.filter(group_buying_id=group_buying_id, merchant_id=merchant_id)
+        push_log = MerchantPushLog.objects.filter(group_buying_id=group_buying_id, merchant_id=merchant_id).first()
         if push_log:
-            push_log[0].is_send_take_goods_notification = 1
-            push_log[0].save()
+            push_log.is_send_take_goods_notification = 1
+            push_log.save()
         else:
             MerchantPushLog.objects.create(
                 group_buying_id = group_buying_id,
@@ -55,3 +55,10 @@ class MerchantPushLog(models.Model):
 
     class Meta:
         db_table = 'lg_merchant_push_log'
+
+
+class ConsumerOrderSharingSummary(models.Model):
+    id = models.AutoField(primary_key=True)
+    sharing_code = models.CharField(max_length=128, default='')
+    group_buying_id = models.PositiveIntegerField()
+    consumer_bought_count = models.PositiveSmallIntegerField()

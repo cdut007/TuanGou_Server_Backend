@@ -1,5 +1,5 @@
 # _*_ coding:utf-8 _*_
-import json, time
+import json, time, uuid
 from datetime import datetime
 from django.db import connection, OperationalError
 from rest_framework.response import Response
@@ -60,6 +60,7 @@ class UserLoginFromWebView(APIView):
 
 class UserInfoView(APIView):
     @Authentication.token_required
+    @raise_general_exception
     def get(self, request):
         user = UserProfile.objects.get(pk=self.get.user_id)
         data = {
@@ -72,6 +73,18 @@ class UserInfoView(APIView):
         }
 
         return Response(format_body(1, 'Success', {'user_profile': data}))
+
+
+class UserSharingCodeView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        user = UserProfile.objects.get(pk=self.get.user_id)
+        if not user.sharing_code:
+            user.sharing_code = uuid.uuid3(uuid.NAMESPACE_DNS, 'SharingCode')
+        user.save()
+
+        return Response(format_body(1, 'Success', {'sharing_code': user.sharing_code}))
 
 
 class ConsumerOrderView(APIView):
@@ -177,45 +190,48 @@ class ConsumerOrderView(APIView):
 
         cursor.execute("COMMIT;")
 
-        #给团长发送微信通知
-        merchant = UserProfile.objects.filter(merchant_code=request.data['merchant_code']).first()
-        consumer = UserProfile.objects.get(pk=self.post.user_id)
-        sql_get_goods = """
-        SELECT
-            b.`name`
-        FROM
-            market_groupbuygoods AS a
-        LEFT JOIN market_goods AS b ON a.goods_id=b.id
-        WHERE
-            a.id = {_goods_id}
-        """.format(_goods_id=request.data['goods_list'][0]['goods_id'])
-        cursor.execute(sql_get_goods)
-        goods_name = dict_fetch_all(cursor)
-        goods_name = goods_name[0]['name'] if len(request.data['goods_list'])==1 else str(goods_name[0]['name'])+'等'
-        data = {
-            "touser": merchant.openid_web,
-            "template_id": "gvE4aH7C9LD51v1VkgQ98jlKWec5VLxk1cxnYN6LGl4",
-            "data": {
-                "first": {
-                    "value": "团员购买通知",
-                    "color": "#173177"
-                },
-                "keyword1": {
-                    "value": goods_name,
-                    "color": "#173177"
-                },
-                "keyword2": {
-                    "value": consumer.nickname,
-                    "color": "#173177"
-                },
-                "remark": {
-                    "value": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
-                    "color": "#173177"
+        try:
+            #给团长发送微信通知
+            merchant = UserProfile.objects.filter(merchant_code=request.data['merchant_code']).first()
+            consumer = UserProfile.objects.get(pk=self.post.user_id)
+            sql_get_goods = """
+            SELECT
+                b.`name`
+            FROM
+                market_groupbuygoods AS a
+            LEFT JOIN market_goods AS b ON a.goods_id=b.id
+            WHERE
+                a.id = {_goods_id}
+            """.format(_goods_id=request.data['goods_list'][0]['goods_id'])
+            cursor.execute(sql_get_goods)
+            goods_name = dict_fetch_all(cursor)
+            goods_name = goods_name[0]['name'] if len(request.data['goods_list'])==1 else str(goods_name[0]['name'])+'等'
+            data = {
+                "touser": merchant.openid_web,
+                "template_id": "gvE4aH7C9LD51v1VkgQ98jlKWec5VLxk1cxnYN6LGl4",
+                "data": {
+                    "first": {
+                        "value": "团员购买通知",
+                        "color": "#173177"
+                    },
+                    "keyword1": {
+                        "value": goods_name,
+                        "color": "#173177"
+                    },
+                    "keyword2": {
+                        "value": consumer.nickname,
+                        "color": "#173177"
+                    },
+                    "remark": {
+                        "value": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()),
+                        "color": "#173177"
+                    }
                 }
             }
-        }
-        wei_xin = WeiXinAPI()
-        wei_xin.push_notice(data)
+            wei_xin = WeiXinAPI()
+            wei_xin.push_notice(data)
+        except Exception as e:
+            pass
 
         group_buy_goods = GroupBuyGoods.objects.get(pk=request.data['goods_list'][0]['goods_id'])
 
@@ -541,6 +557,8 @@ class ConsumerOrderErtView(APIView):
             item['goods_list'] = json.loads(item['goods_list'])
 
         return Response(format_body(1, 'Success', data))
+
+
 
 
 
