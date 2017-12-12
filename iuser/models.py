@@ -82,7 +82,6 @@ class ShoppingCart(models.Model):
 class GenericOrder(models.Model):
     user = models.ForeignKey(UserProfile, verbose_name='购买人')
     agent_code = models.CharField(max_length=128, verbose_name='代理人code')
-    sharing_code = models.CharField(max_length=128, default='')
     goods = models.ForeignKey(GroupBuyGoods, verbose_name='商品', default=1)
     quantity = models.PositiveIntegerField(default=1, verbose_name='数量')
     add_time = models.DateTimeField(default=datetime.now, verbose_name='购买时间')
