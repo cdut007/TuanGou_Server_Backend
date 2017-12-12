@@ -431,29 +431,46 @@ class GroupBuyingCreateView(APIView):
         cursor.execute(sql)
 
         if not str(self.post.user_id).startswith('admin_'):
-            sql_get_goods_ids = """
-            SELECT
-                CONCAT(GROUP_CONCAT(id)) AS goods_ids
-            FROM
-                market_groupbuygoods
-            WHERE
-                group_buy_id = {_id}
-            GROUP BY
-                group_buy_id
-            """.format(_id=new_group_buying.id)
-            cursor.execute(sql_get_goods_ids)
-            goods_ids = dict_fetch_all(cursor)
-            goods_ids = goods_ids[0]['goods_ids']
-
-            AgentOrder.objects.create(
-                goods_ids = goods_ids,
-                add_time = datetime.now(),
-                user_id = self.post.user_id,
-                group_buy_id = new_group_buying.id,
-                mc_end = 0
-            )
+            self.apply_groupbuying_for_merchant(new_group_buying.id, self.post.user_id)
 
         return Response(format_body(1, 'Success', ''))
+
+    @staticmethod
+    def get_group_buying_goods_ids(group_buying_id):
+        cursor = connection.cursor()
+        sql_get_goods_ids = """
+        SELECT
+            CONCAT(GROUP_CONCAT(id)) AS goods_ids
+        FROM
+            market_groupbuygoods
+        WHERE
+            group_buy_id = {_id}
+        GROUP BY
+            group_buy_id
+        """.format(_id=group_buying_id)
+        cursor.execute(sql_get_goods_ids)
+        goods_ids = dict_fetch_all(cursor)
+        goods_ids = goods_ids[0]['goods_ids']
+        return goods_ids
+
+    @staticmethod
+    def apply_groupbuying_for_merchant(group_buying_id, merchant_id):
+        goods_ids = GroupBuyingCreateView.get_group_buying_goods_ids(group_buying_id)
+        AgentOrder.objects.create(
+            goods_ids=goods_ids,
+            add_time=datetime.now(),
+            user_id=merchant_id,
+            group_buy_id=group_buying_id,
+            mc_end=0
+        )
+
+    @staticmethod
+    def update_merchant_order_goods_ids(group_buying_id, merchant_id):
+        goods_ids = GroupBuyingCreateView.get_group_buying_goods_ids(group_buying_id)
+        AgentOrder.objects.filter(
+            user_id=merchant_id,
+            group_buy_id=group_buying_id,
+        ).update(goods_ids=goods_ids)
 
 
 class GroupBuyingUpdateView(APIView):
@@ -475,15 +492,19 @@ class GroupBuyingUpdateView(APIView):
             on_sale = group_buying_info['on_sale'],
             eyu = group_buying_info['eyu']
         )
+
+        # 后台发布团购可更新title
         if str(self.post.user_id).startswith('admin_'):
             GroupBuy.objects.filter(pk=group_buying_info['id']).update(title=group_buying_info['title'])
 
         cursor = connection.cursor()
 
+        # 删除商品
         if del_goods:
             sql = sql_group_buying_goods_delete.format(goods_id=','.join(del_goods))
             cursor.execute(sql)
 
+        # 新增商品和修改商品
         if group_buying_products:
             update_values = ""
             for product in group_buying_products:
@@ -497,6 +518,10 @@ class GroupBuyingUpdateView(APIView):
                 )
             sql = sql_group_buying_goods_update % {'values': update_values[0:-1]}
             cursor.execute(sql)
+
+        # 如果是自主发团，更新merchant order的goods_ids
+        if not str(self.post.user_id).startswith('admin_') and group_buying_products:
+            GroupBuyingCreateView.update_merchant_order_goods_ids(group_buying_info['id'], self.post.user_id)
 
         return Response(format_body(1, 'Success', ''))
 
