@@ -426,14 +426,16 @@ class GroupBuyingCreateView(APIView):
             )
 
         sql = sql_group_buying_goods_create % {'values': insert_values[0:-1]}
-
         cursor = connection.cursor()
         cursor.execute(sql)
 
+        # 自主发团替团长完成申请动作
         if not str(self.post.user_id).startswith('admin_'):
             self.apply_groupbuying_for_merchant(new_group_buying.id, self.post.user_id)
 
-        return Response(format_body(1, 'Success', ''))
+        # 自主发团返回分享信息
+        sharing_info = self.group_buying_sharing_info(new_group_buying.id)
+        return Response(format_body(1, 'Success', {'sharing_info':sharing_info}))
 
     @staticmethod
     def get_group_buying_goods_ids(group_buying_id):
@@ -471,6 +473,31 @@ class GroupBuyingCreateView(APIView):
             user_id=merchant_id,
             group_buy_id=group_buying_id,
         ).update(goods_ids=goods_ids)
+
+    @staticmethod
+    def group_buying_sharing_info(group_buying_id):
+        sql = """
+        SELECT
+            b.`name`,
+            b.`desc`,
+            CONCAT(
+            '{_image_prefix}', 
+            SUBSTRING_INDEX(d.image, '.', 1),
+            '_thumbnail.',
+            SUBSTRING_INDEX(d.image, '.', -1)
+            ) AS image
+        FROM
+            market_groupbuy AS a
+        LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id = b.id
+        LEFT JOIN market_groupbuygoods AS c ON c.group_buy_id=a.id
+        LEFT JOIN market_goodsgallery AS d ON c.goods_id=d.goods_id
+        WHERE a.id={_group_buying_id}
+        LIMIT 1
+        """.format(_group_buying_id=group_buying_id, _image_prefix=image_path())
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        info = dict_fetch_all(cursor)
+        return info[0]
 
 
 class GroupBuyingUpdateView(APIView):
@@ -523,7 +550,9 @@ class GroupBuyingUpdateView(APIView):
         if not str(self.post.user_id).startswith('admin_') and group_buying_products:
             GroupBuyingCreateView.update_merchant_order_goods_ids(group_buying_info['id'], self.post.user_id)
 
-        return Response(format_body(1, 'Success', ''))
+        #自主发团返回分享信息
+        sharing_info = GroupBuyingCreateView.group_buying_sharing_info(group_buying_info['id'])
+        return Response(format_body(1, 'Success', {'sharing_info':sharing_info}))
 
 
 class ClassifyListView(APIView):
