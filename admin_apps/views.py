@@ -612,8 +612,8 @@ class ClassifyCreateView(APIView):
             icon = save_images(request.data['icon'], 'Classify')
             image = save_images(request.data['image'], 'Classify')
         else:
-            icon = '123'
-            image = '456'
+            icon = 'admin/images/Defalut/default_classify_icon.png'
+            image = 'admin/images/Defalut/default_classify_image.jpg'
 
         classify = GoodsClassify(
             name=request.data['name'],
