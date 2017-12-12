@@ -384,7 +384,8 @@ SELECT
 		),
 		']'
 	) AS goods_list,
-	a.nickname
+	a.nickname,
+	temp.order_time
 FROM
 	(
 		SELECT
@@ -393,7 +394,7 @@ FROM
 			b.price * a.quantity AS amount,
 			CONCAT(c.`name`, ' (', b.brief_dec, ')') AS NAME,
 			a.quantity,
-			DATE_FORMAT(a.add_time,'%%Y-%%m-%%d %%H:%%i') AS time
+			DATE_FORMAT(a.add_time,'%b/%d %h:%i%p') AS order_time
 		FROM
 			iuser_genericorder AS a
 		LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
