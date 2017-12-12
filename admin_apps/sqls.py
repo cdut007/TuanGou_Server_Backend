@@ -150,6 +150,7 @@ sql_merchant_group_buying_list = """
 SELECT
 	a.id AS group_buy_id,
 	DATE_FORMAT(a.end_time, '%Y-%m-%d %H:%i:%s') AS end_time,
+	a.on_sale,
 	b.`name`,
 	b.`desc`,
 	CONCAT('{_image_prefix}', d.image) AS image
