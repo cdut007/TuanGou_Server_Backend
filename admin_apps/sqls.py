@@ -268,7 +268,7 @@ sql_group_buying_orders_v2 = """
 SELECT
     temp1.merchant_id,
     temp1.merchant_code,
-	CONVERT(CONCAT(temp1.merchant_id, '  ', c.nickname) USING utf8) AS merchant_name,
+	CONCAT(temp1.merchant_id, '  ', c.nickname) AS merchant_name,
 	SUM(temp2.quantity) AS total_quantity,
 	SUM(a.price*temp2.quantity) AS total_money,
 	CONCAT(

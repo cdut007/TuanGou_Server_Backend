@@ -379,7 +379,7 @@ SELECT
 	b.group_buy_id,
 	CONCAT(c.`name`, ' $', b.price, ' ', b.brief_dec) AS goods_name,
 	a.quantity,
-	CONVERT(d.nickname USING utf8) AS nickname,
+	d.nickname,
 	d.headimgurl
 FROM
 	iuser_genericorder AS a
