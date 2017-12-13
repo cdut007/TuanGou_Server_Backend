@@ -212,7 +212,7 @@ LEFT JOIN market_goodsgallery AS e ON e.goods_id=d.goods_id AND is_primary=1
 LEFT JOIN lg_merchant_push_log AS f ON f.group_buying_id=a.group_buy_id AND merchant_id={user_id} AND is_send_take_goods_notification=1
 WHERE
 	user_id = {user_id}
-AND b.end_time < NOW()
+AND (b.end_time < NOW() OR (b.on_sale=0 AND LEFT(b.created_by, 5)='admin') OR a.mc_end=1)
 GROUP BY a.group_buy_id
 ORDER BY b.ship_time DESC
 {_limit}
@@ -231,7 +231,7 @@ LEFT JOIN market_goods AS d ON d.id=c.goods_id
 WHERE
 	a.agent_code = (
 		SELECT
-			openid
+			merchant_code
 		FROM
 			iuser_userprofile
 		WHERE
