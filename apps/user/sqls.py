@@ -187,7 +187,7 @@ SELECT
     a.group_buy_id,
 	DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s') AS end_time,
 	b.ship_time,
-	b.title AS `desc`,
+	c.name AS `desc`,
 	IFNULL(
 		CONCAT(
 		  '[', 
@@ -302,6 +302,7 @@ WHERE
 	a.user_id = %(_merchant_id)s
 AND a.mc_end = 0
 AND b.end_time > NOW()
+AND b.on_sale = 1
 GROUP BY a.group_buy_id
 ORDER BY
 	a.add_time DESC
@@ -332,7 +333,7 @@ LEFT JOIN (
 ) AS temp1 ON a.group_buy_id=temp1.group_buy_id
 WHERE
 	a.user_id = %(_merchant_id)s
-AND (a.mc_end = 1 OR b.end_time < NOW())
+AND (a.mc_end = 1 OR b.end_time < NOW() OR(b.on_sale=0 AND LEFT(b.created_by, 5)='admin'))
 GROUP BY a.group_buy_id
 ORDER BY
 	a.add_time DESC
