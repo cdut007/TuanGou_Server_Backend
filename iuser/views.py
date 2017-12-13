@@ -72,7 +72,7 @@ class WebUserView(APIView):
 class AgentInfoView(APIView):
     @raise_general_exception
     def get(self, request):
-        user = UserProfile.objects.get(merchant_code=request.GET['merchant_code'])
+        user = UserProfile.objects.get(merchant_code=request.GET['agent_code'])
         data = {
             'nickname': user.nickname,
             'headimgurl': user.headimgurl,
