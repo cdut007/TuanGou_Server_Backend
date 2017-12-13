@@ -72,6 +72,7 @@ class UserInfoView(APIView):
                 'address': user.address,
                 'phone_num': user.phone_num
             },
+            'agent_url': 'http://www.ailinkgo.com/?agent_code=' + user.merchant_code
         }
 
         return Response(format_body(1, 'Success', {'user_profile': data}))
