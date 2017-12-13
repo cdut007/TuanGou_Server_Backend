@@ -269,6 +269,7 @@ WHERE
 	a.user_id = {_user_id}
 AND a.mc_end = 0
 AND b.end_time > NOW()
+AND b.on_sale = 1
 GROUP BY a.group_buy_id
 ORDER BY
 	a.add_time DESC
