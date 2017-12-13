@@ -327,7 +327,7 @@ LEFT JOIN (
 	LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
 	LEFT JOIN iuser_userprofile AS c ON a.user_id=c.id
 	WHERE agent_code = '%(_merchant_code)s'
-	GROUP BY a.user_id
+	GROUP BY a.user_id, b.group_buy_id
 	ORDER BY a.add_time DESC
 ) AS temp1 ON a.group_buy_id=temp1.group_buy_id
 WHERE
