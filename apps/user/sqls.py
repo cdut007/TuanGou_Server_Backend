@@ -259,7 +259,12 @@ SELECT
 	DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s') AS end_time,
 	c.`name` AS classify_name,
 	c.`desc` AS 'desc',
-	CONCAT('{_image_prefix}', e.image) AS goods_image
+	CONCAT(
+        '{_image_prefix}', 
+        SUBSTRING_INDEX(e.image, '.', 1),
+        '_thumbnail.',
+        SUBSTRING_INDEX(e.image, '.', -1)
+	) AS image
 FROM
 	iuser_agentorder AS a
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
