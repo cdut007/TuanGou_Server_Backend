@@ -406,6 +406,7 @@ WHERE
 	a.goods_classify_id = %(classify_id)s
 AND a.on_sale = 1
 AND a.end_time >= NOW()
+AND c.mc_end=0
 AND d.merchant_code = '%(merchant_code)s'
 GROUP BY
 	a.id
