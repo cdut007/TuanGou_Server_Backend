@@ -66,7 +66,7 @@ class WebUserView(APIView):
         authorization_info = wei_xin.website_authorization_access_token(request.GET['code'])
         user_info = wei_xin.website_user_info(authorization_info['access_token'], authorization_info['openid'])
 
-        user_id = UserLoginFromAppView.save_wei_xin_user(user_info, 'web', request.GET['join_way'])
+        user_id = UserLoginFromAppView.save_wei_xin_user(user_info, 'web')
         token = Authentication.generate_auth_token(user_id)
         return Response(format_body(1, 'Success', {'token': token}))
 

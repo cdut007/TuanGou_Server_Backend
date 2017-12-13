@@ -21,7 +21,7 @@ class Banner(models.Model):
 
 
 class GoodsClassify(models.Model):
-    name = models.CharField(max_length=24, verbose_name=u'名称')
+    name = models.CharField(max_length=64, verbose_name=u'名称')
     desc = models.CharField(max_length=256, verbose_name='描述',default='')
     icon = models.ImageField(upload_to='images/Classify', verbose_name='图标', default='')
     image = models.ImageField(upload_to='images/Classify', verbose_name='图片', default='')
