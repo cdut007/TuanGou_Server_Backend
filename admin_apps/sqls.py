@@ -150,15 +150,24 @@ sql_merchant_group_buying_list = """
 SELECT
 	a.id AS group_buy_id,
 	DATE_FORMAT(a.end_time, '%Y-%m-%d %H:%i:%s') AS end_time,
-	a.on_sale,
 	b.`name`,
 	b.`desc`,
-	CONCAT('{_image_prefix}', d.image) AS image
+	CONCAT(
+        '{_image_prefix}', 
+        SUBSTRING_INDEX(d.image, '.', 1),
+        '_thumbnail.',
+        SUBSTRING_INDEX(d.image, '.', -1)
+	) AS image,
+    CASE WHEN a.on_sale=0 THEN '1'
+         WHEN a.on_sale=1 AND a.end_time>NOW() AND e.mc_end=0 THEN '2'
+         ELSE '3' 
+	END AS 'status'
 FROM
 	market_groupbuy AS a
 LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id=b.id
 LEFT JOIN market_groupbuygoods AS c ON c.group_buy_id=a.id
 LEFT JOIN market_goodsgallery AS d ON d.goods_id=c.goods_id AND d.is_primary=1
+LEFT JOIN iuser_agentorder AS e ON e.group_buy_id=a.id AND user_id={_user_id}
 WHERE
 	a.created_by = '{_owner}'
 GROUP BY a.id
