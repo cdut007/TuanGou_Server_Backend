@@ -86,5 +86,5 @@ AND b.end_time > NOW()
 AND b.on_sale = 1
 AND a.mc_end = 0
 GROUP BY
-	a.group_buy_id
+	b.goods_classify_id
 """
