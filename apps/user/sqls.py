@@ -258,6 +258,7 @@ SELECT
 	b.ship_time,
 	DATE_FORMAT(b.end_time,'%Y-%m-%d %H:%i:%s') AS end_time,
 	c.`name` AS classify_name,
+	c.`desc` AS 'desc',
 	CONCAT('{_image_prefix}', e.image) AS goods_image
 FROM
 	iuser_agentorder AS a
