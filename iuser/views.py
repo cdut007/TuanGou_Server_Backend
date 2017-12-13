@@ -9,13 +9,14 @@ from django.core.mail import EmailMessage
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body, dict_fetch_all
+from utils.common import format_body, dict_fetch_all, virtual_login
 from ilinkgo.config import web_link, image_path
 from utils.winxin import WeiXinAPI
 from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
 from market.serializers import GroupBuyGoodsSerializer, GoodsClassifySerializer, GroupBuySerializer
 from models import UserProfile, AgentOrder, ShoppingCart, GenericOrder
 from serializers import UserProfileSerializer, UserAddressSerializer, AgentOrderSerializer, AgentApplySerializer, GenericOrderSerializer2
+from apps.user.views import UserLoginFromAppView
 
 from Authentication import Authentication
 # Create your views here.
@@ -23,36 +24,25 @@ from Authentication import Authentication
 
 class UserView(APIView):
     @Authentication.token_required
+    @raise_general_exception
     def get(self, request):
-        try:
-            user_profile = UserProfile.objects.get(pk=self.get.user_id)
-        except UserProfile.DoesNotExist:
-            return Response(format_body(0, 'Object does not exist', ''))
-        serializer = UserProfileSerializer(user_profile)
-        data = serializer.data
-        data['address_set'] = {'address': user_profile.address, 'phone_num': user_profile.phone_num}
-
+        user = UserProfile.objects.get(pk=self.get.user_id)
+        data = {
+            'nickname': user.nickname,
+            'headimgurl': user.headimgurl,
+            'address_set': {
+                'address': user.address,
+                'phone_num': user.phone_num
+            },
+        }
         return Response(format_body(1, 'Success', {'user_profile': data}))
 
-    def post(self, request, format=None):
-
-        if request.data.has_key('virtual_account') and request.data['virtual_account']==1:
-            if request.data['username'] == 'Mike.zk' and request.data['password']=='1234567a':
-                return Response(format_body(1, 'Success', {'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU2MjIyNzQyOSwiaWF0IjoxNTAxNzQ3NDI5fQ.eyJpZCI6MTB9.d3jVre6F5cC94gPYKJrEiij3v4OMwi3FdEvqQH7VE8I'}))
-            return Response(format_body(2, 'ErrorParams', 'username or password error'))
-
-        serializer = UserProfileSerializer(data=request.data)
-        if serializer.is_valid():
-            user_record = UserProfile.objects.filter(
-                unionid=serializer.validated_data['unionid']
-            ).first()
-            if user_record:
-                token = Authentication.generate_auth_token(user_record.id)
-                return Response(format_body(1, 'Success', {'token': token}))
-            user = serializer.save()
-            token = Authentication.generate_auth_token(user.id)
-            return Response(format_body(1, 'Success', {'token': token}))
-        return Response(format_body(2, 'ErrorParams', serializer.errors))
+    @raise_general_exception
+    @virtual_login
+    def post(self, request):
+        user_id = UserLoginFromAppView.save_wei_xin_user(request.data, 'app')
+        token = Authentication.generate_auth_token(user_id)
+        return Response(format_body(1, 'Success', {'token': token}))
 
     @Authentication.token_required
     def put(self,request):
@@ -68,35 +58,31 @@ class UserView(APIView):
 
 
 class WebUserView(APIView):
+    @raise_general_exception
     def get(self,request):
-        code = request.GET.get('code', '')
-        wei_xin_api = WeiXinAPI()
-        data = wei_xin_api.website_authorization_access_token(code)
-        try:
-            user_info = wei_xin_api.website_user_info(data['access_token'], data['openid'])
-        except KeyError:
-            return Response(format_body(6, 'code error', ''))
-        serializer = UserProfileSerializer(data=user_info)
-        if not serializer.is_valid():
-            return Response(format_body(2, 'ErrorParams, UserInfo', serializer.errors))
-        user_record = UserProfile.objects.filter(unionid=serializer.validated_data['unionid']).first()
-        if user_record:
-            token = Authentication.generate_auth_token(user_record.id)
-            return Response(format_body(1, 'Success', {'token': token}))
-        user = serializer.save()
-        token = Authentication.generate_auth_token(user.id)
+        wei_xin= WeiXinAPI()
+        authorization_info = wei_xin.website_authorization_access_token(request.GET['code'])
+        user_info = wei_xin.website_user_info(authorization_info['access_token'], authorization_info['openid'])
+
+        user_id = UserLoginFromAppView.save_wei_xin_user(user_info, 'web', request.GET['join_way'])
+        token = Authentication.generate_auth_token(user_id)
         return Response(format_body(1, 'Success', {'token': token}))
 
 
 class AgentInfoView(APIView):
+    @raise_general_exception
     def get(self, request):
-        code = request.GET.get('agent_code', '')
-        try:
-            user_profile = UserProfile.objects.get(merchant_code=code)
-        except UserProfile.DoesNotExist:
-            return Response(format_body(0, 'Object does not exist', ''))
-        serializer = UserProfileSerializer(user_profile)
-        return Response(format_body(1, 'Success', {'user_profile': serializer.data}))
+        user = UserProfile.objects.get(merchant_code=request.GET['merchant_code'])
+        data = {
+            'nickname': user.nickname,
+            'headimgurl': user.headimgurl,
+            'address_set': {
+                'address': user.address,
+                'phone_num': user.phone_num
+            }
+        }
+
+        return Response(format_body(1, 'Success', {'merchant_profile': data}))
 
 
 class UserAddressView(APIView):

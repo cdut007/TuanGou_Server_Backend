@@ -1,11 +1,11 @@
 # _*_ coding:utf-8 _*_
-import json, time, uuid
+import json, time, uuid, functools
 from datetime import datetime
 from django.db import connection, OperationalError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit
+from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit, virtual_login
 from utils.winxin import WeiXinAPI
 from ilinkgo.config import image_path
 from market.models import GroupBuyGoods
@@ -16,6 +16,7 @@ from iuser.Authentication import Authentication
 
 class UserLoginFromAppView(APIView):
     @raise_general_exception
+    @virtual_login
     def post(self, request):
         user_id = self.save_wei_xin_user(request.data, 'app')
         token = Authentication.generate_auth_token(user_id)
@@ -74,6 +75,22 @@ class UserInfoView(APIView):
         }
 
         return Response(format_body(1, 'Success', {'user_profile': data}))
+
+
+class MerchantInfoView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        user = UserProfile.objects.get(merchant_code=request.GET['merchant_code'])
+        data = {
+            'nickname': user.nickname,
+            'headimgurl': user.headimgurl,
+            'address_set': {
+                'address': user.address,
+                'phone_num': user.phone_num
+            }
+        }
+
+        return Response(format_body(1, 'Success', {'merchant_profile': data}))
 
 
 class UserSharingCodeView(APIView):

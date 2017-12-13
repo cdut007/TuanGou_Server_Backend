@@ -124,3 +124,15 @@ def save_images(image_file, destination='Goods', create_thumbnail=False):
         return False
     return '/'.join(images_save_base_path().split('/')[-3:])+sub_path+image_name
 
+
+def virtual_login(func):
+    @functools.wraps(func)
+    def wrapper(self, request, *args, **kargs):
+        if request.data.has_key('virtual_account') and int(request.data['virtual_account']) == 1:
+            if request.data['username'] == 'Mike.zk' and request.data['password'] == '1234567a':
+                return Response(format_body(1, 'Success', {
+                    'token': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU2MjIyNzQyOSwiaWF0IjoxNTAxNzQ3NDI5fQ.eyJpZCI6MTB9.d3jVre6F5cC94gPYKJrEiij3v4OMwi3FdEvqQH7VE8I'}))
+            return Response(format_body(2, 'ErrorParams', 'username or password error'))
+        return func(self, request, *args, **kargs)
+    return wrapper
+
