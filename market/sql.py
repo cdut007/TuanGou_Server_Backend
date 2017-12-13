@@ -77,7 +77,7 @@ SELECT
 FROM
 	iuser_agentorder AS a
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
-LEFT JOIN market_groupbuygoods AS c ON FIND_IN_SET(c.id, a.goods_ids)
+INNER JOIN market_groupbuygoods AS c ON FIND_IN_SET(c.id, a.goods_ids)
 LEFT JOIN market_goodsgallery AS d ON c.goods_id=d.goods_id AND d.is_primary=1
 LEFT JOIN market_goodsclassify AS e ON e.id=b.goods_classify_id
 WHERE
