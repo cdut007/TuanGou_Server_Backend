@@ -264,7 +264,7 @@ SELECT
         SUBSTRING_INDEX(e.image, '.', 1),
         '_thumbnail.',
         SUBSTRING_INDEX(e.image, '.', -1)
-	) AS image
+	) AS goods_image
 FROM
 	iuser_agentorder AS a
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
