@@ -52,7 +52,7 @@ class SendOrderInfoView(APIView):
         if send_record:
             _file = excel_save_base_path() + send_record.excel_path
         else:
-            excel_name = str(int(time.time())) + '_' + random_str(4) + '.xlsx'
+            excel_name = str(int(time.time())) + '_' + random_str(4) + '.xls'
             file_path = excel_save_base_path() + excel_name
 
             cursor = connection.cursor()
