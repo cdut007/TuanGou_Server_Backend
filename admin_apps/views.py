@@ -375,7 +375,7 @@ class GroupBuyingDetailView(APIView):
 
         sql_group_buying_detail = sql_group_buying_detail.format(id=request.GET['groupbuying_id'])
         sql_group_buying_products = sql_group_buying_products.format(
-            image_prefix = image_path(),
+            _image_prefix = image_path(),
             id = request.GET['groupbuying_id']
         )
 
