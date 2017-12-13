@@ -84,10 +84,7 @@ class MerchantInfoView(APIView):
         data = {
             'nickname': user.nickname,
             'headimgurl': user.headimgurl,
-            'address_set': {
-                'address': user.address,
-                'phone_num': user.phone_num
-            }
+            'address': user.address,
         }
 
         return Response(format_body(1, 'Success', {'merchant_profile': data}))
