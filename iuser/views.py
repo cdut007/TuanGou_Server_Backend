@@ -76,13 +76,10 @@ class AgentInfoView(APIView):
         data = {
             'nickname': user.nickname,
             'headimgurl': user.headimgurl,
-            'address_set': {
-                'address': user.address,
-                'phone_num': user.phone_num
-            }
+            'address': user.address
         }
 
-        return Response(format_body(1, 'Success', {'merchant_profile': data}))
+        return Response(format_body(1, 'Success', {'user_profile': data}))
 
 
 class UserAddressView(APIView):
