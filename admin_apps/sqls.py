@@ -219,7 +219,7 @@ SELECT
 	`name`,
 	`desc`,
 	CONCAT('{_image_prefix}', icon) AS icon,
-	CONCAT('{_image_prefix}', image) AS image
+	IF(LEFT(created_by, 3)='app', 'http://www.ailinkgo.com/admin/images/Defalut/placeholder.png', CONCAT('{_image_prefix}', image)) AS image
 FROM
 	market_goodsclassify
 WHERE created_by='{_owner}'
