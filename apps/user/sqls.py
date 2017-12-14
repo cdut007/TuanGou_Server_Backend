@@ -417,7 +417,7 @@ FROM
             c.id AS merchant_id,
             COUNT(DISTINCT a.user_id) AS consumer_count,
             f.`name` AS classify_name,
-            if(LEFT(e.created_by, 5)='admin', CONCAT('%(_image_prefix)s', f.icon), 'defalut_classify_icon') AS classify_icon
+            CONCAT('%(_image_prefix)s', f.icon) AS classify_icon
         FROM
             iuser_genericorder AS a
         INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.id
