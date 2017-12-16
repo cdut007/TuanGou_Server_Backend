@@ -1,8 +1,7 @@
 # _*_ coding:utf-8 _*_
 
 #'团员订单详情'
-sql1_desc = [u'团员微信号', u'手机号', u'数量', u'价格', u'商品号']
-sql1 = """
+sql_order_consumer_detail = """
 SELECT
 	d.nickname AS user_wx,
 	d.phone_num AS phone,
@@ -21,8 +20,7 @@ AND b.group_buy_id = %(group_buy_id)s
 """
 
 #'仓库发货清单'
-sql2_desc = [u'数量', u'价格', u'商品号']
-sql2 = """
+sql_order_supplier_summary = """
 SELECT
 	sum(a.quantity) AS quantity,
 	CONCAT('$', ROUND((quantity * b.price), 2)) AS m_amount,

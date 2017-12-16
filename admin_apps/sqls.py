@@ -273,6 +273,7 @@ sql_group_buying_orders_v2 = """
 SELECT
     temp1.merchant_id,
     temp1.merchant_code,
+    temp1.can_download_excel,
 	CONCAT(temp1.merchant_id, '  ', c.nickname) AS merchant_name,
 	SUM(temp2.quantity) AS total_quantity,
 	SUM(a.price*temp2.quantity) AS total_money,
@@ -295,12 +296,14 @@ FROM
 	(
 		SELECT
 			a.id AS aorder_id,
+			IF((a.mc_end=1 OR c.end_time<NOW()), 'y', 'n') AS can_download_excel,
 			a.group_buy_id,
 			a.user_id AS merchant_id,
 			b.merchant_code AS merchant_code
 		FROM
 			iuser_agentorder AS a
 		LEFT JOIN iuser_userprofile AS b ON a.user_id = b.id
+		LEFT JOIN market_groupbuy AS c ON c.id=a.group_buy_id
 		WHERE
 			group_buy_id = %(group_buy_id)s
 	) AS temp1

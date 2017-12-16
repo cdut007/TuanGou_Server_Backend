@@ -19,6 +19,7 @@ class StatusCode():
     JsApiConfigError = 15
     SaveImageFail = 16
     orderEmpty = 17
+    GroupBuyingNotEnd = 18
 
 
 def mysql_config():
@@ -103,6 +104,24 @@ def images_save_base_path():
         path = '/usr/local/nginx_1.10.3/html/ailinkgo/admin/images/'
     else:
         path = '/usr/local/nginx/html/ilinkgo/admin/images/'
+    return path
+
+def excel_path():
+    """load configuration"""
+    mode = os.environ.get('MODE', '')
+    dir_name = os.getcwd().split('/')[-1]
+
+    if mode == 'PRODUCTION':
+        path = ''
+    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
+        path = 'http://www.ailinkgo.com/admin/excels/'
+    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
+        path = 'http://www.ailinkgo.com/adminTesting/excels/'
+    elif mode == 'HOME':
+        path = 'http://www.ailinkgo.demo/admin/excels/'
+    else:
+        path = 'http://www.ailinkgo.demo/admin/excels'
+
     return path
 
 def excel_save_base_path():

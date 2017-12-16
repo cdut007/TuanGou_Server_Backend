@@ -768,6 +768,35 @@ class ProductDeleteView(APIView):
         return Response(format_body(1, 'Success', ''))
 
 
+class MerchantOrderExcelView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from apps.other.views import SendOrderInfoView
+        cursor = connection.cursor()
+
+        sql_is_group_buying_end = """
+        SELECT
+            IF((a.mc_end=1 OR c.end_time<NOW()), 'done', 'doing') AS status
+        FROM
+            iuser_agentorder AS a
+        LEFT JOIN iuser_userprofile AS b ON a.user_id=b.id
+        LEFT JOIN market_groupbuy AS c ON a.group_buy_id=c.id
+        WHERE b.merchant_code='{_merchant_code}' AND a.group_buy_id={_group_buying_id}
+        """.format(
+            _merchant_code=request.GET['merchant_code'],
+            _group_buying_id=request.GET['group_buying_id']
+        )
+        cursor.execute(sql_is_group_buying_end)
+        status = cursor.fetchone()
+
+        if status[0] == 'doing':
+            return Response(format_body(18, 'The order are not finished', ''))
+
+        user = UserProfile.objects.get(merchant_code=request.GET['merchant_code'])
+        excel = SendOrderInfoView.get_order_excel(user.id, request.GET['group_buying_id'])
+
+        return Response(format_body(1, 'Success', {'excel': excel['excel_web_path']}))
+
 
 
 

@@ -37,6 +37,7 @@ urlpatterns = [
     url(r'^groupbuying.orders$', views.GroupBuyingOrderView.as_view(), name='groupbuying.orders'),
     url(r'^merchant.orders$', views.MerchantOrderSummaryView.as_view(), name='merchant.orders'),
     url(r'^order.detail$', views.MerchantOrderDetailView.as_view(), name='order.detail'),
+    url(r'^order.excel$', views.MerchantOrderExcelView.as_view(), name='order.excel'),
 
     # user
     url(r'^user.list$', views.UserListView.as_view(), name='user.list'),
