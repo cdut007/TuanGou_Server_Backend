@@ -40,6 +40,9 @@ class SendOrderInfoView(APIView):
 
         excel = self.get_order_excel(user_id, group_buying_id)
 
+        if excel['count'] == 0:
+            return Response(format_body(17, 'Order Empty', ''))
+
         if request.data['send_type'] == 'email':
             subject = u"类别（%(classify)s）订单详情" % {
                 'classify': excel['group_buying_info'].goods_classify.name
@@ -72,10 +75,23 @@ class SendOrderInfoView(APIView):
     @staticmethod
     def get_order_excel(user_id, group_buying_id):
         from ilinkgo.config import excel_path
-        from sqls import sql_order_consumer_detail, sql_order_supplier_summary
+        from sqls import sql_order_consumer_detail, sql_order_supplier_summary, sql_is_order_empty
 
         user_info = UserProfile.objects.get(id=user_id)
         group_buying = GroupBuy.objects.get(id=group_buying_id)
+
+        # 先判断订单是否为空
+        cursor = connection.cursor()
+        sql_is_order_empty = sql_is_order_empty.format(
+            _group_buying_id = group_buying_id,
+            _merchant_code = user_info.merchant_code
+        )
+        cursor.execute(sql_is_order_empty)
+        count = cursor.fetchone()
+        if int(count[0]) == 0:
+            return {'count': 0}
+
+        # 查询是否有发送记录
         send_record = MerchantPushLog.objects.filter(
             group_buying_id=group_buying_id,
             merchant_id=user_id,
@@ -89,17 +105,12 @@ class SendOrderInfoView(APIView):
             excel_name = str(int(time.time())) + '_' + random_str(4) + '.xls'
             file_path = excel_save_base_path() + excel_name
 
-            cursor = connection.cursor()
-
             sql_order_consumer_detail = sql_order_consumer_detail % {
                 'agent_code': user_info.merchant_code,
                 'group_buy_id': group_buying_id
             }
             cursor.execute(sql_order_consumer_detail)
             order_list = dict_fetch_all(cursor)
-
-            if not order_list:
-                return Response(format_body(17, 'Generic order empty', ''))
 
             sql_order_supplier_summary = sql_order_supplier_summary % {
                 'agent_code': user_info.merchant_code,
@@ -128,4 +139,9 @@ class SendOrderInfoView(APIView):
             _excel_file_path = file_path
             _excel_web_path = excel_path() + excel_name
 
-        return {'excel_file_path': _excel_file_path, 'excel_web_path': _excel_web_path, 'group_buying_info': group_buying}
+        return {
+            'count': count[0],
+            'excel_file_path': _excel_file_path,
+            'excel_web_path': _excel_web_path,
+            'group_buying_info': group_buying
+        }

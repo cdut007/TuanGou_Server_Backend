@@ -1,5 +1,16 @@
 # _*_ coding:utf-8 _*_
 
+# 判断订单是否为空
+sql_is_order_empty = """
+SELECT
+	COUNT(a.id) AS count
+FROM
+	iuser_genericorder AS a
+LEFT JOIN market_groupbuygoods AS b ON a.goods_id=b.id
+WHERE
+	a.agent_code = '{_merchant_code}' AND b.group_buy_id={_group_buying_id}
+"""
+
 #'团员订单详情'
 sql_order_consumer_detail = """
 SELECT

@@ -795,6 +795,9 @@ class MerchantOrderExcelView(APIView):
         user = UserProfile.objects.get(merchant_code=request.GET['merchant_code'])
         excel = SendOrderInfoView.get_order_excel(user.id, request.GET['group_buying_id'])
 
+        if excel['count'] == 0:
+            return Response(format_body(17, 'Order Empty', ''))
+
         return Response(format_body(1, 'Success', {'excel': excel['excel_web_path']}))
 
 
