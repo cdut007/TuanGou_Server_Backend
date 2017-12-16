@@ -111,6 +111,8 @@ class SendOrderInfoView(APIView):
             }
             cursor.execute(sql_order_consumer_detail)
             order_list = dict_fetch_all(cursor)
+            for item in order_list:
+                item['goods_list'] = json.loads(item['goods_list'])
 
             sql_order_supplier_summary = sql_order_supplier_summary % {
                 'agent_code': user_info.merchant_code,
