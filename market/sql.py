@@ -59,7 +59,7 @@ SELECT
 	) USING utf8)  AS classify,
 	CONCAT(
 		'[',
-		GROUP_CONCAT(
+		SUBSTRING_INDEX(GROUP_CONCAT(
 			'\{"goods_id\": \"',
 			c.id,
 			'\", ',
@@ -71,7 +71,7 @@ SELECT
 				SUBSTRING_INDEX(d.image, '.', - 1)
 			),
 			'\"}'
-		),
+		), ',{', 15),
 		']'
 	) AS goods
 FROM
