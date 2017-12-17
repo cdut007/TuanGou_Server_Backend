@@ -59,11 +59,20 @@ class MerchantPushLog(models.Model):
 
 class UnpackRedPacketsLog(models.Model):
     id = models.AutoField(primary_key=True)
-    owner = models.PositiveIntegerField()
-    unpack_user = models.PositiveIntegerField()
-    group_buying_id = models.PositiveIntegerField()
-    money = models.DecimalField(max_digits=4, decimal_places=2)
-    add_time = models.DateTimeField(default=datetime.now)
+    receiver = models.PositiveIntegerField(blank=False)
+    unpack_user = models.PositiveIntegerField(null=True)
+    group_buying_id = models.PositiveIntegerField(blank=False)
+    money = models.DecimalField(max_digits=4, decimal_places=2, null=True)
+    is_failure = models.CharField(max_length=2, default=0)
+    failure_reason = models.CharField(max_length=4, null=True)
+    is_send = models.CharField(max_length=2, blank=True, null=True)
+    send_time = models.DateTimeField(blank=True, null=True)
+    unpack_time = models.DateTimeField(blank=True, null=True)
+
+    @staticmethod
+    def gen_four_record(receiver, group_buying_id):
+        rps = [UnpackRedPacketsLog(receiver=receiver, group_buying_id=group_buying_id) for i in range(4)]
+        UnpackRedPacketsLog.objects.bulk_create(rps)
 
     class Meta:
         db_table = 'lg_unpack_red_packets_log'

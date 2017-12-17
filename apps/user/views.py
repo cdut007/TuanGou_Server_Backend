@@ -8,8 +8,9 @@ from rest_framework.views import APIView
 from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit, virtual_login
 from utils.winxin import WeiXinAPI
 from ilinkgo.config import image_path
-from market.models import GroupBuyGoods
+from market.models import GroupBuyGoods, GroupBuy
 from iuser.models import GenericOrder, UserProfile
+from models import UnpackRedPacketsLog
 from  MySQLdb import escape_string
 
 from iuser.Authentication import Authentication
@@ -139,10 +140,13 @@ class ConsumerOrderView(APIView):
     @Authentication.token_required
     @raise_general_exception
     def post(self, request):
-        from sqls import sql_create_consumer_order, sql_done_consumer_order_update_stock, sql_create_consumer_order_remarks
+        from sqls import sql_create_consumer_order, sql_done_consumer_order_update_stock
+        from sqls import sql_create_consumer_order_remarks, sql_is_order_has_red_packets
 
         cursor = connection.cursor()
-        cursor.execute("START TRANSACTION;")
+        # cursor.execute("START TRANSACTION;")
+
+        goods_ids = ','.join([str(item['goods_id']) for item in request.data['goods_list']])
 
         # 插入订单
         insert_values = ""
@@ -207,8 +211,8 @@ class ConsumerOrderView(APIView):
 
         cursor.execute("COMMIT;")
 
+        # 给团长发送微信通知
         try:
-            #给团长发送微信通知
             merchant = UserProfile.objects.filter(merchant_code=request.data['merchant_code']).first()
             consumer = UserProfile.objects.get(pk=self.post.user_id)
             sql_get_goods = """
@@ -250,9 +254,19 @@ class ConsumerOrderView(APIView):
         except Exception as e:
             pass
 
+        # 奖励红包
+        sql_is_order_has_red_packets = sql_is_order_has_red_packets.format(_goods_ids=goods_ids)
+        cursor.execute(sql_is_order_has_red_packets)
+        grp = dict_fetch_all(cursor)
+        award_red_packets = 1 if grp else 0
+        if award_red_packets:
+            for item in grp:
+                UnpackRedPacketsLog.gen_four_record(receiver=self.post.user_id, group_buying_id=item['group_buying_id'])
+
+        # #一条group_buying_id
         group_buy_goods = GroupBuyGoods.objects.get(pk=request.data['goods_list'][0]['goods_id'])
 
-        return Response(format_body(1, 'Success', {'id': group_buy_goods.group_buy_id}))
+        return Response(format_body(1, 'Success', {'id': group_buy_goods.group_buy_id, 'award_red_packets': award_red_packets}))
 
     @raise_general_exception
     @Authentication.token_required
@@ -574,6 +588,7 @@ class ConsumerOrderErtView(APIView):
             item['goods_list'] = json.loads(item['goods_list'])
 
         return Response(format_body(1, 'Success', data))
+
 
 
 

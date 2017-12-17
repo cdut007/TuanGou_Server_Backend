@@ -536,3 +536,14 @@ GROUP BY
 	temp.user_id
 %(_limit)s
 """
+
+sql_is_order_has_red_packets = """
+SELECT
+        b.award_red_packets,
+        a.group_buy_id AS group_buying_id
+FROM
+        market_groupbuygoods AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
+WHERE
+    a.id IN ({_goods_ids}) AND b.award_red_packets=1
+"""

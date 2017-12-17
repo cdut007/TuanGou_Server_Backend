@@ -45,6 +45,8 @@ class GroupBuy(models.Model):
     add_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')
     eyu = models.CharField(max_length=64, default='')
     created_by = models.CharField(max_length=64, default='')
+    award_red_packets = models.CharField(max_length=2, default='0')
+    min_order_amount = models.DecimalField(max_digits=6, decimal_places=2, default=None)
 
     class Meta:
         verbose_name = u'团购'
