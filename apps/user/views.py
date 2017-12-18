@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit, virtual_login
+from utils.common import decimal_2
 from utils.winxin import WeiXinAPI
 from ilinkgo.config import image_path
 from market.models import GroupBuyGoods, GroupBuy
@@ -144,7 +145,7 @@ class ConsumerOrderView(APIView):
         from sqls import sql_create_consumer_order_remarks, sql_is_order_has_red_packets
 
         cursor = connection.cursor()
-        # cursor.execute("START TRANSACTION;")
+        cursor.execute("START TRANSACTION;")
 
         goods_ids = ','.join([str(item['goods_id']) for item in request.data['goods_list']])
 
@@ -303,10 +304,19 @@ class MerchantOrderView(APIView):
             cursor.execute(sql_merchant_order_detail)
             data = dict_fetch_all(cursor)
 
+            all_quantity = 0; all_amount=0
             for item in data:
+                all_quantity += float(item['total_quantity'])
+                all_amount += float(item['total_amount'])
                 item['goods_list'] = json.loads(item['goods_list'])
 
-            return Response(format_body(1, 'Success', {'order_detail': data}))
+            return Response(format_body(1, 'Success', {
+                'order_detail': data,
+                'summary': {
+                    'all_quantity': decimal_2(all_quantity),
+                    'all_amount': decimal_2(all_amount)
+                }
+            }))
 
         else:
             return Response(format_body(13, 'No this option', ''))

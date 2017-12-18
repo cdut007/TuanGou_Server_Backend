@@ -6,6 +6,7 @@ from random import Random
 from rest_framework.response import Response
 from django.db.models import ObjectDoesNotExist
 from django.db import OperationalError
+from decimal import Decimal
 
 from ilinkgo.config import images_save_base_path
 
@@ -136,3 +137,6 @@ def virtual_login(func):
         return func(self, request, *args, **kargs)
     return wrapper
 
+
+def decimal_2(val):
+    return str(Decimal(val).quantize(Decimal('0.00')))
