@@ -4,6 +4,7 @@ from django.conf.urls import url
 from user import views as UserViews
 from shop import views as ShopViews
 from other import views as OtherViews
+from user import rp_views as RpViews
 
 urlpatterns = [
     url(r'^user.login.app$', UserViews.UserLoginFromAppView.as_view(), name='user.login.app'),
@@ -41,4 +42,7 @@ urlpatterns = [
     # other
     url(r'^winxin.js_sdk_config$', OtherViews.WeiXinJsSdkConfigView.as_view(), name='winxin.js_sdk_config'),
     url(r'^send.order.info$', OtherViews.SendOrderInfoView.as_view(), name='send.order.info'),
+
+    # red packets
+    url(r'^rp.one.entries$', RpViews.RpOneDetailView.as_view(), name='rp.one.entries'),
 ]

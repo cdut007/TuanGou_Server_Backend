@@ -1,5 +1,5 @@
 # _*_ coding:utf-8 _*_
-import time, os
+import time, os, uuid
 from ilinkgo.config import excel_save_base_path
 from utils.common import dict_fetch_all, random_str, raise_general_exception
 from datetime import datetime
@@ -27,6 +27,12 @@ class UserView(APIView):
     @raise_general_exception
     def get(self, request):
         user = UserProfile.objects.get(pk=self.get.user_id)
+
+        # 是否有分享码
+        if not user.sharing_code:
+            user.sharing_code = uuid.uuid1()
+            user.save()
+
         data = {
             'nickname': user.nickname,
             'headimgurl': user.headimgurl,
@@ -34,8 +40,9 @@ class UserView(APIView):
                 'address': user.address,
                 'phone_num': user.phone_num
             },
-            'agent_url': 'http://www.ailinkgo.com/?agent_code='+user.merchant_code,
-            'role': 'merchant' if user.is_agent else 'consumer'
+            'agent_url': 'http://www.ailinkgo.com/?agent_code=' + user.merchant_code,
+            'role': 'merchant' if user.is_agent else 'consumer',
+            'sharing_code': user.sharing_code
         }
         return Response(format_body(1, 'Success', {'user_profile': data}))
 

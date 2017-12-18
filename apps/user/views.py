@@ -67,6 +67,11 @@ class UserInfoView(APIView):
     @raise_general_exception
     def get(self, request):
         user = UserProfile.objects.get(pk=self.get.user_id)
+        #是否有分享码
+        if not user.sharing_code:
+            user.sharing_code = uuid.uuid1()
+            user.save()
+
         data = {
             'nickname': user.nickname,
             'headimgurl': user.headimgurl,
@@ -75,7 +80,8 @@ class UserInfoView(APIView):
                 'phone_num': user.phone_num
             },
             'agent_url': 'http://www.ailinkgo.com/?agent_code=' + user.merchant_code,
-            'role': 'merchant' if user.is_agent else 'consumer'
+            'role': 'merchant' if user.is_agent else 'consumer',
+            'sharing_code': user.sharing_code
         }
 
         return Response(format_body(1, 'Success', {'user_profile': data}))

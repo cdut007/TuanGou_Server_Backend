@@ -31,12 +31,15 @@ class UnpackRedPacketsView(APIView):
 
 
 class RpOneDetailView(APIView):
-    @Authentication.token_required
+    # @Authentication.token_required
     @raise_general_exception
     def get(self, request):
-        receiver = UserProfile.objects.get(sharing_code=request.data['sharing_code'])
-        unpack_user_id = self.post.user_id
-        group_buying_id = request.data['group_buying_id']
-        money = self.gen_rp_money()
-        pass
+        from rp_sqls import sql_rp_one_detail
+        receiver = UserProfile.objects.get(sharing_code=request.GET['sharing_code'])
+        group_buying_id = request.GET['group_buying_id']
+
+        cursor = connection.cursor()
+        cursor.execute(sql_rp_one_detail)
+        rp_entries =dict_fetch_all(cursor)
+        return Response(format_body(1, 'Success', {'rp_entries': rp_entries}))
 
