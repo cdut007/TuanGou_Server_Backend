@@ -148,8 +148,8 @@ def order_excel(data):
     m_all = 0
     q_all = 0
     for item in data['order_list']:
-        m_all += int(item['total_money'])
-        q_all += int(item['total_quantity'])
+        m_all += float(item['total_money'])
+        q_all += float(item['total_quantity'])
         inner_row = 0
 
         sheet2.write_merge(cur_row2, ((cur_row2-1)+len(item['goods_list'])), 0, 0, item['nickname'], style_content)
