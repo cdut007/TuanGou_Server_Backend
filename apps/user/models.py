@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 from datetime import datetime
 from django.db import models
-
+from decimal import Decimal
+import random
 
 class ConsumerOrderRemarks(models.Model):
     id = models.AutoField(primary_key=True)
@@ -73,6 +74,39 @@ class UnpackRedPacketsLog(models.Model):
     def gen_four_record(receiver, group_buying_id):
         rps = [UnpackRedPacketsLog(receiver=receiver, group_buying_id=group_buying_id) for i in range(4)]
         UnpackRedPacketsLog.objects.bulk_create(rps)
+
+    @staticmethod
+    def unpack_one_rp(receiver, group_buying_id, unpack_user):
+        blank_rp = UnpackRedPacketsLog.objects.filter(
+            receiver=receiver,
+            group_buying_id=group_buying_id,
+            unpack_user__isnull=True
+        ).first()
+        if blank_rp:
+            money = UnpackRedPacketsLog.gen_rp_money()
+            blank_rp.unpack_user = unpack_user
+            blank_rp.money = money
+            blank_rp.unpack_time = datetime.now()
+            blank_rp.save()
+            return money
+        else:
+            return 0
+
+    @staticmethod
+    def gen_rp_money():
+        return str(Decimal(random.uniform(0.2, 0.6)).quantize(Decimal('0.00')))
+
+    @staticmethod
+    def can_unpack(receiver, group_buying_id, unpack_user):
+        rp_record = UnpackRedPacketsLog.objects.filter(
+            receiver=receiver,
+            group_buying_id=group_buying_id,
+            unpack_user = unpack_user
+        ).first()
+        if rp_record:
+            return 0
+        else:
+            return 1
 
     class Meta:
         db_table = 'lg_unpack_red_packets_log'

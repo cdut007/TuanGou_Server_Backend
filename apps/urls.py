@@ -44,5 +44,6 @@ urlpatterns = [
     url(r'^send.order.info$', OtherViews.SendOrderInfoView.as_view(), name='send.order.info'),
 
     # red packets
-    url(r'^rp.one.entries$', RpViews.RpOneDetailView.as_view(), name='rp.one.entries'),
+    url(r'^rp.one.entries$', RpViews.RpOneEntriesView.as_view(), name='rp.one.entries'),
+    url(r'^rp.unpack$', RpViews.UnpackRpView.as_view(), name='rp.unpack'),
 ]

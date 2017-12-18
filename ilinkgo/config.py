@@ -20,6 +20,7 @@ class StatusCode():
     SaveImageFail = 16
     orderEmpty = 17
     GroupBuyingNotEnd = 18
+    NoBlankRp = 19
 
 
 def mysql_config():

@@ -679,7 +679,7 @@ class UserProfileUpdateView(APIView):
         user = UserProfile.objects.get(pk=request.data['user_id'])
         user.is_agent = request.data['role']
         if not user.merchant_code:
-            user.merchant_code = uuid.uuid3(uuid.NAMESPACE_DNS, 'vbx_ads')
+            user.merchant_code = uuid.uuid1()
         user.save()
 
         return Response(format_body(1, 'Success', ''))

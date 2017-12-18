@@ -1,6 +1,6 @@
 # _*_ coding:utf-8 _*_
 
-sql_rp_one_detail = """
+sql_rp_one_entries = """
 SELECT
 	b.nickname AS unpack_user,
 	a.money,
@@ -9,6 +9,6 @@ FROM
 	lg_unpack_red_packets_log AS a
 LEFT JOIN iuser_userprofile AS b ON a.unpack_user=b.id
 WHERE
-	group_buying_id = 103
-AND receiver = 78
+	group_buying_id = {_group_buying_id}
+AND receiver = {_receiver}
 """
