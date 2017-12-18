@@ -306,14 +306,14 @@ class MerchantOrderView(APIView):
 
             all_quantity = 0; all_amount=0
             for item in data:
-                all_quantity += float(item['total_quantity'])
+                all_quantity += int(item['total_quantity'])
                 all_amount += float(item['total_amount'])
                 item['goods_list'] = json.loads(item['goods_list'])
 
             return Response(format_body(1, 'Success', {
                 'order_detail': data,
                 'summary': {
-                    'all_quantity': decimal_2(all_quantity),
+                    'all_quantity': all_quantity,
                     'all_amount': decimal_2(all_amount)
                 }
             }))
