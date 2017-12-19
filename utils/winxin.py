@@ -1,5 +1,5 @@
 # _*_ coding:utf-8 _*_
-import urllib, urllib2, json, hashlib, time
+import urllib, urllib2, json, hashlib, time, requests, re
 from datetime import datetime
 from common import random_str
 from apps.other.models import WinXinCache
@@ -8,6 +8,8 @@ class WeiXinAPI:
     def __init__(self):
         self.app_id = 'wx3dfb837875e773af'
         self.secret = '8f124947d450ee56458828481d183889'
+        self.mch_key = 'okljv0R6houqibewuLKYFhLU8kcLU8kc'
+        self.mch_id = '1450506702'
 
     def basal_access_token(self):
         u"""公众号的全局唯一接口调用凭据"""
@@ -131,5 +133,79 @@ class WeiXinAPI:
         headers = {'Content-Type': 'application/json'}
         request = urllib2.Request(url=url, headers=headers, data=json.dumps(data))
         response = urllib2.urlopen(request)
+
+    def send_red_pack(self):
+        randstr = random_str(random_length=20)
+        _url = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack'
+        _headers = {'Content-Type': 'application/xml'}
+        payload = {
+            'nonce_str': randstr,
+            'mch_billno': '0010010404201411170000a',
+            'mch_id': self.mch_id,
+            'wxappid': self.app_id,
+            'send_name': 'ilinkgo',
+            're_openid': 'okljv0R6hou-qibewuLKYFhLU8kc',
+            'total_amount': 100,
+            'total_num': 1,
+            'wishing': 'havefun',
+            'client_ip': '127.0.0.1',
+            'act_name': 'happynewyear',
+            'remark': 'happynewyear',
+            'scene_id': 'PRODUCT_1'
+        }
+        payload['sign'] = self.sign(payload)
+
+        xml_data = WeiXinXml.json2xml(payload)
+        res = requests.post(url=_url, data=xml_data, headers=_headers, cert=('/root/PythonProject/ilinkgo/utils/apiclient_cert.pem', '/root/PythonProject/ilinkgo/utils/apiclient_key.pem'))
+        res_json = WeiXinXml.xml2json(res.text)
+        return res_json
+
+    def sign(self,payload):
+        sorted_keys = sorted(payload)
+        strmd = ''
+        for key in sorted_keys:
+            if payload[key]:
+                strmd += key + '=' + unicode(payload[key]) + '&'
+        strmd += "key=" + self.mch_key
+        m = hashlib.md5()
+        m.update(strmd)
+        sw = str(m.hexdigest()).upper()
+        return sw
+
+
+class WeiXinXml:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def json2xml(org_json):
+        xml = '<xml>\n'
+        for key, val in org_json.items():
+            xml += '<{_key}><![CDATA[{_val}]]></{_key}>\n'.format(_key=key, _val=val)
+        xml += '</xml>'
+        return xml
+
+    @staticmethod
+    def xml2json(org_xml):
+        xml_list = str(org_xml).splitlines()
+        xml_list = xml_list[1:-1]
+
+        pattern_key = re.compile('<(\w+)>')
+        pattern_val1 = re.compile('CDATA\[(.+?)]')
+        pattern_val2 = re.compile('>(\w+)<')
+
+        res = dict()
+        for line in xml_list:
+            key = pattern_key.findall(line)
+            key = key[0]
+            val = pattern_val1.findall(line)
+            if not val:
+                val = pattern_val2.findall(line)
+            val = val[0]
+            res[key] = val
+
+        return res
+
+
 
 

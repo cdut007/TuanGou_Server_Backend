@@ -42,6 +42,7 @@ urlpatterns = [
     # other
     url(r'^winxin.js_sdk_config$', OtherViews.WeiXinJsSdkConfigView.as_view(), name='winxin.js_sdk_config'),
     url(r'^send.order.info$', OtherViews.SendOrderInfoView.as_view(), name='send.order.info'),
+    url(r'^send.red.pack$', OtherViews.SendWxRedPacketView.as_view(), name='send.red.pack'),
 
     # red packets
     url(r'^rp.one.entries$', RpViews.RpOneEntriesView.as_view(), name='rp.one.entries'),

@@ -62,6 +62,7 @@ class UnpackRedPacketsLog(models.Model):
     id = models.AutoField(primary_key=True)
     receiver = models.PositiveIntegerField(blank=False)
     unpack_user = models.PositiveIntegerField(null=True)
+    get_from = models.PositiveIntegerField(null=True, blank=False)
     group_buying_id = models.PositiveIntegerField(blank=False)
     money = models.DecimalField(max_digits=4, decimal_places=2, null=True)
     is_failure = models.CharField(max_length=2, default=0)
@@ -110,3 +111,16 @@ class UnpackRedPacketsLog(models.Model):
 
     class Meta:
         db_table = 'lg_unpack_red_packets_log'
+
+
+class WeiXinRpSendLog(models.Model):
+    id = models.AutoField(primary_key=True)
+    openid = models.CharField(max_length=124)
+    send_time = models.DateTimeField()
+    mch_billno = models.CharField(max_length=32)
+    money = models.DecimalField(max_digits=4, decimal_places=2, null=True)
+    return_code = models.CharField(max_length=16)
+    return_msg = models.CharField(max_length=128)
+    err_code = models.CharField(max_length=16)
+    err_code_des = models.CharField(max_length=128)
+    status = models.CharField(max_length=16, blank=True, null=True)
