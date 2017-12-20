@@ -262,7 +262,10 @@ class ConsumerOrderView(APIView):
             pass
 
         # 奖励红包
-        sql_is_order_has_red_packets = sql_is_order_has_red_packets.format(_goods_ids=goods_ids)
+        sql_is_order_has_red_packets = sql_is_order_has_red_packets.format(
+            _goods_ids=goods_ids,
+            _cur_user = self.post.user_id
+        )
         cursor.execute(sql_is_order_has_red_packets)
         grp = dict_fetch_all(cursor)
         award_red_packets = 1 if grp else 0

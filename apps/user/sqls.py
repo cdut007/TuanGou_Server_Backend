@@ -539,12 +539,14 @@ GROUP BY
 
 sql_is_order_has_red_packets = """
 SELECT
-        b.award_red_packets,
-        a.group_buy_id AS group_buying_id
+	a.group_buy_id AS group_buying_id
 FROM
-        market_groupbuygoods AS a
-LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
+	market_groupbuygoods AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+LEFT JOIN lg_unpack_red_packets_log AS c ON c.group_buying_id=b.id
 WHERE
-    a.id IN ({_goods_ids}) AND b.award_red_packets=1
+	a.id IN ({_goods_ids})
+AND b.award_red_packets = 1
 GROUP BY b.id
+HAVING !FIND_IN_SET('{_cur_user}', GROUP_CONCAT(DISTINCT IFNULL(c.receiver,'')))
 """
