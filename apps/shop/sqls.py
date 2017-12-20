@@ -313,6 +313,7 @@ SELECT
 	a.id AS group_buy_id,
 	a.ship_time,
 	a.eyu,
+	a.award_red_packets,
 	IFNULL(e.remark,'') AS user_remark,
 	DATE_FORMAT(a.end_time,'%%Y-%%m-%%d %%H:%%i:%%s') AS end_time,
 	CONCAT(

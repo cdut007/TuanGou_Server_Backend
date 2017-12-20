@@ -73,7 +73,8 @@ SELECT
 			'\"}'
 		), ',{', 15),
 		']'
-	) AS goods
+	) AS goods,
+	IF(FIND_IN_SET('1',GROUP_CONCAT(DISTINCT b.award_red_packets))>0, '1', '0')  AS award_red_packets
 FROM
 	iuser_agentorder AS a
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
