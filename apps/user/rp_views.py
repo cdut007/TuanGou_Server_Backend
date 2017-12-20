@@ -55,3 +55,33 @@ class RpOneEntriesView(APIView):
         rp_entries =dict_fetch_all(cursor)
         return Response(format_body(1, 'Success', {'rp_entries': rp_entries}))
 
+
+class RpUnopenedView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from rp_sqls import sql_unopened_rp
+
+        cursor = connection.cursor()
+        sql_unopened_rp = sql_unopened_rp.format(
+            _receiver = self.get.user_id
+        )
+        cursor.execute(sql_unopened_rp)
+        rp_unopened =dict_fetch_all(cursor)
+        return Response(format_body(1, 'Success', {'rp_unopened': rp_unopened}))
+
+
+class RpOpenedView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from rp_sqls import sql_opened_rp
+
+        cursor = connection.cursor()
+        sql_opened_rp = sql_opened_rp.format(
+            _receiver = self.get.user_id
+        )
+        cursor.execute(sql_opened_rp)
+        rp_opened =dict_fetch_all(cursor)
+        return Response(format_body(1, 'Success', {'rp_opened': rp_opened}))
+
