@@ -74,7 +74,7 @@ class UnpackRedPacketsLog(models.Model):
     @staticmethod
     def gen_four_record(receiver, group_buying_id, get_from):
         rps = [UnpackRedPacketsLog(
-            eceiver=receiver,
+            receiver=receiver,
             group_buying_id=group_buying_id,
             get_from=get_from
         ) for i in range(4)]
