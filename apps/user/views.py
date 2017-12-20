@@ -451,8 +451,47 @@ class MerchantMcEnd(APIView):
             group_buy_id=request.data['group_buying_id']
         )
         order.mc_end = 1
-        order.save()
+        # order.save()
+
+        #是否发红包
+        if int(order.group_buy.award_red_packets):
+            moa = order.group_buy.min_order_amount
+            if not self.unreached_moa(moa=moa, group_buying_id=order.group_buy_id, get_from=self.post.user_id):
+                self.update_unpacked_rp(group_buying_id=order.group_buy_id, get_from=self.post.user_id)
+
         return Response(format_body(1, 'Success', ''))
+
+    @staticmethod
+    def unreached_moa(moa, group_buying_id, get_from):
+        cursor = connection.cursor()
+
+        sql_merchant_oa = """
+        SELECT
+            SUM(a.quantity*b.price) AS oa
+        FROM
+            iuser_genericorder AS a
+        LEFT JOIN market_groupbuygoods AS b ON a.goods_id=b.id
+        WHERE
+            a.agent_code='ocsmexGwV4BzMOQMFN_IzHwgkj3I' AND b.group_buy_id=60
+        """.format(_group_buying_id=group_buying_id, _get_from=get_from)
+        cursor.execute(sql_merchant_oa)
+        merchant_oa = cursor.fetchone()
+        merchant_oa = int(merchant_oa[0])
+        if int(merchant_oa) < int(moa):
+            UnpackRedPacketsLog.objects.filter(
+                group_buying_id=group_buying_id,
+                get_from=get_from
+            ).update(is_failure=3)
+            return True
+        return False
+
+    @staticmethod
+    def update_unpacked_rp(group_buying_id, get_from):
+        UnpackRedPacketsLog.objects.filter(
+            group_buying_id = group_buying_id,
+            get_from = get_from,
+            unpack_user__isnull=True
+        ).update(is_failure=1)
 
 
 class MerchantShareJieLong(APIView):
