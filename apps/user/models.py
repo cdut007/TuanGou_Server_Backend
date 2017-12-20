@@ -72,8 +72,12 @@ class UnpackRedPacketsLog(models.Model):
     unpack_time = models.DateTimeField(blank=True, null=True)
 
     @staticmethod
-    def gen_four_record(receiver, group_buying_id):
-        rps = [UnpackRedPacketsLog(receiver=receiver, group_buying_id=group_buying_id) for i in range(4)]
+    def gen_four_record(receiver, group_buying_id, get_from):
+        rps = [UnpackRedPacketsLog(
+            eceiver=receiver,
+            group_buying_id=group_buying_id,
+            get_from=get_from
+        ) for i in range(4)]
         UnpackRedPacketsLog.objects.bulk_create(rps)
 
     @staticmethod

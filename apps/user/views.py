@@ -153,6 +153,7 @@ class ConsumerOrderView(APIView):
         cursor = connection.cursor()
         cursor.execute("START TRANSACTION;")
 
+        merchant = UserProfile.objects.filter(merchant_code=request.data['merchant_code']).first()
         goods_ids = ','.join([str(item['goods_id']) for item in request.data['goods_list']])
 
         # 插入订单
@@ -220,7 +221,6 @@ class ConsumerOrderView(APIView):
 
         # 给团长发送微信通知
         try:
-            merchant = UserProfile.objects.filter(merchant_code=request.data['merchant_code']).first()
             consumer = UserProfile.objects.get(pk=self.post.user_id)
             sql_get_goods = """
             SELECT
@@ -271,7 +271,11 @@ class ConsumerOrderView(APIView):
         award_red_packets = 1 if grp else 0
         if award_red_packets:
             for item in grp:
-                UnpackRedPacketsLog.gen_four_record(receiver=self.post.user_id, group_buying_id=item['group_buying_id'])
+                UnpackRedPacketsLog.gen_four_record(
+                    receiver=self.post.user_id,
+                    group_buying_id=item['group_buying_id'],
+                    get_from=merchant.id
+                )
 
         # #一条group_buying_id
         group_buy_goods = GroupBuyGoods.objects.get(pk=request.data['goods_list'][0]['goods_id'])
