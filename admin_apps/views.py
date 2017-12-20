@@ -412,7 +412,9 @@ class GroupBuyingCreateView(APIView):
             add_time = datetime.now(),
             on_sale = group_buying_info['on_sale'],
             eyu = group_buying_info['eyu'],
-            created_by = get_owner(self.post.user_id)
+            created_by = get_owner(self.post.user_id),
+            award_red_packets = group_buying_info['award_rp'],
+            min_order_amount = group_buying_info['moa']
         )
         new_group_buying.save()
 
@@ -518,7 +520,9 @@ class GroupBuyingUpdateView(APIView):
             ship_time = group_buying_info['ship_time'],
             add_time = datetime.now(),
             on_sale = group_buying_info['on_sale'],
-            eyu = group_buying_info['eyu']
+            eyu = group_buying_info['eyu'],
+            award_red_packets=group_buying_info['award_rp'],
+            min_order_amount=group_buying_info['moa']
         )
 
         # 后台发布团购可更新title

@@ -7,10 +7,8 @@ from rest_framework.views import APIView
 
 from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit
 from utils.winxin import WeiXinAPI
-from market.models import GroupBuyGoods, GroupBuy
 from iuser.models import GenericOrder, UserProfile
 from models import UnpackRedPacketsLog
-from  MySQLdb import escape_string
 from iuser.Authentication import Authentication
 
 

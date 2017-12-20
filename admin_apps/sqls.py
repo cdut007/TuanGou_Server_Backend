@@ -184,7 +184,9 @@ SELECT
   a.on_sale,
   a.eyu,
   b.id AS classify,
-  b.`name` AS classify_name
+  b.`name` AS classify_name,
+  a.award_red_packets,
+  a.min_order_amount
 FROM
   market_groupbuy AS a
 LEFT JOIN market_goodsclassify AS b ON a.goods_classify_id=b.id

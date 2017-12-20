@@ -140,7 +140,7 @@ class WeiXinAPI:
         url = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack'
         payload = {
             'nonce_str': random_str(random_length=20),
-            'mch_billno': '0010010404201411170000a',
+            'mch_billno': '0010010404201411170000b',
             'mch_id': self.mch_id,
             'wxappid': self.app_id,
             'send_name': 'ilinkgo',
