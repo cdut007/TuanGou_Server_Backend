@@ -539,14 +539,33 @@ GROUP BY
 
 sql_is_order_has_red_packets = """
 SELECT
-	a.group_buy_id AS group_buying_id
+	temp1.group_buying_id,
+	IFNULL(temp2.is_failure,'') AS is_failure
 FROM
-	market_groupbuygoods AS a
-LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
-LEFT JOIN lg_unpack_red_packets_log AS c ON c.group_buying_id=b.id
-WHERE
-	a.id IN ({_goods_ids})
-AND b.award_red_packets = 1
-GROUP BY b.id
-HAVING !FIND_IN_SET('{_cur_user}', GROUP_CONCAT(DISTINCT IFNULL(c.receiver,'')))
+	(
+		SELECT
+			a.group_buy_id AS group_buying_id
+		FROM
+			market_groupbuygoods AS a
+		LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+		WHERE
+			a.id IN ({_goods_ids})
+		AND b.award_red_packets = 1
+		GROUP BY
+			a.group_buy_id
+	) AS temp1
+	LEFT JOIN 
+	(
+		SELECT
+			id AS rp_id,
+			receiver,
+			group_buying_id,
+			is_failure
+		FROM
+			lg_unpack_red_packets_log
+		WHERE receiver={_cur_user}
+		GROUP BY receiver, group_buying_id
+	) AS temp2
+	ON temp1.group_buying_id=temp2.group_buying_id
+WHERE temp2.rp_id IS NULL OR temp2.is_failure=2
 """

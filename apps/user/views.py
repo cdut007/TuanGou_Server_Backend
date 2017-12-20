@@ -271,11 +271,18 @@ class ConsumerOrderView(APIView):
         award_red_packets = 1 if grp else 0
         if award_red_packets:
             for item in grp:
-                UnpackRedPacketsLog.gen_four_record(
-                    receiver=self.post.user_id,
-                    group_buying_id=item['group_buying_id'],
-                    get_from=merchant.id
-                )
+                if item['is_failure'] == '2':
+                    UnpackRedPacketsLog.re_activate_rp(
+                        receiver=self.post.user_id,
+                        group_buying_id=item['group_buying_id'],
+                        get_from=merchant.id
+                    )
+                else:
+                    UnpackRedPacketsLog.gen_four_record(
+                        receiver=self.post.user_id,
+                        group_buying_id=item['group_buying_id'],
+                        get_from=merchant.id
+                    )
 
         # #一条group_buying_id
         group_buy_goods = GroupBuyGoods.objects.get(pk=request.data['goods_list'][0]['goods_id'])
@@ -490,7 +497,8 @@ class MerchantMcEnd(APIView):
         UnpackRedPacketsLog.objects.filter(
             group_buying_id = group_buying_id,
             get_from = get_from,
-            unpack_user__isnull=True
+            unpack_user__isnull=True,
+            is_failure='0'
         ).update(is_failure=1)
 
 

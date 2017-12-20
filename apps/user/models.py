@@ -96,6 +96,14 @@ class UnpackRedPacketsLog(models.Model):
             return 0
 
     @staticmethod
+    def re_activate_rp(receiver, group_buying_id, get_from):
+        UnpackRedPacketsLog.objects.filter(
+            receiver=receiver,
+            group_buying_id=group_buying_id,
+            is_failure=2
+        ).update(is_failure=0, get_from=get_from)
+
+    @staticmethod
     def gen_rp_money():
         return str(Decimal(random.uniform(0.2, 0.6)).quantize(Decimal('0.00')))
 
