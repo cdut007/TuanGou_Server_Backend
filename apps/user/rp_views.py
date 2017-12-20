@@ -17,6 +17,9 @@ class UnpackRpView(APIView):
     @raise_general_exception
     def post(self, request):
         receiver = UserProfile.objects.get(sharing_code=request.data['sharing_code'])
+        if receiver.id == self.post.user_id:
+            return Response(format_body(21, 'Fail', 'can not your own red packet'))
+
         can_unpack = UnpackRedPacketsLog.can_unpack(
             receiver=receiver.id,
             group_buying_id=request.data['group_buying_id'],
