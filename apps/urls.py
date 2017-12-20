@@ -49,4 +49,5 @@ urlpatterns = [
     url(r'^rp.unpack$', RpViews.UnpackRpView.as_view(), name='rp.unpack'),
     url(r'^rp.unopened.list$', RpViews.RpUnopenedView.as_view(), name='rp.unopened.list'),
     url(r'^rp.opened.list$', RpViews.RpOpenedView.as_view(), name='rp.opened.list'),
+    url(r'^rp.failed.list$', RpViews.RpFailedView.as_view(), name='rp.failed.list'),
 ]

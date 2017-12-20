@@ -66,9 +66,7 @@ class UnpackRedPacketsLog(models.Model):
     group_buying_id = models.PositiveIntegerField(blank=False)
     money = models.DecimalField(max_digits=4, decimal_places=2, null=True)
     is_failure = models.CharField(max_length=2, default=0)
-    failure_reason = models.CharField(max_length=4, null=True)
-    is_send = models.CharField(max_length=2, blank=True, null=True)
-    send_time = models.DateTimeField(blank=True, null=True)
+    send_id = models.PositiveIntegerField(blank=True, null=True)
     unpack_time = models.DateTimeField(blank=True, null=True)
 
     @staticmethod

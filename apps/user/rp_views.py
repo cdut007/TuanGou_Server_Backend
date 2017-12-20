@@ -85,3 +85,18 @@ class RpOpenedView(APIView):
         rp_opened =dict_fetch_all(cursor)
         return Response(format_body(1, 'Success', {'rp_opened': rp_opened}))
 
+
+class RpFailedView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        from rp_sqls import sql_failed_rp
+
+        cursor = connection.cursor()
+        sql_failed_rp = sql_failed_rp.format(
+            _receiver = self.get.user_id
+        )
+        cursor.execute(sql_failed_rp)
+        rp_failed =dict_fetch_all(cursor)
+        return Response(format_body(1, 'Success', {'rp_failed': rp_failed}))
+
