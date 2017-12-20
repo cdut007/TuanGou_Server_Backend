@@ -546,4 +546,5 @@ FROM
 LEFT JOIN market_groupbuy AS b ON a.group_buy_id=b.id
 WHERE
     a.id IN ({_goods_ids}) AND b.award_red_packets=1
+GROUP BY b.id
 """
