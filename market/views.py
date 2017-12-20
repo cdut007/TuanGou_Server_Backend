@@ -2,12 +2,12 @@ import json
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ilinkgo.settings import conf
 from django.db.models import Sum
 from datetime import datetime
 from utils.common import format_body, thumbnail
 from models import Banner, GoodsClassify, GroupBuy, GroupBuyGoods, GoodsGallery
 from serializers import GoodsClassifySerializer, GroupBuySerializer,GroupBuyGoodsSerializer, BannerSerializer
-from ilinkgo.config import image_path
 from iuser.models import AgentOrder, UserProfile, GenericOrder
 from iuser.Authentication import Authentication
 from utils.common import raise_general_exception, dict_fetch_all
@@ -34,7 +34,7 @@ class BannerList(APIView):
 
 class HomePageList(APIView):
     def get(self, request, format=None):
-        path = image_path()
+        path = conf.image_url_prefix
         res = []
         goods_classify = GoodsClassify.objects.all()
 
@@ -76,7 +76,7 @@ class AgentHomePageList(APIView):
 
         res = []
         classifies = GroupBuy.objects.filter(agentorder__user=agent_user.id, end_time__gt=datetime.now(), on_sale=True).values('goods_classify').distinct()
-        path = image_path()
+        path = conf.image_url_prefix
         for classify in classifies:
             classify = GoodsClassify.objects.get(pk=classify['goods_classify'])
             classify_serializer = GoodsClassifySerializer(classify)
@@ -169,7 +169,7 @@ class GroupBuyGoodsDetail(APIView):
             return Response(format_body(0,'Object does not exist',''))
 
         serializer = GroupBuyGoodsSerializer(goods)
-        path = image_path()
+        path = conf.image_url_prefix
 
         # for image_itme in serializer.data['goods']['images']:
         #     image_itme['image'] = path + image_itme['image']
@@ -206,7 +206,7 @@ class UploadImageView(APIView):
                 destination.close()
             return Response({
                 'error': 0,
-                'url':  image_path() + goods_detail_path +image_name,
+                'url':  conf.image_url_prefix + goods_detail_path +image_name,
                 'width': '100%',
                 'height': 'auto'
             })
@@ -249,7 +249,7 @@ class FileManagerView(APIView):
             "moveup_dir_path": moveup_dir_path ,
             "current_dir_path": req_path,
             "total_count": 23,
-            "current_url": image_path() +'images/' + req_path,
+            "current_url": conf.image_url_prefix +'images/' + req_path,
             'file_list': file_list
         }
         return Response(data)
@@ -266,7 +266,7 @@ class MerchantIndexPage(APIView):
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
         cursor.execute(sql_web_index_page_old % {
-            'image_prefix' :image_path(),
+            'image_prefix' :conf.image_url_prefix,
             'user_id' : agent_user.id
         })
         data = dict_fetch_all(cursor)

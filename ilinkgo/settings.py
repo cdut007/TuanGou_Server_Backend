@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-from .config import mysql_config
+from .config import Config
 import sys
 
 default_encoding = 'utf-8'
@@ -23,7 +23,8 @@ if sys.getdefaultencoding() != default_encoding:
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
+#初始化环境变量
+conf = Config()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -99,13 +100,12 @@ REST_FRAMEWORK = {
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-mysql_config = mysql_config()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': mysql_config['name'],
-        'USER': mysql_config['user'],
-        'PASSWORD': mysql_config['password'],
+        'NAME': conf.mysql_db_name,
+        'USER': conf.mysql_db_user,
+        'PASSWORD': conf.mysql_db_password,
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {

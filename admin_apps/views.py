@@ -5,8 +5,8 @@ from django.db import connection
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ilinkgo.settings import conf
 from utils.common import format_body, dict_fetch_all, raise_general_exception
-from ilinkgo.config import image_path
 from utils.common import sql_limit, sql_count, save_images, get_owner
 
 from market.models import Goods, GoodsClassify
@@ -61,13 +61,13 @@ class ProductListView(APIView):
             where_and = "AND"
 
         _sql_goods_list = sql_goods_list.format(**{
-            '_image_prefix': image_path(),
+            '_image_prefix': conf.image_url_prefix,
             '_where': sql_where,
             '_order_by': 'ORDER BY a.id DESC',
             '_limit': sql_limit(request)
         })
         _sql_goods_list_count = sql_count(sql_goods_list.format(**{
-            '_image_prefix': image_path(),
+            '_image_prefix': conf.image_url_prefix,
             '_where': sql_where,
             '_order_by': '',
             '_limit': ''
@@ -92,7 +92,7 @@ class ProductDetailView(APIView):
     def get(self, request):
         from sqls import sql_goods_detail
 
-        sql_goods_detail = sql_goods_detail % {'goods_id': request.GET['goods_id'], 'image_prefix': image_path()}
+        sql_goods_detail = sql_goods_detail % {'goods_id': request.GET['goods_id'], 'image_prefix': conf.image_url_prefix}
 
         cursor = connection.cursor()
         cursor.execute("SET SESSION group_concat_max_len = 204800;")
@@ -194,7 +194,7 @@ class ProductSetListView(APIView):
 
         sql_product_set_list = sql_product_set_list.format(
             _owner = get_owner(self.get.user_id),
-            _image_prefix = image_path(),
+            _image_prefix = conf.image_url_prefix,
             _limit = sql_limit(request)
         )
         cursor = connection.cursor()
@@ -212,7 +212,7 @@ class ProductSetGoodsView(APIView):
 
         sql_product_set_goods = sql_product_set_goods.format(
             _owner = get_owner(self.get.user_id),
-            _image_prefix=image_path(),
+            _image_prefix=conf.image_url_prefix,
             _set = request.GET['set']
         )
         cursor = connection.cursor()
@@ -227,8 +227,8 @@ class ImageUploadView(APIView):
     def post(self, request):
         image = request.FILES['image']
         sub_path = save_images(image, 'GoodsDetail')
-        if image_path:
-            url = image_path() + sub_path
+        if sub_path:
+            url = conf.image_url_prefix + sub_path
             return Response(format_body(1, 'Success', url))
         return Response(format_body(16, 'Fail', ''))
 
@@ -283,7 +283,7 @@ class ProductSearchView(APIView):
             sql_where = "WHERE a.`name` LIKE '%{_keyword}%'".format(_keyword=keyword)
 
         sql_product_search = sql_product_search.format(
-            _image_prefix = image_path(),
+            _image_prefix = conf.image_url_prefix,
             _where = sql_where
         )
 
@@ -357,7 +357,7 @@ class MerchantGroupBuyingListView(APIView):
         _sql_group_buying_list = sql_merchant_group_buying_list.format(
             _owner = get_owner(self.get.user_id),
             _user_id = self.get.user_id,
-            _image_prefix = image_path(),
+            _image_prefix = conf.image_url_prefix,
             _limit = sql_limit(request)
         )
         cursor.execute(_sql_group_buying_list)
@@ -375,7 +375,7 @@ class GroupBuyingDetailView(APIView):
 
         sql_group_buying_detail = sql_group_buying_detail.format(id=request.GET['groupbuying_id'])
         sql_group_buying_products = sql_group_buying_products.format(
-            _image_prefix = image_path(),
+            _image_prefix = conf.image_url_prefix,
             id = request.GET['groupbuying_id']
         )
 
@@ -494,7 +494,7 @@ class GroupBuyingCreateView(APIView):
         LEFT JOIN market_goodsgallery AS d ON c.goods_id=d.goods_id
         WHERE a.id={_group_buying_id}
         LIMIT 1
-        """.format(_group_buying_id=group_buying_id, _image_prefix=image_path())
+        """.format(_group_buying_id=group_buying_id, _image_prefix=conf.image_url_prefix)
         cursor = connection.cursor()
         cursor.execute(sql)
         info = dict_fetch_all(cursor)
@@ -564,7 +564,7 @@ class ClassifyListView(APIView):
         cursor = connection.cursor()
 
         sql_classify_list = sql_classify_list.format(
-            _image_prefix=image_path(),
+            _image_prefix=conf.image_url_prefix,
             _owner=get_owner(self.get.user_id)
         )
         cursor.execute(sql_classify_list)
@@ -594,7 +594,7 @@ class ClassifyUpdateView(APIView):
         classify.save()
 
         cursor.execute(sql_classify_list.format(
-            _image_prefix=image_path(),
+            _image_prefix=conf.image_url_prefix,
             _owner=get_owner(self.post.user_id)
         ))
         classify_list = dict_fetch_all(cursor)
@@ -627,7 +627,7 @@ class ClassifyCreateView(APIView):
         classify.save()
 
         cursor.execute(sql_classify_list.format(
-            _image_prefix=image_path(),
+            _image_prefix=conf.image_url_prefix,
             _owner=get_owner(self.post.user_id)
         ))
         classify_list = dict_fetch_all(cursor)

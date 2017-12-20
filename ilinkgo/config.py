@@ -1,6 +1,62 @@
 import os
 
-class StatusCode():
+class Config:
+    def __init__(self):
+        self.mode = os.environ.get('MODE', '')
+        self.cwd = os.getcwd()
+        self.wei_xin_mch_key_pem = self.cwd + '/other_file/apiclient_key.pem'
+        self.wei_xin_mch_cert_pem = self.cwd + '/other_file/apiclient_cert.pem'
+        self._init_()
+
+    def _init_(self):
+        folder_name = self.cwd.split('/')[-1]
+        if self.mode == 'TESTING'and folder_name == 'TuanGou_Server_Backend':
+            self.live_env()
+        elif self.mode == 'TESTING'and folder_name == 'TuanGou_Server_Backend_Testing':
+            self.staging_env()
+        elif self.mode == 'HOME' :
+            self.home_env()
+        else:
+            self.dev_env()
+
+    def live_env(self):
+        self.mysql_db_name = 'ilinkgo'
+        self.mysql_db_user = 'ilinkusr'
+        self.mysql_db_password = 'ilinkusr123'
+        self.image_file_path = '/var/www/html/ailinkgo/admin/images/'
+        self.image_url_prefix = 'http://www.ailinkgo.com/'
+        self.excel_file_path = '/var/www/html/ailinkgo/admin/excels/'
+        self.excel_url_prefix = 'http://www.ailinkgo.com/admin/excels/'
+
+    def staging_env(self):
+        self.mysql_db_name = 'ilinkgo_test'
+        self.mysql_db_user = 'ilinkusr'
+        self.mysql_db_password = 'ilinkusr123'
+        self.image_file_path = '/var/www/html/ailinkgo/adminTesting/images/'
+        self.image_url_prefix = 'http://www.ailinkgo.com/'
+        self.excel_file_path = '/var/www/html/ailinkgo/adminTesting/excels/'
+        self.excel_url_prefix = 'http://www.ailinkgo.com/adminTesting/excels/'
+
+    def dev_env(self):
+        self.mysql_db_name = 'ilinkgo'
+        self.mysql_db_user = 'root'
+        self.mysql_db_password = '1234567a'
+        self.image_file_path = '/usr/local/nginx/html/ilinkgo/admin/images/'
+        self.image_url_prefix = 'http://www.ailinkgo.demo/'
+        self.excel_file_path = '/usr/local/nginx/html/ilinkgo/admin/excels/'
+        self.excel_url_prefix = 'http://www.ailinkgo.demo/admin/excels/'
+
+    def home_env(self):
+        self.mysql_db_name = 'ilinkgo'
+        self.mysql_db_user = 'root'
+        self.mysql_db_password = '1234567a'
+        self.image_file_path = '/usr/local/nginx_1.10.3/html/ailinkgo/admin/images/'
+        self.image_url_prefix = 'http://www.ailinkgo.demo/'
+        self.excel_file_path = '/usr/local/nginx_1.10.3/html/ailinkgo/admin/excels/'
+        self.excel_url_prefix = 'http://www.ailinkgo.demo/admin/excels/'
+
+
+class StatusCode:
     TokenNeeded = -1
     TokenExpired = -2
     TokenInvalid = -3
@@ -23,125 +79,5 @@ class StatusCode():
     NoBlankRp = 19
 
 
-def mysql_config():
-    """load configuration"""
-    mode = os.environ.get('MODE', '')
-    dir_name = os.getcwd().split('/')[-1]
-
-    if mode == 'PRODUCTION':
-        mysql_config = {
-            'name': 'ilinkgo',
-            'user': 'ilinkusr',
-            'password': 'ilinkusr123',
-        }
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
-       mysql_config = {
-            'name': 'ilinkgo',
-            'user': 'ilinkusr',
-            'password': 'ilinkusr123',
-       }
-    elif mode == 'TESTING' and dir_name == 'TuanGou_Server_Backend_Testing':
-        mysql_config = {
-            'name': 'ilinkgo_test',
-            'user': 'ilinkusr',
-            'password': 'ilinkusr123',
-        }
-    else:
-        mysql_config = {
-            'name': 'ilinkgo',
-            'user': 'root',
-            'password': '1234567a',
-        }
-
-    return mysql_config
-
-def image_path():
-    """load configuration"""
-    mode = os.environ.get('MODE', '')
-    dir_name = os.getcwd().split('/')[-1]
-
-    if mode == 'PRODUCTION':
-        path = ''
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
-        path = 'http://www.ailinkgo.com/'
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
-        path = 'http://www.ailinkgo.com/'
-    elif mode == 'HOME':
-        path = 'http://www.ailinkgo.demo/'
-    else:
-        path = 'http://www.ailinkgo.demo/'
-
-    return path
-
-def image_path_v2():
-    """load configuration"""
-    mode = os.environ.get('MODE', '')
-    dir_name = os.getcwd().split('/')[-1]
-
-    if mode == 'PRODUCTION':
-        path = ''
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
-        path = 'http://www.ailinkgo.com:3000/'
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
-        path = 'http://www.ailinkgo.com:3001/'
-    elif mode == 'HOME':
-        path = 'http://www.ailinkgo.demo/admin/images/'
-    else:
-        path = 'http://www.ailinkgo.demo/admin/images/'
-
-    return path
-
-def images_save_base_path():
-    mode = os.environ.get('MODE', '')
-    dir_name = os.getcwd().split('/')[-1]
-
-    if mode == 'PRODUCTION':
-        path = ''
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
-        path = '/var/www/html/ailinkgo/admin/images/'
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
-        path = '/var/www/html/ailinkgo/adminTesting/images/'
-    elif mode == 'HOME':
-        path = '/usr/local/nginx_1.10.3/html/ailinkgo/admin/images/'
-    else:
-        path = '/usr/local/nginx/html/ilinkgo/admin/images/'
-    return path
-
-def excel_path():
-    """load configuration"""
-    mode = os.environ.get('MODE', '')
-    dir_name = os.getcwd().split('/')[-1]
-
-    if mode == 'PRODUCTION':
-        path = ''
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
-        path = 'http://www.ailinkgo.com/admin/excels/'
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
-        path = 'http://www.ailinkgo.com/adminTesting/excels/'
-    elif mode == 'HOME':
-        path = 'http://www.ailinkgo.demo/admin/excels/'
-    else:
-        path = 'http://www.ailinkgo.demo/admin/excels'
-
-    return path
-
-def excel_save_base_path():
-    mode = os.environ.get('MODE', '')
-    dir_name = os.getcwd().split('/')[-1]
-
-    if mode == 'PRODUCTION':
-        path = ''
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend':
-        path = '/var/www/html/ailinkgo/admin/excels/'
-    elif mode == 'TESTING'and dir_name == 'TuanGou_Server_Backend_Testing':
-        path = '/var/www/html/ailinkgo/adminTesting/excels/'
-    elif mode == 'HOME':
-        path = '/usr/local/nginx_1.10.3/html/ailinkgo/admin/excels/'
-    else:
-        path = '/usr/local/nginx/html/ilinkgo/admin/excels/'
-    return path
-
-def web_link():
-    return 'http://www.ailinkgo.com/'
 
 

@@ -8,7 +8,7 @@ from django.db.models import ObjectDoesNotExist
 from django.db import OperationalError
 from decimal import Decimal
 
-from ilinkgo.config import images_save_base_path
+from ilinkgo.settings import conf
 
 
 def format_body(code, message, data):
@@ -100,7 +100,7 @@ def save_images(image_file, destination='Goods', create_thumbnail=False):
             time.strftime('%Y'),
             time.strftime('%m')
         )
-        path = images_save_base_path() + sub_path
+        path = conf.image_file_path + sub_path
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -123,7 +123,7 @@ def save_images(image_file, destination='Goods', create_thumbnail=False):
 
     except Exception as e:
         return False
-    return '/'.join(images_save_base_path().split('/')[-3:])+sub_path+image_name
+    return '/'.join(conf.image_file_path.split('/')[-3:])+sub_path+image_name
 
 
 def virtual_login(func):

@@ -5,10 +5,10 @@ from django.db import connection, OperationalError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ilinkgo.settings import conf
 from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit, virtual_login
 from utils.common import decimal_2
 from utils.winxin import WeiXinAPI
-from ilinkgo.config import image_path
 from market.models import GroupBuyGoods, GroupBuy
 from iuser.models import GenericOrder, UserProfile
 from models import UnpackRedPacketsLog
@@ -129,7 +129,7 @@ class ConsumerOrderView(APIView):
             'consumer_id': self.get.user_id,
             'merchant_id': merchant.id,
             'merchant_code': request.GET['merchant_code'],
-            'image_prefix': image_path(),
+            'image_prefix': conf.image_url_prefix,
             '_is_end': is_end
         }
 
@@ -335,7 +335,7 @@ class ShareGroupBuyingView(APIView):
         from sqls import sql_share_latest_groupbuying
 
         sql_share_latest_groupbuying = sql_share_latest_groupbuying.format(
-            image_prefix=image_path(),
+            image_prefix=conf.image_url_prefix,
             user_id=self.get.user_id
         )
 
@@ -354,7 +354,7 @@ class UserGroupBuyingView(APIView):
 
         sql_user_group_buying = sql_user_group_buying.format(
             user_id=self.get.user_id,
-            image_prefix=image_path(),
+            image_prefix=conf.image_url_prefix,
             _limit=sql_limit(request)
         )
 
@@ -442,7 +442,7 @@ class MerchantShareJieLong(APIView):
 
         sql_merchant_share_jie_long = sql_merchant_share_jie_long.format(
             _user_id = self.get.user_id,
-            _image_prefix = image_path(),
+            _image_prefix = conf.image_url_prefix,
             _limit = sql_limit(request)
         )
         cursor.execute(sql_merchant_share_jie_long)
@@ -463,7 +463,7 @@ class MerchantCheckJieLongDoing(APIView):
         sql_merchant_check_jie_long = sql_merchant_check_jie_long_doing % {
             '_merchant_id': self.get.user_id,
             '_merchant_code': merchant.merchant_code,
-            '_image_prefix': image_path()
+            '_image_prefix': conf.image_url_prefix
         }
         cursor.execute(sql_merchant_check_jie_long)
         data = dict_fetch_all(cursor)
@@ -489,7 +489,7 @@ class MerchantCheckJieLongDone(APIView):
         sql_merchant_check_jie_long = sql_merchant_check_jie_long_done % {
             '_merchant_id': self.get.user_id,
             '_merchant_code': merchant.merchant_code,
-            '_image_prefix': image_path(),
+            '_image_prefix': conf.image_url_prefix,
             '_limit': sql_limit(request)
         }
         cursor.execute(sql_merchant_check_jie_long)
@@ -542,7 +542,7 @@ class GetConsumerOrderView(APIView):
 
         cursor.execute("SET SESSION group_concat_max_len = 20480;")
         sql_consumer_order_web = sql_consumer_order_web % {
-            '_image_prefix': image_path(),
+            '_image_prefix': conf.image_url_prefix,
             '_doing_or_done': _doing_or_done,
             '_consumer_id': self.get.user_id,
             '_limit': _limit
@@ -568,7 +568,7 @@ class ConsumerOrderDetailView(APIView):
 
         cursor.execute("SET SESSION group_concat_max_len = 20480;")
         sql_consumer_order_detail = sql_consumer_order_detail % {
-            '_image_prefix': image_path(),
+            '_image_prefix': conf.image_url_prefix,
             '_group_buying_id': request.GET['group_buying_id'],
             '_merchant_code': request.GET['merchant_code'],
             '_consumer_id': self.get.user_id

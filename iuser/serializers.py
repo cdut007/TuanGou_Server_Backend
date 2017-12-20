@@ -2,8 +2,7 @@
 from  rest_framework import serializers
 
 from  models import UserProfile, AgentOrder, AgentApply, ShoppingCart, GenericOrder
-from market.serializers import GroupBuyGoodsSerializer
-from ilinkgo.config import web_link
+from ilinkgo.settings import conf
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -15,7 +14,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super(UserProfileSerializer, self).to_representation(instance)
-        data['agent_url'] = web_link() + '?agent_code=' + data['merchant_code'] if instance.is_agent else ''
+        data['agent_url'] = conf.image_url_prefix + '?agent_code=' + data['merchant_code'] if instance.is_agent else ''
         data.pop('unionid')
         data.pop('privilege')
         return data

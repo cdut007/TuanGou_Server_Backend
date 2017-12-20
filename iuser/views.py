@@ -1,6 +1,6 @@
 # _*_ coding:utf-8 _*_
 import time, os, uuid
-from ilinkgo.config import excel_save_base_path
+from ilinkgo.settings import conf
 from utils.common import dict_fetch_all, random_str, raise_general_exception
 from datetime import datetime
 from django.db.models import Sum, Q
@@ -9,8 +9,8 @@ from django.core.mail import EmailMessage
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ilinkgo.settings import conf
 from utils.common import format_body, dict_fetch_all, virtual_login
-from ilinkgo.config import web_link, image_path
 from utils.winxin import WeiXinAPI
 from market.models import GroupBuyGoods, GroupBuy, GoodsClassify
 from market.serializers import GroupBuyGoodsSerializer, GoodsClassifySerializer, GroupBuySerializer
@@ -181,10 +181,10 @@ class AgentOrderView(APIView):
             classify_info = dict_fetch_all(cursor)
 
             if order_record:
-                return Response(format_body(4, 'The user already applied this group_buy', {'agent_url': web_link() + '?agent_code=' + user.merchant_code, 'group_buy_info': classify_info}))
+                return Response(format_body(4, 'The user already applied this group_buy', {'agent_url': conf.image_url_prefix + '?agent_code=' + user.merchant_code, 'group_buy_info': classify_info}))
 
             serializer.save()
-            return Response(format_body(1, 'Success', {'agent_url': web_link() + '?agent_code=' + user.merchant_code, 'group_buy_info': classify_info}))
+            return Response(format_body(1, 'Success', {'agent_url': conf.image_url_prefix + '?agent_code=' + user.merchant_code, 'group_buy_info': classify_info}))
 
         return Response(format_body(2, serializer.errors, ''))
 
@@ -199,7 +199,7 @@ class ShoppingCartView(APIView):
             sql_get_shopping_cart = sql_get_shopping_cart % {
                 'user_id': self.get.user_id,
                 'agent_code': request.GET['agent_code'],
-                'image_prefix': image_path()
+                'image_prefix': conf.image_url_prefix
             }
         except KeyError as e:
             return Response(format_body(2, 'Params error', e.message))
@@ -405,10 +405,10 @@ class SendEmailView(APIView):
         )
 
         if send_record:
-            _file= excel_save_base_path() + send_record[0].excel_path
+            _file= conf.excel_file_path + send_record[0].excel_path
         else:
             excel_name = str(int(time.time())) + '_' + random_str(4) + '.xlsx'
-            file_path = excel_save_base_path() + excel_name
+            file_path = conf.excel_file_path + excel_name
 
             cursor = connection.cursor()
 

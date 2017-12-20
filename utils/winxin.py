@@ -2,6 +2,7 @@
 import urllib, urllib2, json, hashlib, time, requests, re
 from datetime import datetime
 from common import random_str
+from ilinkgo.settings import conf
 from apps.other.models import WinXinCache
 
 class WeiXinAPI:
@@ -10,6 +11,7 @@ class WeiXinAPI:
         self.secret = '8f124947d450ee56458828481d183889'
         self.mch_key = 'okljv0R6houqibewuLKYFhLU8kcLU8kc'
         self.mch_id = '1450506702'
+        self.xml_header = {'Content-Type': 'application/xml'}
 
     def basal_access_token(self):
         u"""公众号的全局唯一接口调用凭据"""
@@ -135,11 +137,9 @@ class WeiXinAPI:
         response = urllib2.urlopen(request)
 
     def send_red_pack(self):
-        randstr = random_str(random_length=20)
-        _url = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack'
-        _headers = {'Content-Type': 'application/xml'}
+        url = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack'
         payload = {
-            'nonce_str': randstr,
+            'nonce_str': random_str(random_length=20),
             'mch_billno': '0010010404201411170000a',
             'mch_id': self.mch_id,
             'wxappid': self.app_id,
@@ -156,7 +156,12 @@ class WeiXinAPI:
         payload['sign'] = self.sign(payload)
 
         xml_data = WeiXinXml.json2xml(payload)
-        res = requests.post(url=_url, data=xml_data, headers=_headers, cert=('/root/PythonProject/ilinkgo/utils/apiclient_cert.pem', '/root/PythonProject/ilinkgo/utils/apiclient_key.pem'))
+        res = requests.post(
+            url=url,
+            data=xml_data,
+            headers=self.xml_header,
+            cert=(conf.wei_xin_mch_cert_pem, conf.wei_xin_mch_key_pem)
+        )
         res_json = WeiXinXml.xml2json(res.text)
         return res_json
 

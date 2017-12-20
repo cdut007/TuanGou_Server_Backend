@@ -1,15 +1,13 @@
 # _*_ coding:utf-8 _*_
 import json
-from datetime import datetime
 from django.db import connection
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit, save_images
-from ilinkgo.config import image_path
+from ilinkgo.settings import conf
+from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit
 
 from iuser.Authentication import Authentication
-from market.models import Goods
 
 
 class MerchantGoodsDetailView(APIView):
@@ -23,7 +21,7 @@ class MerchantGoodsDetailView(APIView):
         query = {
             'goods_id': request.GET['goods_id'],
             'merchant_code': request.GET['merchant_code'],
-            'image_prefix': image_path(),
+            'image_prefix': conf.image_url_prefix,
             'access_user': Authentication.access_user(request)
         }
 
@@ -93,7 +91,7 @@ class MerchantGoodsListView(APIView):
 
         sql_goods_detail = sql_goods_list.format(**{
             'group_buy_id': request.GET['group_buy_id'],
-            'image_prefix': image_path()
+            'image_prefix': conf.image_url_prefix
         })
 
         cursor = connection.cursor()
@@ -119,7 +117,7 @@ class MerchantClassifyView(APIView):
         query = {
             'classify_id': request.GET['classify_id'],
             'merchant_code': request.GET['merchant_code'],
-            'image_prefix': image_path(),
+            'image_prefix': conf.image_url_prefix,
             'access_user': Authentication.access_user(request)
         }
 
@@ -159,7 +157,7 @@ class GoodsListingView(APIView):
 
         query = {
             'classify_id': request.GET['classify_id'],
-            'image_prefix': image_path(),
+            'image_prefix': conf.image_url_prefix,
         }
 
         sql_classify_info = sql_classify_info.format(**query)
@@ -192,7 +190,7 @@ class GoodsDetailView(APIView):
 
         query = {
             'goods_id': request.GET['goods_id'],
-            'image_prefix': image_path(),
+            'image_prefix': conf.image_url_prefix,
         }
 
         sql_goods_detail = sql_goods_detail_app.format(**query)
@@ -224,7 +222,7 @@ class IndexPageView(APIView):
         from sqls import sql_app_index_page
         cursor = connection.cursor()
 
-        cursor.execute(sql_app_index_page.format(image_prefix=image_path()))
+        cursor.execute(sql_app_index_page.format(image_prefix=conf.image_url_prefix))
         data = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', data))
@@ -238,7 +236,7 @@ class MerchantIndexPageView(APIView):
         cursor = connection.cursor()
 
         cursor.execute(sql_web_index_page.format(
-            image_prefix = image_path(),
+            image_prefix = conf.image_url_prefix,
             user_id = self.get.user_id
         ))
         data = dict_fetch_all(cursor)

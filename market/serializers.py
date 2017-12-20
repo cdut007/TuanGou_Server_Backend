@@ -1,7 +1,7 @@
 from  rest_framework import serializers
 
 from models import Banner, GoodsClassify, GroupBuy, Goods, GroupBuyGoods, GoodsGallery
-from ilinkgo.config import image_path
+from ilinkgo.settings import conf
 from utils.common import utc_time_to_local_time
 
 class BannerSerializer(serializers.ModelSerializer):
@@ -11,7 +11,7 @@ class BannerSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super(BannerSerializer, self).to_representation(instance)
-        data['image'] =  image_path() + data['image']
+        data['image'] =  conf.image_url_prefix + data['image']
         return data
 
 
@@ -22,7 +22,7 @@ class GoodsGallerySerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
        data = super(GoodsGallerySerializer, self).to_representation(instance)
-       data['image'] = image_path() + data['image']
+       data['image'] = conf.image_url_prefix + data['image']
        return data
 
 
@@ -65,7 +65,7 @@ class GoodsClassifySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'desc', 'icon', 'image')
 
     def to_representation(self, instance):
-        path = image_path()
+        path = conf.image_url_prefix
         data = super(GoodsClassifySerializer, self).to_representation(instance)
         data['image'] =  path + data['image']
         data['icon'] = path + data['icon']

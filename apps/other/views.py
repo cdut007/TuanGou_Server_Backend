@@ -5,10 +5,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.mail import EmailMessage
 
+from ilinkgo.settings import conf
 from utils.gen_excel import order_excel
 from utils.common import format_body, raise_general_exception, random_str, dict_fetch_all
 from utils.winxin import WeiXinAPI
-from ilinkgo.config import image_path, excel_save_base_path
 from apps.user.models import MerchantPushLog
 from iuser.models import UserProfile
 from market.models import GroupBuy
@@ -74,7 +74,6 @@ class SendOrderInfoView(APIView):
 
     @staticmethod
     def get_order_excel(user_id, group_buying_id):
-        from ilinkgo.config import excel_path
         from sqls import sql_order_consumer_detail, sql_order_supplier_summary, sql_is_order_empty
 
         user_info = UserProfile.objects.get(id=user_id)
@@ -99,11 +98,11 @@ class SendOrderInfoView(APIView):
         ).first()
 
         if send_record:
-            _excel_file_path = excel_save_base_path() + send_record.excel_path
-            _excel_web_path = excel_path() + send_record.excel_path
+            _excel_file_path = conf.excel_file_path + send_record.excel_path
+            _excel_web_path = conf.excel_url_prefix + send_record.excel_path
         else:
             excel_name = str(int(time.time())) + '_' + random_str(4) + '.xls'
-            file_path = excel_save_base_path() + excel_name
+            file_path = conf.excel_file_path + excel_name
 
             sql_order_consumer_detail = sql_order_consumer_detail % {
                 'agent_code': user_info.merchant_code,
@@ -139,7 +138,7 @@ class SendOrderInfoView(APIView):
                 excel_path=excel_name
             )
             _excel_file_path = file_path
-            _excel_web_path = excel_path() + excel_name
+            _excel_web_path = conf.excel_url_prefix + excel_name
 
         return {
             'count': count[0],
