@@ -7,10 +7,10 @@ from rest_framework.views import APIView
 
 from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit
 from utils.winxin import WeiXinAPI
-from iuser.models import GenericOrder, UserProfile
+from iuser.models import GenericOrder, UserProfile, AgentOrder
 from models import UnpackRedPacketsLog, WeiXinRpSendLog
 from iuser.Authentication import Authentication
-from apps.user.views import ConsumerOrderView
+
 
 class UnpackRpView(APIView):
     @Authentication.token_required
@@ -41,14 +41,28 @@ class UnpackRpView(APIView):
 
 
 class RpOneEntriesView(APIView):
-    @Authentication.token_required
+    # @Authentication.token_required
     @raise_general_exception
     def get(self, request):
         from rp_sqls import sql_rp_one_entries
         receiver = UserProfile.objects.get(sharing_code=request.GET['sharing_code'])
 
-        # 红包链接是否还有效
-        remain_order = ConsumerOrderView.remain_order(receiver.id, request.GET['group_buying_id'])
+        # # 红包链接是否还有效
+        # remain_order = GenericOrder.objects.filter(
+        #         user_id = receiver.id,
+        #         goods__group_buy_id = request.GET['group_buying_id']
+        # ).count()
+        # get_from = UnpackRedPacketsLog.objects.filter(
+        #     receiver = receiver.id,
+        #     group_buying_id = request.GET['group_buying_id']
+        # ).first()
+        # merchant_order = AgentOrder.objects.filter(
+        #     user_id = get_from,
+        #     group_buy_id =  request.GET['group_buying_id']
+        # ).first()
+        #
+        # if (not remain_order) or merchant_order.mc_end == 1 or merchant_order.group_buy.end_time < datetime.now():
+        #     return Response(format_body(22, 'Fail', u'sorry，该红包已经失效了'))
 
         cursor = connection.cursor()
         sql_rp_one_entries = sql_rp_one_entries.format(

@@ -306,7 +306,10 @@ class ConsumerOrderView(APIView):
 
         #该商品是否有红包, 有则失效
         if int(order_goods.goods.group_buy.award_red_packets):
-            remain_order = self.remain_order(self.delete.user_id,order_goods.goods.group_buy_id)
+            remain_order = GenericOrder.objects.filter(
+                user_id = self.delete.user_id,
+                goods__group_buy_id = order_goods.goods.group_buy_id
+            ).count()
             if not remain_order:
                 UnpackRedPacketsLog.objects.filter(
                     receiver = self.delete.user_id,
@@ -315,13 +318,6 @@ class ConsumerOrderView(APIView):
 
         return Response(format_body(1, 'Success', ''))
 
-    @staticmethod
-    def remain_order(user_id, group_buying_id):
-        remain_order = GenericOrder.objects.filter(
-            user_id = user_id,
-            goods__group_buy_id = group_buying_id
-        ).count()
-        return remain_order
 
 class MerchantOrderView(APIView):
     @Authentication.token_required

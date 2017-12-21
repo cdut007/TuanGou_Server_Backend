@@ -77,6 +77,7 @@ class StatusCode:
     orderEmpty = 17
     GroupBuyingNotEnd = 18
     NoBlankRp = 19
+    RpLinkFailed = 22
 
 
 
