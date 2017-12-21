@@ -4,6 +4,7 @@ from datetime import datetime
 from django.db import models
 from decimal import Decimal
 import random
+from utils.common import random_str
 
 class ConsumerOrderRemarks(models.Model):
     id = models.AutoField(primary_key=True)
@@ -25,6 +26,9 @@ class MerchantPushLog(models.Model):
     is_send_take_goods_notification = models.SmallIntegerField(default=0)
     is_send_excel = models.SmallIntegerField(default=0)
     excel_path = models.CharField(max_length=96, default='')
+
+    class Meta:
+        db_table = 'lg_merchant_push_log'
 
     @staticmethod
     def insert_send_excel_log(group_buying_id, merchant_id, excel_path):
@@ -54,9 +58,6 @@ class MerchantPushLog(models.Model):
                 is_send_take_goods_notification = 1
             )
 
-    class Meta:
-        db_table = 'lg_merchant_push_log'
-
 
 class UnpackRedPacketsLog(models.Model):
     id = models.AutoField(primary_key=True)
@@ -68,6 +69,9 @@ class UnpackRedPacketsLog(models.Model):
     is_failure = models.CharField(max_length=2, default=0)
     send_id = models.PositiveIntegerField(blank=True, null=True)
     unpack_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'lg_unpack_red_packets_log'
 
     @staticmethod
     def gen_four_record(receiver, group_buying_id, get_from):
@@ -105,7 +109,7 @@ class UnpackRedPacketsLog(models.Model):
 
     @staticmethod
     def gen_rp_money():
-        return str(Decimal(random.uniform(0.2, 0.6)).quantize(Decimal('0.00')))
+        return str(Decimal(random.uniform(0.25, 0.6)).quantize(Decimal('0.00')))
 
     @staticmethod
     def can_unpack(receiver, group_buying_id, unpack_user):
@@ -119,18 +123,53 @@ class UnpackRedPacketsLog(models.Model):
         else:
             return 1
 
-    class Meta:
-        db_table = 'lg_unpack_red_packets_log'
+    @staticmethod
+    def update_send(group_buying_id, receiver, send_id):
+        UnpackRedPacketsLog.objects.filter(
+            receiver=receiver,
+            group_buying_id=group_buying_id,
+            is_failure=0
+        ).update(send_id=send_id)
 
 
 class WeiXinRpSendLog(models.Model):
     id = models.AutoField(primary_key=True)
     openid = models.CharField(max_length=124)
     send_time = models.DateTimeField()
-    mch_billno = models.CharField(max_length=32)
-    money = models.DecimalField(max_digits=4, decimal_places=2, null=True)
+    mch_bill_no = models.CharField(max_length=32)
+    money = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    result_code = models.CharField(max_length=16, blank=True, null=True)
     return_code = models.CharField(max_length=16)
     return_msg = models.CharField(max_length=128)
     err_code = models.CharField(max_length=16)
     err_code_des = models.CharField(max_length=128)
     status = models.CharField(max_length=16, blank=True, null=True)
+
+    class Meta:
+        db_table = 'lg_wei_xin_rp_send_log'
+
+    @staticmethod
+    def insert_one_log(open_id, money, bill_no, res):
+        entry = WeiXinRpSendLog(
+            openid = open_id,
+            send_time = datetime.now(),
+            mch_bill_no = bill_no,
+            money = money,
+            result_code = res['result_code'],
+            return_code = res['return_code'],
+            return_msg = res['return_msg'],
+            err_code = res['err_code'],
+            err_code_des = res['err_code_des'],
+            status = 'RECEIVED'
+        )
+        entry.save()
+        return entry.id
+
+    @staticmethod
+    def gen_bill_no():
+        ra = random_str(random_length=28)
+        rec = WeiXinRpSendLog.objects.filter(mch_bill_no = ra).first()
+        if rec:
+            return WeiXinRpSendLog.gen_bill_no()
+        else:
+            return ra

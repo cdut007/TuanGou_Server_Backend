@@ -13,6 +13,7 @@ from market.models import GroupBuyGoods, GroupBuy
 from iuser.models import GenericOrder, UserProfile
 from models import UnpackRedPacketsLog
 from MySQLdb import escape_string
+from apps.user.rp_views import RpSendView
 
 from iuser.Authentication import Authentication
 
@@ -458,13 +459,14 @@ class MerchantMcEnd(APIView):
             group_buy_id=request.data['group_buying_id']
         )
         order.mc_end = 1
-        # order.save()
+        order.save()
 
         #是否发红包
         if int(order.group_buy.award_red_packets):
             moa = order.group_buy.min_order_amount
             if not self.unreached_moa(moa=moa, group_buying_id=order.group_buy_id, get_from=self.post.user_id):
                 self.update_unpacked_rp(group_buying_id=order.group_buy_id, get_from=self.post.user_id)
+                RpSendView.send(group_buying_id=order.group_buy_id,get_from=self.post.user_id)
 
         return Response(format_body(1, 'Success', ''))
 

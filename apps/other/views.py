@@ -146,10 +146,3 @@ class SendOrderInfoView(APIView):
             'excel_web_path': _excel_web_path,
             'group_buying_info': group_buying
         }
-
-
-class SendWxRedPacketView(APIView):
-    def post(self, request):
-        wei_xin_api = WeiXinAPI()
-        res = wei_xin_api.send_red_pack()
-        return Response(format_body(1, 'Success', {'res': res}))

@@ -42,12 +42,14 @@ urlpatterns = [
     # other
     url(r'^winxin.js_sdk_config$', OtherViews.WeiXinJsSdkConfigView.as_view(), name='winxin.js_sdk_config'),
     url(r'^send.order.info$', OtherViews.SendOrderInfoView.as_view(), name='send.order.info'),
-    url(r'^send.red.pack$', OtherViews.SendWxRedPacketView.as_view(), name='send.red.pack'),
 
     # red packets
+    url(r'^rp.send$', RpViews.RpSendView.as_view(), name='rp.send'),
     url(r'^rp.one.entries$', RpViews.RpOneEntriesView.as_view(), name='rp.one.entries'),
     url(r'^rp.unpack$', RpViews.UnpackRpView.as_view(), name='rp.unpack'),
     url(r'^rp.unopened.list$', RpViews.RpUnopenedView.as_view(), name='rp.unopened.list'),
     url(r'^rp.opened.list$', RpViews.RpOpenedView.as_view(), name='rp.opened.list'),
     url(r'^rp.failed.list$', RpViews.RpFailedView.as_view(), name='rp.failed.list'),
+    url(r'^rp.logs$', RpViews.RpLogsView.as_view(), name='rp.logs'),
+    url(r'^rp.summary$', RpViews.RpSummaryView.as_view(), name='rp.summary'),
 ]

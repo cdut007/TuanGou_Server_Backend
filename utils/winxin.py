@@ -136,21 +136,21 @@ class WeiXinAPI:
         request = urllib2.Request(url=url, headers=headers, data=json.dumps(data))
         response = urllib2.urlopen(request)
 
-    def send_red_pack(self):
+    def send_red_pack(self, money, open_id, bill_no):
         url = 'https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack'
         payload = {
             'nonce_str': random_str(random_length=20),
-            'mch_billno': '0010010404201411170000b',
+            'mch_billno': bill_no,
             'mch_id': self.mch_id,
             'wxappid': self.app_id,
-            'send_name': 'ilinkgo',
-            're_openid': 'okljv0R6hou-qibewuLKYFhLU8kc',
-            'total_amount': 100,
+            'send_name': u'爱邻购',
+            're_openid': open_id,
+            'total_amount': money,
             'total_num': 1,
-            'wishing': 'havefun',
+            'wishing': u'恭喜你获得爱邻购双旦接龙红包',
             'client_ip': '127.0.0.1',
-            'act_name': 'happynewyear',
-            'remark': 'happynewyear',
+            'act_name': u'双旦红包接龙活动',
+            'remark': u'爱邻购双旦红包接龙活动',
             'scene_id': 'PRODUCT_1'
         }
         payload['sign'] = self.sign(payload)
