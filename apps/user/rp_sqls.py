@@ -4,7 +4,8 @@ sql_rp_one_entries = """
 SELECT
 	b.nickname AS unpack_user,
 	a.money,
-	DATE_FORMAT(a.unpack_time,'%m月%d号 %H:%i') AS unpack_time
+	DATE_FORMAT(a.unpack_time,'%m月%d号 %H:%i') AS unpack_time,
+	is_failure
 FROM
 	lg_unpack_red_packets_log AS a
 LEFT JOIN iuser_userprofile AS b ON a.unpack_user=b.id
