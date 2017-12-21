@@ -23,7 +23,7 @@ FROM
 LEFT JOIN market_groupbuy AS b ON a.group_buying_id=b.id
 LEFT JOIN market_goodsclassify AS c ON c.id=b.goods_classify_id
 LEFT JOIN iuser_agentorder AS d ON d.group_buy_id=a.group_buying_id AND a.get_from=d.user_id
-WHERE receiver={_receiver} AND d.mc_end=0 AND unpack_user is NULL 
+WHERE receiver={_receiver} AND d.mc_end=0 AND b.end_time>NOW() AND unpack_user is NULL 
 GROUP BY group_buying_id
 """
 
@@ -37,7 +37,7 @@ FROM
 LEFT JOIN market_groupbuy AS b ON a.group_buying_id=b.id
 LEFT JOIN market_goodsclassify AS c ON c.id=b.goods_classify_id
 LEFT JOIN iuser_agentorder AS d ON d.group_buy_id=a.group_buying_id AND a.get_from=d.user_id
-WHERE receiver={_receiver} AND unpack_user is NOT NULL AND d.mc_end=0
+WHERE receiver={_receiver} AND unpack_user is NOT NULL AND d.mc_end=0 AND b.end_time>NOW()
 GROUP BY group_buying_id
 """
 
