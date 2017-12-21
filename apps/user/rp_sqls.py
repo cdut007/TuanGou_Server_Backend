@@ -47,9 +47,9 @@ SELECT
   COUNT(a.id) AS failure_rp,
 	c.`name` AS title,
 	CASE is_failure 
-	WHEN 1 THEN 'unopened'
-	WHEN 2 THEN 'cancel order'
-	WHEN 3 THEN 'your merchant unreached order amount'
+	WHEN 1 THEN '很遗憾！你的接龙红包在截团前未拆完！'
+	WHEN 2 THEN '很遗憾！由于订单取消导致红包失效！'
+	WHEN 3 THEN '很遗憾！该接龙在截团时不满足送货条件！'
 	END AS failure_reason
 FROM
 	lg_unpack_red_packets_log AS a

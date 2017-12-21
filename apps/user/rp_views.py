@@ -10,7 +10,7 @@ from utils.winxin import WeiXinAPI
 from iuser.models import GenericOrder, UserProfile
 from models import UnpackRedPacketsLog, WeiXinRpSendLog
 from iuser.Authentication import Authentication
-
+from apps.user.views import ConsumerOrderView
 
 class UnpackRpView(APIView):
     @Authentication.token_required
@@ -41,10 +41,14 @@ class UnpackRpView(APIView):
 
 
 class RpOneEntriesView(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def get(self, request):
         from rp_sqls import sql_rp_one_entries
         receiver = UserProfile.objects.get(sharing_code=request.GET['sharing_code'])
+
+        # 红包链接是否还有效
+        remain_order = ConsumerOrderView.remain_order(receiver.id, request.GET['group_buying_id'])
 
         cursor = connection.cursor()
         sql_rp_one_entries = sql_rp_one_entries.format(
