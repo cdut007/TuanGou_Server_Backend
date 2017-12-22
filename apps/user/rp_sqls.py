@@ -34,7 +34,8 @@ SELECT
 	group_buying_id,
 	SUM(a.money) AS money,
 	COUNT(a.id) AS opened_rp,
-	c.`name` AS title
+	c.`name` AS title,
+	DATE_FORMAT(a.unpack_time,'%Y-%m-%d %H:%s:%i') AS unpack_time
 FROM
 	lg_unpack_red_packets_log AS a
 LEFT JOIN market_groupbuy AS b ON a.group_buying_id=b.id
