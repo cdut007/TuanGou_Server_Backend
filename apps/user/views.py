@@ -628,7 +628,10 @@ class GetConsumerOrderView(APIView):
             else:
                 item['consumers'] = []
 
-        return Response(format_body(1, 'Success', data))
+        has_rp = UnpackRedPacketsLog.objects.filter(receiver=self.get.user_id).count()
+        message = 'has-redpack' if has_rp else 'Success'
+
+        return Response(format_body(1, message, data))
 
 
 class ConsumerOrderDetailView(APIView):
