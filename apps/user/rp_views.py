@@ -41,6 +41,7 @@ class UnpackRpView(APIView):
 
 
 class RpOneEntriesView(APIView):
+    @Authentication
     @raise_general_exception
     def get(self, request):
         from rp_sqls import sql_rp_one_entries
@@ -77,8 +78,22 @@ class RpOneEntriesView(APIView):
             _receiver = receiver.id
         )
         cursor.execute(sql_rp_one_entries)
-        rp_entries =dict_fetch_all(cursor)
-        return Response(format_body(1, 'Success', {'rp_entries': rp_entries, 'merchant_code': merchant.merchant_code}))
+        rp_entries = dict_fetch_all(cursor)
+
+        yichai = 0
+        for rp in rp_entries:
+            if rp['user_id'] == self.get.user_id:
+                yichai = 1
+
+        def pop_user_id(v):
+            v.pop('user_id')
+            return v
+
+        return Response(format_body(1, 'Success', {
+            'rp_entries': map(pop_user_id, rp_entries),
+            'merchant_code': merchant.merchant_code,
+            'yichai': yichai
+        }))
 
 
 class RpUnopenedView(APIView):

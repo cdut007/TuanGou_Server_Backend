@@ -2,6 +2,7 @@
 
 sql_rp_one_entries = """
 SELECT
+    b.id AS user_id,
 	b.nickname AS unpack_user,
 	b.headimgurl,
 	a.money,
