@@ -476,7 +476,7 @@ class MerchantMcEnd(APIView):
 
         sql_merchant_oa = """
         SELECT
-            SUM(a.quantity*b.price) AS oa
+            IFNULL(SUM(a.quantity * b.price), 0) AS oa
         FROM
             iuser_genericorder AS a
         LEFT JOIN market_groupbuygoods AS b ON a.goods_id=b.id
