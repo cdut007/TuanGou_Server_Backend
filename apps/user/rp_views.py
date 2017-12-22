@@ -41,7 +41,7 @@ class UnpackRpView(APIView):
 
 
 class RpOneEntriesView(APIView):
-    @Authentication
+    @Authentication.token_required
     @raise_general_exception
     def get(self, request):
         from rp_sqls import sql_rp_one_entries
