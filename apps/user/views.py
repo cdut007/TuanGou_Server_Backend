@@ -480,9 +480,10 @@ class MerchantMcEnd(APIView):
         FROM
             iuser_genericorder AS a
         LEFT JOIN market_groupbuygoods AS b ON a.goods_id=b.id
+		LEFT JOIN iuser_userprofile AS c ON a.agent_code=c.merchant_code
         WHERE
-            a.agent_code='ocsmexGwV4BzMOQMFN_IzHwgkj3I' AND b.group_buy_id=60
-        """.format(_group_buying_id=group_buying_id, _get_from=get_from)
+            c.id='{_get_from}' AND b.group_buy_id={_group_buying_id}
+        """.format(_get_from=get_from, _group_buying_id=group_buying_id)
         cursor.execute(sql_merchant_oa)
         merchant_oa = cursor.fetchone()
         merchant_oa = int(merchant_oa[0])

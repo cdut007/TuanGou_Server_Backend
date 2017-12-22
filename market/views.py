@@ -27,7 +27,7 @@ from utils.common import raise_general_exception, dict_fetch_all
 
 class BannerList(APIView):
     def get(self,request, format=None):
-        banners = Banner.objects.filter(is_show=1)
+        banners = Banner.objects.filter(is_show=1).order_by('id')
         banner_serializer =  BannerSerializer(banners, many=True)
         return Response(format_body(1, 'Success', {'images': banner_serializer.data}))
 
