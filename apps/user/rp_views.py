@@ -47,6 +47,12 @@ class RpOneEntriesView(APIView):
 
         receiver = UserProfile.objects.get(sharing_code=request.GET['sharing_code'])
 
+        rp = UnpackRedPacketsLog.objects.filter(
+            receiver = receiver.id,
+            group_buying_id = request.GET['group_buying_id']
+        ).first()
+        merchant = UserProfile.objects.get(pk=rp.get_from)
+
         # access_user = Authentication.access_user(request)
         # if not access_user == receiver.id:
         #     # 红包链接是否还有效
@@ -72,7 +78,7 @@ class RpOneEntriesView(APIView):
         )
         cursor.execute(sql_rp_one_entries)
         rp_entries =dict_fetch_all(cursor)
-        return Response(format_body(1, 'Success', {'rp_entries': rp_entries}))
+        return Response(format_body(1, 'Success', {'rp_entries': rp_entries, 'merchant_code': merchant.merchant_code}))
 
 
 class RpUnopenedView(APIView):
