@@ -145,7 +145,7 @@ class RpSendView(APIView):
     @Authentication.token_required
     @raise_general_exception
     def post(self, request):
-        # self.send(103,172)
+        self.send(request.data['group_buying_id'],request.data['get_from'])
         return Response(format_body(1, 'Success', ''))
 
     @staticmethod
