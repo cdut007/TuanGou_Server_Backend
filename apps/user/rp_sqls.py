@@ -3,8 +3,9 @@
 sql_rp_one_entries = """
 SELECT
 	b.nickname AS unpack_user,
+	b.headimgurl,
 	a.money,
-	DATE_FORMAT(a.unpack_time,'%m月%d号 %H:%i') AS unpack_time,
+	DATE_FORMAT(a.unpack_time,'%Y-%m-%d %H:%s:%i') AS unpack_time,
 	is_failure
 FROM
 	lg_unpack_red_packets_log AS a
@@ -32,6 +33,7 @@ sql_opened_rp = """
 SELECT
 	group_buying_id,
 	SUM(a.money) AS money,
+	COUNT(a.id) AS opened_rp,
 	c.`name` AS title
 FROM
 	lg_unpack_red_packets_log AS a
