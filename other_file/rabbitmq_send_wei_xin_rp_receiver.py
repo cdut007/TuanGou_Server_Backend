@@ -18,8 +18,7 @@ class Consuming:
         channel.basic_consume(callback,queue='send_wei_xin_rp')
         channel.start_consuming()
 
-    @staticmethod
-    def http_send(group_buying_id, get_from):
+    def http_send(self, group_buying_id, get_from):
         url = 'http://192.168.222.128:3000/v2/api.rp.send'
         headers = {
             'Content-Type': 'application/json',
@@ -32,12 +31,20 @@ class Consuming:
         request = urllib2.Request(url=url, headers=headers, data=data)
         res = urllib2.urlopen(request)
         res = json.loads(res.read())
-        print '{now}\t group_buying_id: {group_buying_id}\t get_from: {get_from}\t post_status: {post_status}\n'.format(
+        hg = '{now}\t group_buying_id: {group_buying_id}\t get_from: {get_from}\t post_status: {post_status}\n'.format(
             now = datetime.now(),
             group_buying_id = group_buying_id,
             get_from = get_from,
             post_status = res['code']
         )
+        print hg
+        self.write_log(hg)
+
+    @staticmethod
+    def write_log(hg):
+        f = open('./rabbitmq_send_wei_xin_rp_receiver.log', 'a')
+        f.write(hg)
+        f.close()
 
 
 if __name__ == '__main__':
