@@ -124,6 +124,20 @@ class UnpackRedPacketsLog(models.Model):
             return 1
 
     @staticmethod
+    def times_today(unpack_user):
+        today = datetime.now()
+        today_start = "{Y}-{m}-{d} 00:00:00".format(Y=today.year, m=today.month, d=today.day)
+        today_start = datetime.strptime(today_start, '%Y-%m-%d %H:%M:%S')
+        today_end = "{Y}-{m}-{d} 00:00:00".format(Y=today.year, m=today.month, d=today.day+1)
+        today_end = datetime.strptime(today_end, '%Y-%m-%d %H:%M:%S')
+        count = UnpackRedPacketsLog.objects.filter(
+            unpack_user=172,
+            unpack_time__gt=today_start,
+            unpack_time__lt=today_end
+        ).count()
+        return count
+
+    @staticmethod
     def update_send(group_buying_id, receiver, send_id):
         UnpackRedPacketsLog.objects.filter(
             receiver=receiver,

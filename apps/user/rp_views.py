@@ -17,25 +17,33 @@ class UnpackRpView(APIView):
     @raise_general_exception
     def post(self, request):
         receiver = UserProfile.objects.get(sharing_code=request.data['sharing_code'])
-        if receiver.id == self.post.user_id:
-            return Response(format_body(21, 'Fail', 'can not your own red packet'))
 
+        #不能拆自己的红包
+        if receiver.id == self.post.user_id:
+            return Response(format_body(21, 'Fail', u'您不能拆自己的红包哦！'))
+
+        # 已经帮这位好友拆过
         can_unpack = UnpackRedPacketsLog.can_unpack(
             receiver=receiver.id,
             group_buying_id=request.data['group_buying_id'],
             unpack_user=self.post.user_id
         )
         if not can_unpack:
-            return Response(format_body(20, 'Fail', 'Has record for this receiver&group_buying_id'))
+            return Response(format_body(20, 'Fail', u'您已经帮这位好友拆过这个红包了哦！'))
 
+        # 今天拆的次数有没3次
+        times_today = UnpackRedPacketsLog.times_today(unpack_user=self.post.user_id)
+        if times_today >= 3:
+            return Response(format_body(23, 'Fail', u'您今天已经帮好友拆过3次红包了哦！'))
+
+        # 如果没有money, 说明四个红包都已拆完
         money = UnpackRedPacketsLog.unpack_one_rp(
             receiver=receiver.id,
             group_buying_id=request.data['group_buying_id'],
             unpack_user=self.post.user_id
         )
-
         if not money:
-            return Response(format_body(19, 'Fail', 'Not have blank red packets yet'))
+            return Response(format_body(19, 'Fail', u'四个红包已经全部拆完了哦！'))
 
         return Response(format_body(1, 'Success', {'money': money}))
 

@@ -78,6 +78,7 @@ class StatusCode:
     GroupBuyingNotEnd = 18
     NoBlankRp = 19
     RpLinkFailed = 22
+    ThreeTimesToday = 23
 
 
 
