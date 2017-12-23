@@ -466,7 +466,8 @@ class MerchantMcEnd(APIView):
             moa = order.group_buy.min_order_amount
             if not self.unreached_moa(moa=moa, group_buying_id=order.group_buy_id, get_from=self.post.user_id):
                 self.update_unpacked_rp(group_buying_id=order.group_buy_id, get_from=self.post.user_id)
-                RpSendView.send(group_buying_id=order.group_buy_id,get_from=self.post.user_id)
+                # RpSendView.send(group_buying_id=order.group_buy_id,get_from=self.post.user_id)
+                RpSendView.send_to_rabbitmq(group_buying_id=order.group_buy_id,get_from=self.post.user_id)
 
         return Response(format_body(1, 'Success', ''))
 

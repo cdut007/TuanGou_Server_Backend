@@ -27,6 +27,7 @@ class Config:
         self.image_url_prefix = 'http://www.ailinkgo.com/'
         self.excel_file_path = '/var/www/html/ailinkgo/admin/excels/'
         self.excel_url_prefix = 'http://www.ailinkgo.com/admin/excels/'
+        self.server_run_addr = '47.90.86.229:3000'
 
     def staging_env(self):
         self.mysql_db_name = 'ilinkgo_test'
@@ -36,6 +37,7 @@ class Config:
         self.image_url_prefix = 'http://www.ailinkgo.com/'
         self.excel_file_path = '/var/www/html/ailinkgo/adminTesting/excels/'
         self.excel_url_prefix = 'http://www.ailinkgo.com/adminTesting/excels/'
+        self.server_run_addr = '47.90.86.229:3001'
 
     def dev_env(self):
         self.mysql_db_name = 'ilinkgo'
@@ -45,6 +47,7 @@ class Config:
         self.image_url_prefix = 'http://www.ailinkgo.demo/'
         self.excel_file_path = '/usr/local/nginx/html/ilinkgo/admin/excels/'
         self.excel_url_prefix = 'http://www.ailinkgo.demo/admin/excels/'
+        self.server_run_addr = '192.168.222.128:3000'
 
     def home_env(self):
         self.mysql_db_name = 'ilinkgo'
@@ -54,6 +57,7 @@ class Config:
         self.image_url_prefix = 'http://www.ailinkgo.demo/'
         self.excel_file_path = '/usr/local/nginx_1.10.3/html/ailinkgo/admin/excels/'
         self.excel_url_prefix = 'http://www.ailinkgo.demo/admin/excels/'
+        self.server_run_addr = '192.168.222.128:3000'
 
 
 class StatusCode:

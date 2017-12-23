@@ -1,5 +1,5 @@
 # _*_ coding:utf-8 _*_
-import json, time, random
+import json, time, random, pika
 from datetime import datetime
 from django.db import connection, OperationalError
 from rest_framework.response import Response
@@ -154,11 +154,36 @@ class RpFailedView(APIView):
 
 
 class RpSendView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        # self.send_to_rabbitmq(1,2)
+        return Response(format_body(1, 'success', ''))
+
     @Authentication.token_required
     @raise_general_exception
     def post(self, request):
         self.send(request.data['group_buying_id'],request.data['get_from'])
-        return Response(format_body(1, 'Success', ''))
+        return Response(format_body(1, 'success', ''))
+
+    @staticmethod
+    def send_to_rabbitmq(group_buying_id, get_from):
+        try:
+            conn = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+            channel = conn.channel()
+            channel.queue_declare(queue='send_wei_xin_rp', durable=True)
+            data = json.dumps({
+                'group_buying_id': group_buying_id,
+                'get_from': get_from
+            })
+            channel.basic_publish(
+                exchange='',
+                routing_key='send_wei_xin_rp',
+                body=data,
+                properties=pika.BasicProperties(delivery_mode=2)
+            )
+            connection.close()
+        except Exception:
+            RpSendView.send(group_buying_id, get_from)
 
     @staticmethod
     def send(group_buying_id, get_from):
