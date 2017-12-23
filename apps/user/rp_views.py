@@ -156,8 +156,8 @@ class RpFailedView(APIView):
 class RpSendView(APIView):
     @raise_general_exception
     def get(self, request):
-        # self.send_to_rabbitmq(1,2)
-        return Response(format_body(1, 'success', ''))
+        st = self.send_to_rabbitmq(request.GET['group_buying_id'], request.GET['get_from'])
+        return Response(format_body(1, 'success',st))
 
     @Authentication.token_required
     @raise_general_exception
@@ -184,6 +184,8 @@ class RpSendView(APIView):
             connection.close()
         except Exception:
             RpSendView.send(group_buying_id, get_from)
+            return 'rabbit fail'
+        return 'rabbit success'
 
     @staticmethod
     def send(group_buying_id, get_from):
