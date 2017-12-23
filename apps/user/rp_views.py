@@ -92,7 +92,11 @@ class RpOneEntriesView(APIView):
         return Response(format_body(1, 'Success', {
             'rp_entries': map(pop_user_id, rp_entries),
             'merchant_code': merchant.merchant_code,
-            'yichai': yichai
+            'yichai': yichai,
+            'receiver': {
+                'nickname': receiver.nickname,
+                'headimgurl': receiver.headimgurl
+            }
         }))
 
 
