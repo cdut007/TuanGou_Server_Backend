@@ -20,7 +20,7 @@ class Consuming:
 
     @staticmethod
     def http_send(group_buying_id, get_from):
-        url = 'http://47.90.86.229:3000/v2/api.rp.send'
+        url = 'http://192.168.222.128:3000/v2/api.rp.send'
         headers = {
             'Content-Type': 'application/json',
             'Authorization': 'eyJhbGciOiJIUzI1NiIsImV4cCI6MTU3MzcxODMxMywiaWF0IjoxNTEzMjM4MzEzfQ.eyJpZCI6Nzh9.QdDieApGFoFgLJkvRs-SgWlpFaGKR5ZjLDE6378AIOI'
