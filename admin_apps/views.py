@@ -400,9 +400,13 @@ class GroupBuyingCreateView(APIView):
 
         if str(self.post.user_id).startswith('admin_'):
             title = group_buying_info['title']
+            award_red_packets = group_buying_info['award_rp']
+            moa = group_buying_info['moa']
         else:
             merchant = UserProfile.objects.get(pk=self.post.user_id)
             title = u'【团长-'+str(merchant.id)+u'】 '+str(group_buying_info['eyu'])
+            award_red_packets = 0
+            moa = 0
 
         new_group_buying = GroupBuy(
             goods_classify_id = group_buying_info['classify'],
@@ -413,8 +417,8 @@ class GroupBuyingCreateView(APIView):
             on_sale = group_buying_info['on_sale'],
             eyu = group_buying_info['eyu'],
             created_by = get_owner(self.post.user_id),
-            award_red_packets = group_buying_info['award_rp'],
-            min_order_amount = group_buying_info['moa']
+            award_red_packets = award_red_packets,
+            min_order_amount = moa
         )
         new_group_buying.save()
 
@@ -514,6 +518,13 @@ class GroupBuyingUpdateView(APIView):
         group_buying_products = request.data['groupbuying_products']
         del_goods = request.data['del_goods']
 
+        if str(self.post.user_id).startswith('admin_'):
+            award_red_packets = group_buying_info['award_rp']
+            moa = group_buying_info['moa']
+        else:
+            award_red_packets = 0
+            moa = 0
+
         GroupBuy.objects.filter(pk=group_buying_info['id']).update(
             goods_classify_id = group_buying_info['classify'],
             end_time = group_buying_info['end_time'],
@@ -521,8 +532,8 @@ class GroupBuyingUpdateView(APIView):
             add_time = datetime.now(),
             on_sale = group_buying_info['on_sale'],
             eyu = group_buying_info['eyu'],
-            award_red_packets=group_buying_info['award_rp'],
-            min_order_amount=group_buying_info['moa']
+            award_red_packets = award_red_packets,
+            min_order_amount = moa
         )
 
         # 后台发布团购可更新title
