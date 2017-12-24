@@ -14,6 +14,7 @@ LEFT JOIN iuser_userprofile AS b ON a.unpack_user=b.id
 WHERE
 	group_buying_id = {_group_buying_id}
 AND receiver = {_receiver}
+ORDER BY a.unpack_time DESC 
 """
 
 sql_unopened_rp = """
