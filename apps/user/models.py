@@ -5,6 +5,7 @@ from django.db import models
 from decimal import Decimal
 import random
 from utils.common import random_str
+from market.models import GroupBuy
 
 class ConsumerOrderRemarks(models.Model):
     id = models.AutoField(primary_key=True)
@@ -74,13 +75,15 @@ class UnpackRedPacketsLog(models.Model):
         db_table = 'lg_unpack_red_packets_log'
 
     @staticmethod
-    def gen_four_record(receiver, group_buying_id, get_from):
+    def gen_rp_record(receiver, group_buying_id, get_from):
+        group_buying = GroupBuy.objects.get(pk=group_buying_id)
         rps = [UnpackRedPacketsLog(
             receiver=receiver,
             group_buying_id=group_buying_id,
             get_from=get_from
-        ) for i in range(4)]
+        ) for i in range(group_buying.rp_number)]
         UnpackRedPacketsLog.objects.bulk_create(rps)
+        return group_buying.rp_number
 
     @staticmethod
     def unpack_one_rp(receiver, group_buying_id, unpack_user):
@@ -90,7 +93,7 @@ class UnpackRedPacketsLog(models.Model):
             unpack_user__isnull=True
         ).first()
         if blank_rp:
-            money = UnpackRedPacketsLog.gen_rp_money()
+            money = UnpackRedPacketsLog.gen_rp_money(group_buying_id)
             blank_rp.unpack_user = unpack_user
             blank_rp.money = money
             blank_rp.unpack_time = datetime.now()
@@ -101,15 +104,20 @@ class UnpackRedPacketsLog(models.Model):
 
     @staticmethod
     def re_activate_rp(receiver, group_buying_id, get_from):
+        group_buying = GroupBuy.objects.get(pk=group_buying_id)
         UnpackRedPacketsLog.objects.filter(
             receiver=receiver,
             group_buying_id=group_buying_id,
             is_failure=2
         ).update(is_failure=0, get_from=get_from)
+        return group_buying.rp_number
 
     @staticmethod
-    def gen_rp_money():
-        return str(Decimal(random.uniform(0.25, 0.6)).quantize(Decimal('0.00')))
+    def gen_rp_money(group_buying_id):
+        group_buying = GroupBuy.objects.get(pk=group_buying_id)
+        min_money = group_buying.min_rp_money
+        max_money = group_buying.max_rp_money
+        return str(Decimal(random.uniform(min_money, max_money)).quantize(Decimal('0.00')))
 
     @staticmethod
     def can_unpack(receiver, group_buying_id, unpack_user):

@@ -186,6 +186,9 @@ SELECT
   b.id AS classify,
   b.`name` AS classify_name,
   a.award_red_packets,
+  a.rp_number,
+  a.min_rp_money,
+  a.max_rp_money,
   a.min_order_amount
 FROM
   market_groupbuy AS a

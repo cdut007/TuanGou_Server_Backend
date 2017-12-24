@@ -46,6 +46,9 @@ class GroupBuy(models.Model):
     eyu = models.CharField(max_length=64, default='')
     created_by = models.CharField(max_length=64, default='')
     award_red_packets = models.CharField(max_length=2, default='0')
+    rp_number = models.PositiveSmallIntegerField(default=0)
+    min_rp_money = models.DecimalField(max_digits=4, decimal_places=2, default=None)
+    max_rp_money = models.DecimalField(max_digits=4, decimal_places=2, default=None)
     min_order_amount = models.DecimalField(max_digits=6, decimal_places=2, default=None)
 
     class Meta:

@@ -270,25 +270,31 @@ class ConsumerOrderView(APIView):
         cursor.execute(sql_is_order_has_red_packets)
         grp = dict_fetch_all(cursor)
         award_red_packets = 1 if grp else 0
+        rp_number = 0
         if award_red_packets:
             for item in grp:
                 if item['is_failure'] == '2':
-                    UnpackRedPacketsLog.re_activate_rp(
+                    rp_num = UnpackRedPacketsLog.re_activate_rp(
                         receiver=self.post.user_id,
                         group_buying_id=item['group_buying_id'],
                         get_from=merchant.id
                     )
                 else:
-                    UnpackRedPacketsLog.gen_four_record(
+                    rp_num = UnpackRedPacketsLog.gen_rp_record(
                         receiver=self.post.user_id,
                         group_buying_id=item['group_buying_id'],
                         get_from=merchant.id
                     )
+                rp_number += rp_num
 
         # #一条group_buying_id
         group_buy_goods = GroupBuyGoods.objects.get(pk=request.data['goods_list'][0]['goods_id'])
 
-        return Response(format_body(1, 'Success', {'id': group_buy_goods.group_buy_id, 'award_red_packets': award_red_packets}))
+        return Response(format_body(1, 'Success', {
+            'id': group_buy_goods.group_buy_id,
+            'award_red_packets': award_red_packets,
+            'rp_number': rp_number
+        }))
 
     @Authentication.token_required
     @raise_general_exception

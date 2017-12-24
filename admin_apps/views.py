@@ -401,12 +401,18 @@ class GroupBuyingCreateView(APIView):
         if str(self.post.user_id).startswith('admin_'):
             title = group_buying_info['title']
             award_red_packets = group_buying_info['award_rp']
-            moa = group_buying_info['moa']
+            rp_number = group_buying_info['rp_number']
+            min_rp_money = group_buying_info['min_rp_money']
+            max_rp_money = group_buying_info['max_rp_money']
+            min_order_amount = group_buying_info['min_order_amount']
         else:
             merchant = UserProfile.objects.get(pk=self.post.user_id)
             title = u'【团长-'+str(merchant.id)+u'】 '+str(group_buying_info['eyu'])
             award_red_packets = 0
-            moa = 0
+            rp_number = 0
+            min_rp_money = 0
+            max_rp_money = 0
+            min_order_amount = 0
 
         new_group_buying = GroupBuy(
             goods_classify_id = group_buying_info['classify'],
@@ -418,7 +424,10 @@ class GroupBuyingCreateView(APIView):
             eyu = group_buying_info['eyu'],
             created_by = get_owner(self.post.user_id),
             award_red_packets = award_red_packets,
-            min_order_amount = moa
+            rp_number = rp_number,
+            min_rp_money = min_rp_money,
+            max_rp_money = max_rp_money,
+            min_order_amount = min_order_amount
         )
         new_group_buying.save()
 
@@ -520,10 +529,16 @@ class GroupBuyingUpdateView(APIView):
 
         if str(self.post.user_id).startswith('admin_'):
             award_red_packets = group_buying_info['award_rp']
-            moa = group_buying_info['moa']
+            rp_number = group_buying_info['rp_number']
+            min_rp_money = group_buying_info['min_rp_money']
+            max_rp_money = group_buying_info['max_rp_money']
+            min_order_amount = group_buying_info['min_order_amount']
         else:
             award_red_packets = 0
-            moa = 0
+            rp_number = 0
+            min_rp_money = 0
+            max_rp_money = 0
+            min_order_amount = 0
 
         GroupBuy.objects.filter(pk=group_buying_info['id']).update(
             goods_classify_id = group_buying_info['classify'],
@@ -533,7 +548,10 @@ class GroupBuyingUpdateView(APIView):
             on_sale = group_buying_info['on_sale'],
             eyu = group_buying_info['eyu'],
             award_red_packets = award_red_packets,
-            min_order_amount = moa
+            rp_number = rp_number,
+            min_rp_money = min_rp_money,
+            max_rp_money = max_rp_money,
+            min_order_amount = min_order_amount
         )
 
         # 后台发布团购可更新title

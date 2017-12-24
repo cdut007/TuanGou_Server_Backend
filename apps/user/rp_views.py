@@ -36,14 +36,14 @@ class UnpackRpView(APIView):
         if times_today >= 3:
             return Response(format_body(23, 'Fail', u'您今天已经帮好友拆过3次红包了哦！'))
 
-        # 如果没有money, 说明四个红包都已拆完
+        # 如果没有money, 则红包都已拆完
         money = UnpackRedPacketsLog.unpack_one_rp(
             receiver=receiver.id,
             group_buying_id=request.data['group_buying_id'],
             unpack_user=self.post.user_id
         )
         if not money:
-            return Response(format_body(19, 'Fail', u'四个红包已经全部拆完了哦！'))
+            return Response(format_body(19, 'Fail', u'红包已经全部拆完了哦！'))
 
         return Response(format_body(1, 'Success', {'money': money}))
 
