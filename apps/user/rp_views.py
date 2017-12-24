@@ -104,7 +104,8 @@ class RpOneEntriesView(APIView):
             'receiver': {
                 'nickname': receiver.nickname,
                 'headimgurl': receiver.headimgurl
-            }
+            },
+            'jielong_link': 'https://mp.weixin.qq.com/s?__biz=MzUyMjEyMzkyMg==&mid=2247483695&idx=1&sn=2e2600eabe3f8a6b8faa7ac2e5bc037f&chksm=f9d1eed2cea667c419910e5ed3de3b29ed88013e0becb8a36bc394f12d414a1f0a6e2dc2457a&mpshare=1&scene=1&srcid=1224EVJYL2hjYabatrWFOmdH#rd'
         }))
 
 
