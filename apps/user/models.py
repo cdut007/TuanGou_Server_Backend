@@ -117,7 +117,7 @@ class UnpackRedPacketsLog(models.Model):
         group_buying = GroupBuy.objects.get(pk=group_buying_id)
         min_money = group_buying.min_rp_money
         max_money = group_buying.max_rp_money
-        return str(Decimal(random.uniform(min_money, max_money)).quantize(Decimal('0.00')))
+        return str(Decimal(random.uniform(float(min_money), float(max_money))).quantize(Decimal('0.00')))
 
     @staticmethod
     def can_unpack(receiver, group_buying_id, unpack_user):
