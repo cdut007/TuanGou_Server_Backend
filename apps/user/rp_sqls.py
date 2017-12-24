@@ -6,7 +6,7 @@ SELECT
 	b.nickname AS unpack_user,
 	b.headimgurl,
 	a.money,
-	DATE_FORMAT(a.unpack_time,'%Y-%m-%d %H:%s:%i') AS unpack_time,
+	DATE_FORMAT(a.unpack_time,'%Y-%m-%d %H:%i:%s') AS unpack_time,
 	is_failure
 FROM
 	lg_unpack_red_packets_log AS a
