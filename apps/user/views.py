@@ -40,11 +40,14 @@ class UserLoginFromAppView(APIView):
             user.privilege = info['privilege']
             user.join_way = join_way
 
-        user.nickname = info['nickname']
-        user.headimgurl = info['headimgurl']
+        if info.has_key('nickname'):
+            user.nickname = info['nickname']
+        if info.has_key('headimgurl'):
+            user.headimgurl = info['headimgurl']
 
         if login_from == 'app' and not user.openid_app:
-            user.openid_app = info['openid']
+            if info.has_key('openid'):
+                user.openid_app = info['openid']
         elif login_from == 'web' and not  user.openid_web:
             user.openid_web = info['openid']
         user.save()
