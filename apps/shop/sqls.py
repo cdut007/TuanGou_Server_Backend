@@ -413,6 +413,92 @@ GROUP BY
 	a.id
 """
 
+sql_merchant_classify_group_buying_list = """
+SELECT
+	a.group_buy_id,
+	b.ship_time,
+	b.award_red_packets,
+	b.eyu,
+	DATE_FORMAT(
+		b.end_time,
+		'%Y-%m-%d %H:%i:%s'
+	) AS end_time,
+	IFNULL(c.remark,'') AS user_remark
+FROM
+	iuser_agentorder AS a
+LEFT JOIN market_groupbuy AS b ON a.group_buy_id = b.id
+LEFT JOIN lg_consumer_order_remarks AS c ON c.user_id = 172
+AND c.group_buying_id = a.group_buy_id
+AND c.merchant_code = 'ocsmexC4m2oJk5XEvwaahCOZYEg4'
+WHERE
+	a.user_id = {_merchant_id}
+AND b.goods_classify_id = {_classify_id}
+AND a.mc_end = 0
+AND b.end_time > NOW()
+"""
+
+sql_merchant_group_buying_goods_list = """
+SELECT
+	temp1.purchased_user_count,
+	temp1.purchased_user,
+	a.name,
+	temp1.goods_id,
+	temp1.brief_dec,
+	temp1.price,
+	temp1.stock,
+	CONCAT(
+		'%(image_prefix)s',
+		SUBSTRING_INDEX(b.image, '.', 1),
+		'_thumbnail.',
+		SUBSTRING_INDEX(b.image, '.', - 1)
+	) AS image
+FROM
+	(
+		SELECT
+			a.id AS goods_id,
+			a.goods_id AS org_goods_id,
+			a.brief_dec,
+			a.price,
+			a.stock,
+			COUNT(b.id) AS purchased_user_count,
+			CONCAT(
+				'[',
+				SUBSTRING_INDEX(
+					GROUP_CONCAT(
+						'{\"nickname\": \"',
+						IF(b.anonymity, '猜猜我是谁...', c.nickname),
+						'\", ',
+						'\"headimgurl\": \"',
+						IF(
+							b.anonymity,
+							(CASE c.sex 
+								WHEN 0 THEN 'http://www.ailinkgo.com/admin/images/Defalut/other_icon.png' 
+								WHEN 1 THEN 'http://www.ailinkgo.com/admin/images/Defalut/boy_icon.png'
+								WHEN 2 THEN 'http://www.ailinkgo.com/admin/images/Defalut/girl_icon.png' 
+							END), 
+							c.headimgurl
+                        ),
+						'\"}'
+					ORDER BY
+						b.add_time DESC
+					),
+					',{',
+					5
+				),
+				']'
+			) AS purchased_user
+		FROM
+			market_groupbuygoods AS a
+		LEFT JOIN iuser_genericorder AS b ON a.id = b.goods_id
+		LEFT JOIN iuser_userprofile AS c ON b.user_id = c.id
+		WHERE
+			a.id IN (%(goods_ids)s)
+		GROUP BY
+			a.id
+	) AS temp1
+LEFT JOIN market_goods AS a ON temp1.org_goods_id=a.id
+LEFT JOIN market_goodsgallery AS b ON b.goods_id=temp1.org_goods_id AND b.is_primary=1
+"""
 
 
 # abandon
