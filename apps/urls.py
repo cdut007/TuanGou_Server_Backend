@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^merchant.goods.purchased.user$', ShopViews.MerchantGoodsPurchasedUserView.as_view(), name='goods.purchased.user'),
     url(r'^merchant.goods.list$', ShopViews.MerchantGoodsListView.as_view(), name='merchant.goods.list'),
     url(r'^merchant.classify.group_buy$', ShopViews.MerchantClassifyView.as_view(), name='merchant.classify.group_buy'),
+    url(r'^merchant.classify.group_buy.v2$', ShopViews.MerchantClassifyV2View.as_view(), name='merchant.classify.group_buy.v2'),
     # shop -> app
     url(r'^goods.listing$', ShopViews.GoodsListingView.as_view(), name='goods.listing'),
     url(r'^goods.detail$', ShopViews.GoodsDetailView.as_view(), name='goods.detail'),

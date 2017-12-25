@@ -8,6 +8,7 @@ from ilinkgo.settings import conf
 from utils.common import format_body, dict_fetch_all, raise_general_exception, sql_limit
 
 from iuser.Authentication import Authentication
+from iuser.models import AgentOrder, UserProfile
 
 
 class MerchantGoodsDetailView(APIView):
@@ -142,6 +143,63 @@ class MerchantClassifyView(APIView):
         data = {
             'classify': info,
             'group_buy_list': _list,
+        }
+
+        return Response(format_body(1, 'Success', data))
+
+
+class MerchantClassifyV2View(APIView):
+    @raise_general_exception
+    def get(self, request):
+        cursor = connection.cursor()
+        from sqls import sql_classify_info
+        from sqls import sql_merchant_classify_group_buying_list, sql_merchant_group_buying_goods_list
+
+        merchant = UserProfile.objects.get(merchant_code=request.GET['merchant_code'])
+        classify_id = request.GET['classify_id']
+
+        cursor.execute("SET SESSION group_concat_max_len = 20480;")
+        cursor.execute(sql_classify_info.format(
+            image_prefix = conf.image_url_prefix,
+            classify_id = classify_id
+        ))
+        classify_info = dict_fetch_all(cursor)
+        classify_info = classify_info[0]
+
+        cursor.execute(sql_merchant_classify_group_buying_list.format(
+            _merchant_id = merchant.id,
+            _classify_id = classify_id
+        ))
+        group_buying_list = dict_fetch_all(cursor)
+
+        def recombine_goods_list(v):
+            if v['purchased_user']:
+                _purchased_user = json.loads(v['purchased_user'])
+            else:
+                _purchased_user = []
+            v['purchased_user'] = {
+                'users': _purchased_user,
+                'count': v['purchased_user_count']
+            }
+            v.pop('purchased_user_count')
+            return v
+
+        for group_buying in  group_buying_list:
+            ao = AgentOrder.objects.get(
+                group_buy_id = group_buying['group_buy_id'],
+                user_id = merchant.id
+            )
+            sql_goods_list = sql_merchant_group_buying_goods_list % {
+                'goods_ids': ao.goods_ids,
+                'image_prefix': conf.image_url_prefix
+            }
+            cursor.execute(sql_goods_list)
+            goods_list = dict_fetch_all(cursor)
+            group_buying['goods_list'] = map(recombine_goods_list, goods_list)
+
+        data = {
+            'classify': classify_info,
+            'group_buy_list': group_buying_list
         }
 
         return Response(format_body(1, 'Success', data))
