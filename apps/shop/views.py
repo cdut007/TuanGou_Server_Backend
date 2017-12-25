@@ -111,47 +111,6 @@ class MerchantClassifyView(APIView):
     @raise_general_exception
     def get(self, request):
         cursor = connection.cursor()
-
-        from sqls import sql_classify_info
-        from sqls import sql_merchant_classify_group_buy_list_with_all_goods_v2
-
-        query = {
-            'classify_id': request.GET['classify_id'],
-            'merchant_code': request.GET['merchant_code'],
-            'image_prefix': conf.image_url_prefix,
-            'access_user': Authentication.access_user(request)
-        }
-
-        sql_classify_info = sql_classify_info.format(**query)
-        sql_classify_group_buy_list = sql_merchant_classify_group_buy_list_with_all_goods_v2 % query
-
-        cursor.execute(sql_classify_info)
-        info = dict_fetch_all(cursor)[0]
-
-        cursor.execute("SET SESSION group_concat_max_len = 204800;")
-        cursor.execute(sql_classify_group_buy_list)
-        _list = dict_fetch_all(cursor)
-
-        for item in _list:
-            _a = item['goods_list']\
-                .replace('"[', '[')\
-                .replace(']"', ']')\
-                .replace('}"', '}')\
-                .replace('"{', '{')
-            item['goods_list'] = json.loads(_a)
-
-        data = {
-            'classify': info,
-            'group_buy_list': _list,
-        }
-
-        return Response(format_body(1, 'Success', data))
-
-
-class MerchantClassifyV2View(APIView):
-    @raise_general_exception
-    def get(self, request):
-        cursor = connection.cursor()
         from sqls import sql_classify_info
         from sqls import sql_merchant_classify_group_buying_list, sql_merchant_group_buying_goods_list
 

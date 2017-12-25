@@ -469,7 +469,6 @@ FROM
 						IF(b.anonymity, '猜猜我是谁...', c.nickname),
 						'\", ',
 						'\"headimgurl\": \"',
-						c.headimgurl,
 						IF(
 							b.anonymity,
 							(CASE c.sex 
@@ -478,7 +477,7 @@ FROM
 								WHEN 2 THEN 'http://www.ailinkgo.com/admin/images/Defalut/girl_icon.png' 
 							END), 
 							c.headimgurl
-            ),
+                        ),
 						'\"}'
 					ORDER BY
 						b.add_time DESC
