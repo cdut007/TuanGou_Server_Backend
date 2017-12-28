@@ -85,10 +85,25 @@ class UserInfoView(APIView):
             },
             'agent_url': 'http://www.ailinkgo.com/?agent_code=' + user.merchant_code,
             'role': 'merchant' if user.is_agent else 'consumer',
-            'sharing_code': user.sharing_code
+            'sharing_code': user.sharing_code,
+            'agree_ua': int(user.agree_ua)
         }
 
         return Response(format_body(1, 'Success', {'user_profile': data}))
+
+
+class UserProfileUpdateView(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def post(self, request):
+        user = UserProfile.objects.get(pk=self.post.user_id)
+        update = request.data['update']
+        allow_field = ['agree_ua']
+        for (key, value) in update.items():
+            if key in allow_field:
+                setattr(user, key, value)
+        user.save()
+        return Response(format_body(1, 'Success',''))
 
 
 class MerchantInfoView(APIView):
