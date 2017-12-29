@@ -123,9 +123,10 @@ FROM
 	lg_unpack_red_packets_log AS a
 LEFT JOIN iuser_userprofile AS b ON a.receiver = b.id
 WHERE
-	group_buying_id = {group_buying_id}
+	group_buying_id = {_group_buying_id}
 AND unpack_user IS NOT NULL AND send_id IS NULL
 GROUP BY
 	receiver
 ORDER BY SUM(a.money) DESC
+{_limit}
 """
