@@ -272,7 +272,10 @@ class RpRankingView(APIView):
         from rp_sqls import sql_rp_ranking
         cursor = connection.cursor()
 
-        cursor.execute(sql_rp_ranking.format(group_buying_id=request.GET['group_buying_id']))
+        cursor.execute(sql_rp_ranking.format(
+            _group_buying_id=request.GET['group_buying_id'],
+            _limit = sql_limit(request)
+        ))
         ranking = dict_fetch_all(cursor)
 
         return Response(format_body(1, 'Success', {'ranking': ranking}))
