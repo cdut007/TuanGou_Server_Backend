@@ -114,3 +114,18 @@ WHERE a.receiver={_user_id} AND b.mc_end=0 AND c.end_time > NOW() AND a.is_failu
 sql_failed_rp_count = """
 SELECT COUNT(id) AS failed_rp FROM lg_unpack_red_packets_log WHERE receiver={_user_id} AND is_failure!='0'
 """
+
+sql_rp_ranking = """
+SELECT
+	b.nickname,
+	SUM(a.money) AS money
+FROM
+	lg_unpack_red_packets_log AS a
+LEFT JOIN iuser_userprofile AS b ON a.receiver = b.id
+WHERE
+	group_buying_id = {group_buying_id}
+AND unpack_user IS NOT NULL AND send_id IS NULL
+GROUP BY
+	receiver
+ORDER BY SUM(a.money) DESC
+"""

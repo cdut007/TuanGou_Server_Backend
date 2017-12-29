@@ -53,4 +53,5 @@ urlpatterns = [
     url(r'^rp.failed.list$', RpViews.RpFailedView.as_view(), name='rp.failed.list'),
     url(r'^rp.logs$', RpViews.RpLogsView.as_view(), name='rp.logs'),
     url(r'^rp.summary$', RpViews.RpSummaryView.as_view(), name='rp.summary'),
+    url(r'^rp.ranking$', RpViews.RpRankingView.as_view(), name='rp.ranking'),
 ]
