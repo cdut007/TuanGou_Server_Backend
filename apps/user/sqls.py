@@ -136,7 +136,7 @@ SELECT
 		']'
 	) AS goods_list,
 	temp.time,
-	COUNT(temp.user_id) AS total_quantity,
+	SUM(temp.quantity) AS total_quantity,
 	SUM(temp.amount) AS total_amount,
 	a.nickname,
 	a.headimgurl,
