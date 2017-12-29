@@ -26,6 +26,7 @@ class UserProfile(models.Model):
     is_agent = models.BooleanField(default=False, verbose_name='代理商')
     join_time = models.DateTimeField(default=datetime.now, verbose_name='加入时间')
     join_way = models.CharField(max_length=8, default='1')
+    agree_ua = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = u'用户'

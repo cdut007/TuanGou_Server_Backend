@@ -265,3 +265,15 @@ class RpSummaryView(APIView):
             'rp_failed': failed_count
         }))
 
+
+class RpRankingView(APIView):
+    @raise_general_exception
+    def get(self, request):
+        from rp_sqls import sql_rp_ranking
+        cursor = connection.cursor()
+
+        cursor.execute(sql_rp_ranking.format(group_buying_id=request.GET['group_buying_id']))
+        ranking = dict_fetch_all(cursor)
+
+        return Response(format_body(1, 'Success', {'ranking': ranking}))
+

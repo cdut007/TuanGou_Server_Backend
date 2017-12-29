@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^user.login.app$', UserViews.UserLoginFromAppView.as_view(), name='user.login.app'),
     url(r'^user.login.web$', UserViews.UserLoginFromWebView.as_view(), name='user.login.web'),
     url(r'^user.info$', UserViews.UserInfoView.as_view(), name='user.info'),
+    url(r'^user.profile.update$', UserViews.UserProfileUpdateView.as_view(), name='user.profile.update'),
     url(r'^merchant.info$', UserViews.MerchantInfoView.as_view(), name='merchant.info'),
     url(r'^user.sharing_code$', UserViews.UserSharingCodeView.as_view(), name='user.sharing_code'),
     # user -> web
@@ -52,4 +53,5 @@ urlpatterns = [
     url(r'^rp.failed.list$', RpViews.RpFailedView.as_view(), name='rp.failed.list'),
     url(r'^rp.logs$', RpViews.RpLogsView.as_view(), name='rp.logs'),
     url(r'^rp.summary$', RpViews.RpSummaryView.as_view(), name='rp.summary'),
+    url(r'^rp.ranking$', RpViews.RpRankingView.as_view(), name='rp.ranking'),
 ]

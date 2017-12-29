@@ -500,8 +500,6 @@ LEFT JOIN market_goods AS a ON temp1.org_goods_id=a.id
 LEFT JOIN market_goodsgallery AS b ON b.goods_id=temp1.org_goods_id AND b.is_primary=1
 """
 
-
-
 # abandon
 sql_goods_list = """
 SELECT
