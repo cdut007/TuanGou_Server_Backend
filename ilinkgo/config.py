@@ -6,6 +6,7 @@ class Config:
         self.cwd = os.getcwd()
         self.wei_xin_mch_key_pem = self.cwd + '/other_file/apiclient_key.pem'
         self.wei_xin_mch_cert_pem = self.cwd + '/other_file/apiclient_cert.pem'
+        self.domain = 'http://a1.ailinkgo.com/'
         self._init_()
 
     def _init_(self):
@@ -24,9 +25,9 @@ class Config:
         self.mysql_db_user = 'ilinkusr'
         self.mysql_db_password = 'ilinkusr123'
         self.image_file_path = '/var/www/html/ailinkgo/admin/images/'
-        self.image_url_prefix = 'http://www.ailinkgo.com/'
+        self.image_url_prefix = self.domain
         self.excel_file_path = '/var/www/html/ailinkgo/admin/excels/'
-        self.excel_url_prefix = 'http://www.ailinkgo.com/admin/excels/'
+        self.excel_url_prefix = self.domain+'admin/excels/'
         self.server_run_addr = '47.90.86.229:3000'
 
     def staging_env(self):
@@ -34,9 +35,9 @@ class Config:
         self.mysql_db_user = 'ilinkusr'
         self.mysql_db_password = 'ilinkusr123'
         self.image_file_path = '/var/www/html/ailinkgo/adminTesting/images/'
-        self.image_url_prefix = 'http://www.ailinkgo.com/'
+        self.image_url_prefix = self.domain
         self.excel_file_path = '/var/www/html/ailinkgo/adminTesting/excels/'
-        self.excel_url_prefix = 'http://www.ailinkgo.com/adminTesting/excels/'
+        self.excel_url_prefix = self.domain+'adminTesting/excels/'
         self.server_run_addr = '47.90.86.229:3001'
 
     def dev_env(self):

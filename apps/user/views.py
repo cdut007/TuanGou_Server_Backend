@@ -83,7 +83,7 @@ class UserInfoView(APIView):
                 'address': user.address,
                 'phone_num': user.phone_num
             },
-            'agent_url': 'http://www.ailinkgo.com/?agent_code=' + user.merchant_code,
+            'agent_url': conf.domain + '?agent_code=' + user.merchant_code,
             'role': 'merchant' if user.is_agent else 'consumer',
             'sharing_code': user.sharing_code,
             'agree_ua': int(user.agree_ua)
