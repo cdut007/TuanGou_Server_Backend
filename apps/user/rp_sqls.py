@@ -79,6 +79,7 @@ AND a.group_buying_id = {_group_buying_id}
 AND a.is_failure=0
 AND a.send_id IS NULL
 GROUP BY a.receiver
+HAVING SUM(a.money)>=1
 """
 
 sql_rp_logs = """
