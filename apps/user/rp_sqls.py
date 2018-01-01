@@ -124,7 +124,7 @@ FROM
 LEFT JOIN iuser_userprofile AS b ON a.receiver = b.id
 WHERE
 	group_buying_id = {_group_buying_id}
-AND unpack_user IS NOT NULL AND send_id IS NULL
+AND unpack_user IS NOT NULL
 GROUP BY
 	receiver
 ORDER BY SUM(a.money) DESC
