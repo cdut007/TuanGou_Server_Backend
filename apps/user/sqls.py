@@ -398,44 +398,6 @@ GROUP BY temp2.consumer_id
 %(_limit)s
 """
 
-sql_consumer_order_web = """
-SELECT
-    temp1.merchant_code,
-    temp1.merchant_name,
-    temp1.group_buy_id,
-    temp1.consumer_count,
-    temp1.classify_name,
-    temp1.classify_icon,
-    CONCAT('[',GROUP_CONCAT('\"', a.headimgurl, '\"'),']') AS consumers
-FROM
-    (
-        SELECT
-            b.group_buy_id,
-            GROUP_CONCAT(DISTINCT a.user_id) AS consumer_ids,
-            c.nickname AS merchant_name,
-            a.agent_code AS merchant_code,
-            c.id AS merchant_id,
-            COUNT(DISTINCT a.user_id) AS consumer_count,
-            f.`name` AS classify_name,
-            CONCAT('%(_image_prefix)s', f.icon) AS classify_icon
-        FROM
-            iuser_genericorder AS a
-        INNER JOIN market_groupbuygoods AS b ON a.goods_id = b.id
-        LEFT JOIN iuser_userprofile AS c ON c.merchant_code = a.agent_code
-        LEFT JOIN iuser_agentorder AS d ON c.id=d.user_id AND b.group_buy_id=d.group_buy_id
-        LEFT JOIN market_groupbuy AS e ON e.id = b.group_buy_id
-        LEFT JOIN market_goodsclassify AS f ON e.goods_classify_id=f.id
-        WHERE %(_doing_or_done)s
-        GROUP BY
-            a.agent_code,b.group_buy_id
-        HAVING FIND_IN_SET(%(_consumer_id)s, GROUP_CONCAT(a.user_id))
-        ORDER BY e.end_time DESC
-        %(_limit)s
-    ) AS temp1
-    LEFT JOIN iuser_userprofile AS a ON FIND_IN_SET(a.id, temp1.consumer_ids)
-    GROUP BY temp1.merchant_code,temp1.group_buy_id
-"""
-
 sql_consumer_order_detail = """
 SELECT
 	temp1.total_money,

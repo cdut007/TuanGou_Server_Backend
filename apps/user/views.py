@@ -627,36 +627,67 @@ class GetConsumerOrderView(APIView):
     @Authentication.token_required
     @raise_general_exception
     def get(self, request):
-        from sqls import sql_consumer_order_web
         cursor = connection.cursor()
 
+        sql_order = """
+        SELECT
+            merchant_code,
+            merchant_name,
+            classify_name,
+            classify_icon,
+            CONCAT('{_image_prefix_}', classify_icon) AS classify_icon,
+            group_buy_id
+        FROM
+            lg_consumer_order
+        WHERE
+            consumer_id = {_consumer_id_} AND ({_status_})
+        GROUP BY merchant_code, group_buy_id
+        ORDER BY end_time DESC
+        {_limit_}
+        """
         if request.GET['status'] == 'done':
-            _doing_or_done = ' d.mc_end=1 OR e.end_time < NOW() OR e.on_sale=0 '
-            _limit = sql_limit(request)
+            _status_ = ' mc_end = 1 OR end_time < NOW() OR on_sale=0 '
+            _limit_ = sql_limit(request)
         else:
-            _doing_or_done = ' d.mc_end=0 AND e.end_time > NOW() AND e.on_sale=1'
-            _limit = ''
+            _status_ = ' mc_end=0 AND end_time > NOW() AND on_sale=1 '
+            _limit_ = ''
 
-        cursor.execute("SET SESSION group_concat_max_len = 20480;")
-        sql_consumer_order_web = sql_consumer_order_web % {
-            '_image_prefix': conf.image_url_prefix,
-            '_doing_or_done': _doing_or_done,
-            '_consumer_id': self.get.user_id,
-            '_limit': _limit
-        }
-        cursor.execute(sql_consumer_order_web)
-        data = dict_fetch_all(cursor)
+        sql_order = sql_order.format(
+            _image_prefix_ = conf.image_url_prefix,
+            _status_ = _status_,
+            _consumer_id_ = self.get.user_id,
+            _limit_ = _limit_
+        )
+        cursor.execute(sql_order)
+        orders = dict_fetch_all(cursor)
 
-        for item in data:
-            if item['consumers']:
-                item['consumers'] = json.loads(item['consumers'])
-            else:
-                item['consumers'] = []
+        for order in orders:
+            sql_purchased_user = """
+            SELECT
+                c.nickname,
+                c.headimgurl
+            FROM
+                iuser_genericorder AS a
+            LEFT JOIN market_groupbuygoods AS b ON a.goods_id = b.id
+            LEFT JOIN iuser_userprofile AS c ON c.id = a.user_id
+            WHERE
+                a.agent_code = '{_merchant_code_}'
+            AND b.group_buy_id = {_group_buying_id_}
+            GROUP BY
+                a.user_id
+            """.format(
+                _merchant_code_=order['merchant_code'],
+                _group_buying_id_=order['group_buy_id']
+            )
+            cursor.execute(sql_purchased_user)
+            users = dict_fetch_all(cursor)
+            order['consumers'] = [user['headimgurl'] for user in users]
+            order['consumer_count'] = len(users)
 
         has_rp = UnpackRedPacketsLog.objects.filter(receiver=self.get.user_id).count()
         message = 'has-redpack' if has_rp else 'Success'
 
-        return Response(format_body(1, message, data))
+        return Response(format_body(1, message, orders))
 
 
 class ConsumerOrderDetailView(APIView):
