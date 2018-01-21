@@ -165,6 +165,34 @@ class WeiXinAPI:
         res_json = WeiXinXml.xml2json(res.text)
         return res_json
 
+    def pay(self):
+        url = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
+        payload = {
+            'appid': self.app_id,
+            'attach': 'test',
+            'body': 'jsapi test',
+            'mch_id': self.mch_id,
+            'detail': '<![CDATA[{ "goods_detail":[ { "goods_id":"iphone6s_16G", "wxpay_goods_id":"1001", "goods_name":"iPhone6s 16G", "quantity":1, "price":528800, "goods_category":"123456", "body":"苹果手机" }, { "goods_id":"iphone6s_32G", "wxpay_goods_id":"1002", "goods_name":"iPhone6s 32G", "quantity":1, "price":608800, "goods_category":"123789", "body":"苹果手机" } ] }]]>',
+            'nonce_str': random_str(random_length=26),
+            'notify_url': 'www.ailinkgo.com/v2/api.test',
+            'openid': 'okljv0R6hou-qibewuLKYFhLU8kc',
+            'out_trade_no': random_str(random_length=28),
+            'spbill_create_ip': '192.168.239.129',
+            'total_fee': 1,
+            'trade_type': 'JSAPI'
+        }
+        payload['sign'] = self.sign(payload)
+
+        xml_data = WeiXinXml.json2xml(payload)
+        res = requests.post(
+            url=url,
+            data=xml_data,
+            headers=self.xml_header,
+            cert=(conf.wei_xin_mch_cert_pem, conf.wei_xin_mch_key_pem)
+        )
+        res_json = WeiXinXml.xml2json(res._content)
+        return res_json
+
     def sign(self,payload):
         sorted_keys = sorted(payload)
         strmd = ''

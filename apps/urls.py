@@ -5,6 +5,7 @@ from user import views as UserViews
 from shop import views as ShopViews
 from other import views as OtherViews
 from user import rp_views as RpViews
+from kanjia import views as  KanJiaView
 
 urlpatterns = [
     url(r'^user.login.app$', UserViews.UserLoginFromAppView.as_view(), name='user.login.app'),
@@ -54,4 +55,7 @@ urlpatterns = [
     url(r'^rp.logs$', RpViews.RpLogsView.as_view(), name='rp.logs'),
     url(r'^rp.summary$', RpViews.RpSummaryView.as_view(), name='rp.summary'),
     url(r'^rp.ranking$', RpViews.RpRankingView.as_view(), name='rp.ranking'),
+
+    #kan jia
+    url(r'^kanjia.pay$', KanJiaView.WxPayView.as_view(), name='kanjia.pay'),
 ]
