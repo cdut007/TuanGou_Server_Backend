@@ -104,6 +104,7 @@ class SendOrderInfoView(APIView):
             excel_name = str(int(time.time())) + '_' + random_str(4) + '.xls'
             file_path = conf.excel_file_path + excel_name
 
+            cursor.execute("SET SESSION group_concat_max_len = 204800;")
             sql_order_consumer_detail = sql_order_consumer_detail % {
                 'agent_code': user_info.merchant_code,
                 'group_buy_id': group_buying_id
