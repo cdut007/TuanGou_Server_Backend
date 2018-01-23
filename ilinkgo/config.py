@@ -6,7 +6,7 @@ class Config:
         self.cwd = os.getcwd()
         self.wei_xin_mch_key_pem = self.cwd + '/other_file/apiclient_key.pem'
         self.wei_xin_mch_cert_pem = self.cwd + '/other_file/apiclient_cert.pem'
-        self.domain = 'http://a1.ailinkgo.com/'
+        self.domain = 'http://ailinkgo.ultralinked.com/'
         self._init_()
 
     def _init_(self):
