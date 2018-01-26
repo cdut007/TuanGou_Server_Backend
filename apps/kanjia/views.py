@@ -97,6 +97,7 @@ class KanJiaIntro(APIView):
 
 
 class KanJiaDetail(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def get(self, request):
         from sqls import sql_activity_detail, sql_activity_user_info, sql_activity_kan_jia_logs
