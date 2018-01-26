@@ -34,12 +34,15 @@ SELECT
 	a.current_price,
 	b.nickname,
 	b.headimgurl,
-	b.sharing_code
+	b.sharing_code,
+	c.wx_result_code,
+	c.pickup_code
 FROM
 	kj_activity_join AS a
 LEFT JOIN iuser_userprofile AS b ON a.`owner`=b.id
+LEFT JOIN kj_order AS c ON c.activity_id=a.activity_id
 WHERE 
-activity_id={activity_id} AND `owner`={owner}
+a.activity_id={activity_id} AND a.`owner`={owner}
 """
 
 sql_activity_kan_jia_logs = """

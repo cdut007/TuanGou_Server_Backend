@@ -130,7 +130,7 @@ class WeiXinAPI:
 
     def user_info(self, openid):
         params = dict()
-        params['access_token'] = '6_RQXRjF1jJ8phnPMAMcE979zDaHOtvTN5vWi-40kLB_C2Vk_wpynDV8s5DRiAI4NxWAwgp9a82cW3iZdHXR_NvYjcCjaWEdVNu3DvqsUa17MCQwFXqm7orxeVXWbJaty78c_8oXwOB7T2K-pPHBFgACAAUY'
+        params['access_token'] = self.get_wei_xin_basal_access_token()
         params['openid'] = openid
         params['lang'] = 'zh_CN'
         url = 'https://api.weixin.qq.com/cgi-bin/user/info?' + urllib.urlencode(params)

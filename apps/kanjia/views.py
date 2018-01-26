@@ -1,11 +1,10 @@
 # _*_ coding:utf-8 _*_
-import os, time, json
-from django.db import connection, OperationalError
+from django.db import connection
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ilinkgo.settings import conf
-from utils.common import format_body, raise_general_exception, random_str, dict_fetch_all
+from utils.common import format_body, raise_general_exception, dict_fetch_all
 from utils.winxin import WeiXinAPI, WeiXinXml
 
 from models import ActivityJoin, KanJiaLog, KanJiaActivity, KanJiaOrder
@@ -14,17 +13,23 @@ from iuser.models import UserProfile
 
     
 class WxPayView(APIView):
+    @Authentication.token_required
     @raise_general_exception
     def post(self, request):
         wei_xin_api = WeiXinAPI()
-        activity = KanJiaActivity.objects.get(activity_id=request.data['activity_id'])
-        # pay_money = activity.activity_price * 100 * int(request.data['activity_id'])
-        pay_money = 1
+        quantity = int(request.data['quantity'])
+        activity_id =request.data['activity_id']
+
+        activity = KanJiaActivity.objects.get(activity_id=activity_id)
+        pay_money = activity.activity_price * 100 * quantity
         trade_no = KanJiaOrder.gen_trade_no()
         notify_url = conf.server_run_addr+'/v2/api.kanjia.pay.callback'
+
         wx_prepay_order = wei_xin_api.pay(activity.title,trade_no, pay_money, notify_url)
         prepay_id = wx_prepay_order['prepay_id']
-        KanJiaOrder.prepay(172, activity.activity_id, 1, activity.exchange_price, pay_money, trade_no, prepay_id)
+
+        KanJiaOrder.prepay(self.post.user_id, activity.activity_id, quantity, activity.exchange_price, pay_money, trade_no, prepay_id)
+
         params = wei_xin_api.pay_params(prepay_id)
         return Response(format_body(1, 'Success', params))
 
@@ -33,11 +38,8 @@ class WxPayCallBack(APIView):
     @raise_general_exception
     def post(self, request):
         from django.http import HttpResponse
-        with open('wxPayCallback.log', 'a+') as f:
-            data = WeiXinXml.xml2json(request.body)
-            f.write(str(data))
-            f.write("\n\n\n\n\n")
-
+        wx_callback_data = WeiXinXml.xml2json(request.body)
+        KanJiaOrder.update_pay(wx_callback_data)
         res = WeiXinXml.json2xml({'return_code': 'SUCCESS','return_msg': ''})
         return HttpResponse(res,content_type="text/xml")
 
@@ -114,10 +116,10 @@ class KanJiaDetail(APIView):
         cursor.execute(sql_activity_kan_jia_logs)
         activity_kan_jia_logs = dict_fetch_all(cursor)
 
-        owner_info['is_purchased'] = 0
-        owner_info['pickup_code'] = 'MKH938479'
+        owner_info['is_purchased'] = 1  if owner_info['wx_result_code']=='SUCCESS' else 0
+        owner_info.pop('wx_result_code')
 
-        current_user = UserProfile.objects.get(pk=172)
+        current_user = UserProfile.objects.get(pk=self.get.user_id)
         wei_xin_api = WeiXinAPI()
         wx_info = wei_xin_api.user_info(current_user.openid_web)
 

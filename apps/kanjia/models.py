@@ -161,6 +161,22 @@ class KanJiaOrder(models.Model):
             string += chars[Random().randint(0, len(chars) - 1)]
         return string
 
-    def update_pay(self):
-        pass
+    @staticmethod
+    def update_pay(wx_callback_data):
+        order = KanJiaOrder.objects.filter(trade_no=wx_callback_data['out_trade_no']).first()
+        if order:
+            order.wx_result_code = wx_callback_data['result_code']
+            if wx_callback_data['result_code'] == 'SUCCESS':
+                order.wx_bank_type = wx_callback_data['bank_type']
+                order.wx_transaction_id = wx_callback_data['transaction_id']
+                order.pickup_code = 'MKH'+str(order.order_id).zfill(6)
+                order.save()
+
+                activity = KanJiaActivity.objects.filter(activity_id=order.activity_id).first()
+                activity.quantity -= order.quantity
+                activity.save()
+            else:
+                order.wx_err_code = wx_callback_data['err_code']
+                order.wx_err_code_des = wx_callback_data['err_code_des']
+                order.save()
 
