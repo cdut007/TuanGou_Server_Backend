@@ -87,20 +87,28 @@ class KanJiaDetail(APIView):
 
         sql_activity_user_info = sql_activity_user_info.format(activity_id = request.GET['activity_id'],owner=owner.id)
         cursor.execute(sql_activity_user_info)
-        activity_user_info = dict_fetch_all(cursor)[0]
+        owner_info = dict_fetch_all(cursor)[0]
 
         sql_activity_kan_jia_logs = sql_activity_kan_jia_logs.format(activity_id = request.GET['activity_id'],owner=owner.id)
         cursor.execute(sql_activity_kan_jia_logs)
         activity_kan_jia_logs = dict_fetch_all(cursor)
 
+        owner_info['is_purchased'] = 0
+        owner_info['pickup_code'] = 'MKH938479'
+
+        current_user = UserProfile.objects.get(pk=172)
         wei_xin_api = WeiXinAPI()
-        user_info = wei_xin_api.user_info('okljv0R6hou-qibewuLKYFhLU8kc')
+        wx_info = wei_xin_api.user_info(current_user.openid_web)
 
-        activity_user_info['is_subscribe'] = user_info['subscribe'] if user_info.has_key('subscribe') else 0
-        activity_user_info['is_purchased'] = 0
-        activity_user_info['pickup_code'] = 'MKH938479'
-
-        return Response(format_body(1, 'Success', {'intro': activity_intro, 'logs': activity_kan_jia_logs, 'user_info': activity_user_info}))
+        return Response(format_body(1, 'Success', {
+            'intro': activity_intro,
+            'logs': activity_kan_jia_logs,
+            'owner': owner_info,
+            'current_user': {
+                'is_subscribe': wx_info['subscribe'] if wx_info.has_key('subscribe') else 0,
+                'sharing_code': current_user.sharing_code
+            }
+        }))
 
 
 
