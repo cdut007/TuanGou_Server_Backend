@@ -18,10 +18,10 @@ class WxPayView(APIView):
     def post(self, request):
         wei_xin_api = WeiXinAPI()
         quantity = int(request.data['quantity'])
-        activity_id =request.data['activity_id']
+        activity_id = request.data['activity_id']
 
         activity = KanJiaActivity.objects.get(activity_id=activity_id)
-        pay_money = activity.activity_price * 100 * quantity
+        pay_money = activity.exchange_price * 100 * quantity
         trade_no = KanJiaOrder.gen_trade_no()
         notify_url = conf.server_run_addr+'/v2/api.kanjia.pay.callback'
 
