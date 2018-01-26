@@ -6,9 +6,9 @@ from rest_framework.views import APIView
 
 from ilinkgo.settings import conf
 from utils.common import format_body, raise_general_exception, random_str, dict_fetch_all
-from utils.winxin import WeiXinAPI
+from utils.winxin import WeiXinAPI, WeiXinXml
 
-from models import ActivityJoin, KanJiaLog
+from models import ActivityJoin, KanJiaLog, KanJiaActivity, KanJiaOrder
 from iuser.Authentication import Authentication
 from iuser.models import UserProfile
 
@@ -17,8 +17,27 @@ class WxPayView(APIView):
     @raise_general_exception
     def post(self, request):
         wei_xin_api = WeiXinAPI()
-        res = wei_xin_api.pay()
-        return Response(format_body(1, 'Success', res))
+        activity = KanJiaActivity.objects.get(activity_id=request.data['activity_id'])
+        # pay_money = activity.activity_price * 100 * int(request.data['activity_id'])
+        pay_money = 1
+        trade_no = KanJiaOrder.gen_trade_no()
+        notify_url = conf.server_run_addr+'/v2/api.kanjia.pay.callback'
+        wx_prepay_order = wei_xin_api.pay(activity.title,trade_no, pay_money, notify_url)
+        prepay_id = wx_prepay_order['prepay_id']
+        KanJiaOrder.prepay(172, activity.activity_id, 1, activity.exchange_price, pay_money, trade_no, prepay_id)
+        params = wei_xin_api.pay_params(prepay_id)
+        return Response(format_body(1, 'Success', params))
+
+
+class WxPayCallBack(APIView):
+    @raise_general_exception
+    def post(self, request):
+        from django.http import HttpResponse
+        with open('wxPayCallback.log', 'a+') as f:
+            f.write(request.body)
+            f.write("\n\n\n\n\n")
+        res = WeiXinXml.json2xml({'return_code': 'SUCCESS','return_msg': ''})
+        return HttpResponse(res,content_type="text/xml")
 
 
 class KanJiaJoin(APIView):

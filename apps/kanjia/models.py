@@ -6,6 +6,7 @@ from decimal import Decimal
 import random
 from utils.common import random_str
 from market.models import GroupBuy
+from random import Random
 
 class KanJiaActivity(models.Model):
     activity_id = models.AutoField(primary_key=True)
@@ -111,17 +112,55 @@ class KanJiaLog(models.Model):
         ).count()
         return count
 
-# class KanJiaOrder(models.Model):
-#     order_id = models.AutoField(primary_key=True)
-#     owner = models.PositiveIntegerField()
-#     activity_id = models.PositiveIntegerField()
-#     pay_money = models.PositiveIntegerField()
-#     trade_no = models.CharField(max_length=32)
-#     prepay_id = models.CharField(max_length=32)
-#     wx_bank_type = models.CharField(max_length=32)
-#     wx_result_code = models.CharField(max_length=24)
-#     wx_err_code = models.CharField(max_length=32)
-#     wx_err_code_des = models.CharField(max_length=256)
-#     wx_transaction_id = models.CharField(max_length=32)
-#     pickup_code = models.CharField(max_length=24)
-#     create_on = models.DateTimeField()
+
+class KanJiaOrder(models.Model):
+    order_id = models.AutoField(primary_key=True)
+    owner = models.PositiveIntegerField()
+    activity_id = models.PositiveIntegerField()
+    quantity = models.PositiveSmallIntegerField()
+    exchange_price = models.DecimalField(max_digits=6, decimal_places=2, default=None)
+    pay_money = models.PositiveIntegerField()
+    trade_no = models.CharField(max_length=32)
+    prepay_id = models.CharField(max_length=64)
+    wx_bank_type = models.CharField(max_length=32)
+    wx_result_code = models.CharField(max_length=24)
+    wx_err_code = models.CharField(max_length=32)
+    wx_err_code_des = models.CharField(max_length=256)
+    wx_transaction_id = models.CharField(max_length=32)
+    pickup_code = models.CharField(max_length=24)
+    create_on = models.DateTimeField()
+
+    class Meta:
+        db_table = 'kj_order'
+
+    @staticmethod
+    def prepay(owner, activity_id, quantity, exchange_price, pay_money,trade_no, prepay_id):
+        KanJiaOrder.objects.create(
+            owner = owner,
+            activity_id = activity_id,
+            quantity = quantity,
+            exchange_price = exchange_price,
+            pay_money = pay_money,
+            trade_no = trade_no,
+            prepay_id = prepay_id,
+            create_on = datetime.now()
+        )
+
+    @staticmethod
+    def gen_trade_no():
+        no = KanJiaOrder.random_str()
+        rec = KanJiaOrder.objects.filter(trade_no=no).first()
+        if rec: return KanJiaOrder.gen_trade_no()
+        return no
+
+    @staticmethod
+    def random_str():
+        string = ''
+        chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZ0123456789_-*'
+        for i in range(28):
+            string += chars[Random().randint(0, len(chars) - 1)]
+        return string
+
+    def update_pay(self):
+        pass
+

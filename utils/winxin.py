@@ -175,20 +175,20 @@ class WeiXinAPI:
         res_json = WeiXinXml.xml2json(res.text)
         return res_json
 
-    def pay(self):
+    def pay(self, body, trade_no, total_fee, notify_url):
         url = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
         payload = {
             'appid': self.app_id,
-            'attach': 'test',
-            'body': 'jsapi test',
+            'attach': '',
+            'body': body,
             'mch_id': self.mch_id,
-            'detail': '123',
+            'detail': '',
             'nonce_str': random_str(random_length=26),
-            'notify_url': 'www.ailinkgo.com/v2/api.test',
+            'notify_url': notify_url,
             'openid': 'okljv0R6hou-qibewuLKYFhLU8kc',
-            'out_trade_no': random_str(random_length=28),
-            'spbill_create_ip': '192.168.239.129',
-            'total_fee': 1,
+            'out_trade_no': trade_no,
+            'spbill_create_ip': '192.168.222.128',
+            'total_fee': total_fee,
             'trade_type': 'JSAPI'
         }
         payload['sign'] = self.sign(payload)
@@ -200,9 +200,8 @@ class WeiXinAPI:
             headers=self.xml_header,
             cert=(conf.wei_xin_mch_cert_pem, conf.wei_xin_mch_key_pem)
         )
-        re = WeiXinXml.xml2json(res.text)
-        pay = self.pay_params(re['prepay_id'])
-        return pay
+        res = WeiXinXml.xml2json(res.text)
+        return res
 
     def pay_params(self, prepay_id):
         params = {
