@@ -34,8 +34,10 @@ class WxPayCallBack(APIView):
     def post(self, request):
         from django.http import HttpResponse
         with open('wxPayCallback.log', 'a+') as f:
-            f.write(request.body)
+            data = WeiXinXml.xml2json(request.body)
+            f.write(str(data))
             f.write("\n\n\n\n\n")
+
         res = WeiXinXml.json2xml({'return_code': 'SUCCESS','return_msg': ''})
         return HttpResponse(res,content_type="text/xml")
 
