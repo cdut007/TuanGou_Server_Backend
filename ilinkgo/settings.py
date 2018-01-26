@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'iuser',
     'corsheaders',
     'apps.other',
-    'apps.user'
+    'apps.user',
+    'apps.kanjia'
 ]
 
 MIDDLEWARE = [

@@ -58,4 +58,8 @@ urlpatterns = [
 
     #kan jia
     url(r'^kanjia.pay$', KanJiaView.WxPayView.as_view(), name='kanjia.pay'),
+    url(r'^kanjia.join', KanJiaView.KanJiaJoin.as_view(), name='kanjia.join'),
+    url(r'^kanjia.kj', KanJiaView.KanJiaKj.as_view(), name='kanjia.kj'),
+    url(r'^kanjia.intro', KanJiaView.KanJiaIntro.as_view(), name='kanjia.intro'),
+    url(r'^kanjia.detail', KanJiaView.KanJiaDetail.as_view(), name='kanjia.detail'),
 ]

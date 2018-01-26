@@ -136,7 +136,7 @@ class UnpackRedPacketsLog(models.Model):
         today = datetime.now()
         today_start = "{Y}-{m}-{d} 00:00:00".format(Y=today.year, m=today.month, d=today.day)
         today_start = datetime.strptime(today_start, '%Y-%m-%d %H:%M:%S')
-        today_end = "{Y}-{m}-{d} 00:00:00".format(Y=today.year, m=today.month, d=today.day+1)
+        today_end = "{Y}-{m}-{d} 23:59:59".format(Y=today.year, m=today.month, d=today.day)
         today_end = datetime.strptime(today_end, '%Y-%m-%d %H:%M:%S')
         count = UnpackRedPacketsLog.objects.filter(
             unpack_user=unpack_user,

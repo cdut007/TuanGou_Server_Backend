@@ -2,6 +2,7 @@
 from django.conf.urls import url
 
 import views
+import KanJiaViews
 
 
 urlpatterns = [
@@ -41,5 +42,10 @@ urlpatterns = [
 
     # user
     url(r'^user.list$', views.UserListView.as_view(), name='user.list'),
-    url(r'^user.update$', views.UserProfileUpdateView.as_view(), name='user.update')
+    url(r'^user.update$', views.UserProfileUpdateView.as_view(), name='user.update'),
+
+    # kanjia
+    url(r'^kanjia.list$', KanJiaViews.KanJiaList.as_view(), name='kanjia.list'),
+    url(r'^kanjia.detail', KanJiaViews.KanJiaDetail.as_view(), name='kanjia.detail'),
+    url(r'^kanjia.save', KanJiaViews.KanJiaSave.as_view(), name='kanjia.save'),
 ]

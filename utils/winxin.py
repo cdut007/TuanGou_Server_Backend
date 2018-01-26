@@ -9,8 +9,8 @@ class WeiXinAPI:
     def __init__(self):
         self.app_id = 'wx3dfb837875e773af'
         self.secret = '8f124947d450ee56458828481d183889'
-        self.mch_key = 'okljv0R6houqibewuLKYFhLU8kcLU8kc'
-        self.mch_id = '1450506702'
+        self.mch_key = 'ailinkgo14505067021493509322ALGO'
+        self.mch_id = '1493509322'
         self.xml_header = {'Content-Type': 'application/xml'}
 
     def basal_access_token(self):
@@ -128,6 +128,16 @@ class WeiXinAPI:
         config = self.js_api_config(ticket, url)
         return config
 
+    def user_info(self, openid):
+        params = dict()
+        params['access_token'] = '6_RQXRjF1jJ8phnPMAMcE979zDaHOtvTN5vWi-40kLB_C2Vk_wpynDV8s5DRiAI4NxWAwgp9a82cW3iZdHXR_NvYjcCjaWEdVNu3DvqsUa17MCQwFXqm7orxeVXWbJaty78c_8oXwOB7T2K-pPHBFgACAAUY'
+        params['openid'] = openid
+        params['lang'] = 'zh_CN'
+        url = 'https://api.weixin.qq.com/cgi-bin/user/info?' + urllib.urlencode(params)
+        response = urllib2.urlopen(urllib2.Request(url))
+        res = response.read()
+        return json.loads(res)
+
     def push_notice(self, data):
         access_token = self.get_wei_xin_basal_access_token()
         url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+access_token
@@ -172,7 +182,7 @@ class WeiXinAPI:
             'attach': 'test',
             'body': 'jsapi test',
             'mch_id': self.mch_id,
-            'detail': '<![CDATA[{ "goods_detail":[ { "goods_id":"iphone6s_16G", "wxpay_goods_id":"1001", "goods_name":"iPhone6s 16G", "quantity":1, "price":528800, "goods_category":"123456", "body":"苹果手机" }, { "goods_id":"iphone6s_32G", "wxpay_goods_id":"1002", "goods_name":"iPhone6s 32G", "quantity":1, "price":608800, "goods_category":"123789", "body":"苹果手机" } ] }]]>',
+            'detail': '123',
             'nonce_str': random_str(random_length=26),
             'notify_url': 'www.ailinkgo.com/v2/api.test',
             'openid': 'okljv0R6hou-qibewuLKYFhLU8kc',
@@ -190,8 +200,20 @@ class WeiXinAPI:
             headers=self.xml_header,
             cert=(conf.wei_xin_mch_cert_pem, conf.wei_xin_mch_key_pem)
         )
-        res_json = WeiXinXml.xml2json(res._content)
-        return res_json
+        re = WeiXinXml.xml2json(res.text)
+        pay = self.pay_params(re['prepay_id'])
+        return pay
+
+    def pay_params(self, prepay_id):
+        params = {
+            'appId': self.app_id,
+            'timeStamp': int(time.time()),
+            'nonceStr': random_str(random_length=26),
+            'package' : 'prepay_id=' + prepay_id,
+            'signType': 'MD5'
+        }
+        params['paySign'] = self.sign(params)
+        return params
 
     def sign(self,payload):
         sorted_keys = sorted(payload)
