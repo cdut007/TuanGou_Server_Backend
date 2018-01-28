@@ -24,8 +24,9 @@ class WxPayView(APIView):
         pay_money = int(activity.exchange_price * 100 * quantity)
         trade_no = KanJiaOrder.gen_trade_no()
         notify_url = conf.server_run_addr+'/v2/api.kanjia.pay.callback'
+        user = UserProfile.objects.get(pk=self.post.user_id)
 
-        wx_prepay_order = wei_xin_api.pay(activity.title,trade_no, pay_money, notify_url)
+        wx_prepay_order = wei_xin_api.pay(activity.title,trade_no, pay_money, notify_url, user.openid_web)
         prepay_id = wx_prepay_order['prepay_id']
 
         KanJiaOrder.prepay(self.post.user_id, activity.activity_id, quantity, activity.exchange_price, pay_money, trade_no, prepay_id)

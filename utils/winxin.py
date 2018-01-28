@@ -175,7 +175,7 @@ class WeiXinAPI:
         res_json = WeiXinXml.xml2json(res.text)
         return res_json
 
-    def pay(self, body, trade_no, total_fee, notify_url):
+    def pay(self, body, trade_no, total_fee, notify_url, openid):
         url = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
         payload = {
             'appid': self.app_id,
@@ -185,7 +185,7 @@ class WeiXinAPI:
             'detail': '',
             'nonce_str': random_str(random_length=26),
             'notify_url': notify_url,
-            'openid': 'okljv0R6hou-qibewuLKYFhLU8kc',
+            'openid': openid,
             'out_trade_no': trade_no,
             'spbill_create_ip': '192.168.222.128',
             'total_fee': total_fee,
