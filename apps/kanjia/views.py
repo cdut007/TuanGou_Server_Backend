@@ -138,6 +138,9 @@ class KanJiaDetail(APIView):
 
         current_user = UserProfile.objects.get(pk=self.get.user_id)
         join_rec = ActivityJoin.objects.filter(owner=self.get.user_id, activity_id=request.GET['activity_id']).first()
+        kanjia_rec = KanJiaLog.objects.filter(owner=owner.id, kj_user=self.get.user_id).first()
+        is_kj = 1 if kanjia_rec else 0
+        kj_money = kanjia_rec.money if kanjia_rec else 0
         is_join = 1 if join_rec else 0
         wei_xin_api = WeiXinAPI()
         wx_info = wei_xin_api.user_info(current_user.openid_web)
@@ -149,7 +152,9 @@ class KanJiaDetail(APIView):
             'current_user': {
                 'is_subscribe': wx_info['subscribe'] if wx_info.has_key('subscribe') else 0,
                 'sharing_code': current_user.sharing_code,
-                'is_join': is_join
+                'is_join': is_join,
+                'is_kj': is_kj,
+                'kj_money': kj_money
             }
         }))
 
