@@ -125,7 +125,7 @@ class KanJiaDetail(APIView):
         cursor.execute(sql_activity_detail)
         activity_intro = dict_fetch_all(cursor)[0]
 
-        sql_activity_user_info = sql_activity_user_info.format(activity_id = request.GET['activity_id'],owner=owner.id)
+        sql_activity_user_info = sql_activity_user_info.format(activity_id=request.GET['activity_id'],owner=owner.id)
         cursor.execute(sql_activity_user_info)
         owner_info = dict_fetch_all(cursor)[0]
 
