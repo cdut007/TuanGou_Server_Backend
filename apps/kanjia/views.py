@@ -7,7 +7,7 @@ from ilinkgo.settings import conf
 from utils.common import format_body, raise_general_exception, dict_fetch_all
 from utils.winxin import WeiXinAPI, WeiXinXml
 
-from models import ActivityJoin, KanJiaLog, KanJiaActivity, KanJiaOrder
+from models import ActivityJoin, KanJiaLog, KanJiaActivity, KanJiaOrder, ActivityLatestTrack
 from iuser.Authentication import Authentication
 from iuser.models import UserProfile
 
@@ -144,18 +144,42 @@ class KanJiaDetail(APIView):
         is_join = 1 if join_rec else 0
         wei_xin_api = WeiXinAPI()
         wx_info = wei_xin_api.user_info(current_user.openid_web)
+        is_subscribe = wx_info['subscribe'] if wx_info.has_key('subscribe') else 0
+
+        ActivityLatestTrack.save_track(
+            sharing_code = request.GET['sharing_code'],
+            activity_id = request.GET['activity_id'],
+            user_id = self.get.user_id
+        )
 
         return Response(format_body(1, 'Success', {
             'intro': activity_intro,
             'logs': activity_kan_jia_logs,
             'owner': owner_info,
             'current_user': {
-                'is_subscribe': wx_info['subscribe'] if wx_info.has_key('subscribe') else 0,
+                'is_subscribe': is_subscribe,
                 'sharing_code': current_user.sharing_code,
                 'is_join': is_join,
                 'is_kj': is_kj,
                 'kj_money': kj_money
             }
+        }))
+
+
+class LatestTrack(APIView):
+    @Authentication.token_required
+    @raise_general_exception
+    def get(self, request):
+        track = ActivityLatestTrack.objects.filter(user_id=self.get.user_id).first()
+        if track:
+            sharing_code = track.sharing_code
+            activity_id = track.activity_id
+        else:
+            sharing_code = ''
+            activity_id = ''
+        return Response(format_body(1, 'Success', {
+            'sharing_code': sharing_code,
+            'activity_id': activity_id
         }))
 
 

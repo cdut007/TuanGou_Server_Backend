@@ -180,3 +180,29 @@ class KanJiaOrder(models.Model):
                 order.wx_err_code_des = wx_callback_data['err_code_des']
                 order.save()
 
+
+class ActivityLatestTrack(models.Model):
+    id = models.AutoField(primary_key=True)
+    sharing_code = models.CharField(max_length=48)
+    activity_id = models.PositiveIntegerField()
+    user_id = models.PositiveIntegerField()
+    update_on = models.DateTimeField()
+
+    class Meta:
+        db_table = 'kj_latest_track'
+
+    @staticmethod
+    def save_track(sharing_code, activity_id, user_id):
+        rec = ActivityLatestTrack.objects.filter(user_id=user_id).first()
+        if rec:
+            rec.sharing_code = sharing_code
+            rec.activity_id = activity_id
+            rec.update_on = datetime.now()
+            rec.save()
+        else:
+            ActivityLatestTrack.objects.create(
+                sharing_code = sharing_code,
+                activity_id = activity_id,
+                user_id = user_id,
+                update_on = datetime.now()
+            )
