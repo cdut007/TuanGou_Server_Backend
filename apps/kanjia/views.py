@@ -183,4 +183,16 @@ class LatestTrack(APIView):
         }))
 
 
+class GeoCoderParamsView(APIView):
+    @raise_general_exception
+    def get(self,request):
+        import urllib, urllib2, json
+        params = dict()
+        params['key'] = '7S6BZ-VK5KX-JAY4K-7YD4F-WE7Z3-SYFAC'
+        params['location'] = request.GET['latitude'] + ',' + request.GET['longitude']
+        url = 'http://apis.map.qq.com/ws/geocoder/v1?' + urllib.urlencode(params)
+        response = urllib2.urlopen(urllib2.Request(url))
+        return Response(format_body(1, 'Success', json.loads(response.read())))
+
+
 

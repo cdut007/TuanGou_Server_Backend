@@ -64,4 +64,5 @@ urlpatterns = [
     url(r'^kanjia.intro$', KanJiaView.KanJiaIntro.as_view(), name='kanjia.intro'),
     url(r'^kanjia.detail$', KanJiaView.KanJiaDetail.as_view(), name='kanjia.detail'),
     url(r'^kanjia.latest.track$', KanJiaView.LatestTrack.as_view(), name='kanjia.latest.track'),
+    url(r'^geocoder.params$', KanJiaView.GeoCoderParamsView.as_view(), name='geocoder.params'),
 ]
