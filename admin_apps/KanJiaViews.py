@@ -61,7 +61,7 @@ class KanJiaSave(APIView):
             activity.goods_image = save_images(request.FILES['image'], 'KanJia', create_thumbnail=False)
         activity.original_price = info['original_price']
         activity.activity_price = info['activity_price']
-        activity.exchange_price = info['min_kj_money']
+        activity.exchange_price = info['exchange_price']
         activity.max_kj_money = info['max_kj_money']
         activity.min_kj_money = info['min_kj_money']
         activity.goods_description = info['goods_description']

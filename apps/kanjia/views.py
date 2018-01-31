@@ -138,7 +138,7 @@ class KanJiaDetail(APIView):
 
         current_user = UserProfile.objects.get(pk=self.get.user_id)
         join_rec = ActivityJoin.objects.filter(owner=self.get.user_id, activity_id=request.GET['activity_id']).first()
-        kanjia_rec = KanJiaLog.objects.filter(owner=owner.id, kj_user=self.get.user_id).first()
+        kanjia_rec = KanJiaLog.objects.filter(owner=owner.id, kj_user=self.get.user_id, activity_id=request.GET['activity_id']).first()
         is_kj = 1 if kanjia_rec else 0
         kj_money = kanjia_rec.money if kanjia_rec else 0
         is_join = 1 if join_rec else 0
