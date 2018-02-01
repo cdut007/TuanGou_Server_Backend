@@ -129,7 +129,7 @@ class KanJiaIntro(APIView):
         wei_xin_api = WeiXinAPI()
         wx_info = wei_xin_api.user_info(current_user.openid_web)
 
-        activity_intro['country'] = u'新加坡'
+        activity_intro['country'] = u'中国'
         return Response(format_body(1, 'Success', {
             'intro': activity_intro,
             'ranking': activity_ranking,
@@ -185,7 +185,7 @@ class KanJiaDetail(APIView):
             user_id = self.get.user_id
         )
 
-        activity_intro['country'] = u'新加坡'
+        activity_intro['country'] = u'中国'
         return Response(format_body(1, 'Success', {
             'intro': activity_intro,
             'logs': activity_kan_jia_logs,
