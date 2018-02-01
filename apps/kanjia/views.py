@@ -91,7 +91,7 @@ class KanJiaKj(APIView):
         # 今天砍价的次数是否大于3次
         times_today = KanJiaLog.times_today(self.post.user_id)
         if times_today >= 3:
-            return Response(format_body(23, 'Fail', u'您今天已经帮好友拆过3次红包了哦！'))
+            return Response(format_body(23, 'Fail', u'今天的砍价次数已用完，请明天再砍！'))
 
         money = KanJiaLog.kan_jia(owner.id, self.post.user_id, request.data['activity_id'])
 
