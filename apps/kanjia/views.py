@@ -1,4 +1,5 @@
 # _*_ coding:utf-8 _*_
+import uuid
 from django.db import connection
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -137,6 +138,10 @@ class KanJiaDetail(APIView):
         owner_info.pop('wx_result_code')
 
         current_user = UserProfile.objects.get(pk=self.get.user_id)
+        if not current_user.sharing_code:
+            current_user.sharing_code = uuid.uuid1()
+            current_user.save()
+
         join_rec = ActivityJoin.objects.filter(owner=self.get.user_id, activity_id=request.GET['activity_id']).first()
         kanjia_rec = KanJiaLog.objects.filter(owner=owner.id, kj_user=self.get.user_id, activity_id=request.GET['activity_id']).first()
         is_kj = 1 if kanjia_rec else 0
