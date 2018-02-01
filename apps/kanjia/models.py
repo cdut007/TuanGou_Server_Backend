@@ -71,7 +71,7 @@ class KanJiaLog(models.Model):
         activity_join = ActivityJoin.objects.filter(activity_id=activity_id, owner=owner).first()
 
         a = activity_join.current_price - activity.activity_price
-        if a<=0: return 0
+        if a<=0: return u'已经不能再帮Ta砍价了'
 
         kj_money = KanJiaLog.gen_kj_money(activity.min_kj_money, activity.max_kj_money)
         if kj_money > a: kj_money = a
