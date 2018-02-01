@@ -180,7 +180,9 @@ class KanJiaOrder(models.Model):
                 order.save()
 
                 activity = KanJiaActivity.objects.filter(activity_id=order.activity_id).first()
-                activity.quantity -= order.quantity
+                quantity = activity.quantity - order.quantity
+                if quantity < 0: quantity = 0;
+                activity.quantity = quantity
                 activity.save()
             else:
                 order.wx_err_code = wx_callback_data['err_code']
