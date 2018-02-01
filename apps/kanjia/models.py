@@ -99,6 +99,13 @@ class KanJiaLog(models.Model):
         return log
 
     @staticmethod
+    def is_expire(activity_id):
+        activity = KanJiaActivity.objects.get(activity_id=activity_id)
+        if activity.end_time < datetime.now():
+            return True
+        return False
+
+    @staticmethod
     def times_today(kj_user):
         today = datetime.now()
         today_start = "{Y}-{m}-{d} 00:00:00".format(Y=today.year, m=today.month, d=today.day)

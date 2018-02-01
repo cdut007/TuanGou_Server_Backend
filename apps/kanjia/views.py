@@ -17,11 +17,23 @@ class WxPayView(APIView):
     @Authentication.token_required
     @raise_general_exception
     def post(self, request):
-        wei_xin_api = WeiXinAPI()
         quantity = int(request.data['quantity'])
         activity_id = request.data['activity_id']
 
         activity = KanJiaActivity.objects.get(activity_id=activity_id)
+        if activity.quantity < quantity:
+            return Response(format_body(25, 'Fail', u'当前剩余数量：'+str(activity.quantity)+'!'))
+
+        order_rec = KanJiaOrder.objects.filter(
+            owner = self.post.user_id,
+            activity_id = activity_id,
+            wx_result_code = 'SUCCESS'
+        ).first()
+        if order_rec:
+            return Response(format_body(25, 'Fail', u'您已购买过当前商品了哦！'))
+
+        wei_xin_api = WeiXinAPI()
+
         pay_money = int(activity.exchange_price * 100 * quantity)
         trade_no = KanJiaOrder.gen_trade_no()
         notify_url = conf.server_run_addr+'/v2/api.kanjia.pay.callback'
@@ -61,6 +73,11 @@ class KanJiaKj(APIView):
     @raise_general_exception
     def post(self,request):
         owner = UserProfile.objects.get(sharing_code=request.data['sharing_code'])
+
+        # 活动是否过期
+        is_expire = KanJiaLog.is_expire(activity_id=request.data['activity_id'])
+        if is_expire:
+            return Response(format_body(24, 'Fail', u'当前活动已经过期了哦^V^！'))
 
         # 不能帮自己砍价
         if owner.id == self.post.user_id:
@@ -109,7 +126,8 @@ class KanJiaIntro(APIView):
                 'is_subscribe': wx_info['subscribe'] if wx_info.has_key('subscribe') else 0,
                 'sharing_code': current_user.sharing_code,
                 'is_join': is_join
-            }
+            },
+            'country': u'新加坡'
         }))
 
 
