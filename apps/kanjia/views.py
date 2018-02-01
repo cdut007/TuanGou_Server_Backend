@@ -20,6 +20,11 @@ class WxPayView(APIView):
         quantity = int(request.data['quantity'])
         activity_id = request.data['activity_id']
 
+        # 活动是否过期
+        is_expire = KanJiaLog.is_expire(activity_id=request.data['activity_id'])
+        if is_expire:
+            return Response(format_body(24, 'Fail', u'当前活动已经过期了哦^V^！'))
+
         activity = KanJiaActivity.objects.get(activity_id=activity_id)
         if activity.quantity < quantity:
             return Response(format_body(25, 'Fail', u'当前剩余数量：'+str(activity.quantity)+'!'))
@@ -62,6 +67,11 @@ class KanJiaJoin(APIView):
     @Authentication.token_required
     @raise_general_exception
     def post(self, request):
+        # 活动是否过期
+        is_expire = KanJiaLog.is_expire(activity_id=request.data['activity_id'])
+        if is_expire:
+            return Response(format_body(24, 'Fail', u'当前活动已经过期了哦^V^！'))
+
         activity_id = request.data['activity_id']
         owner = self.post.user_id
         ActivityJoin.join(owner, activity_id)
@@ -119,6 +129,7 @@ class KanJiaIntro(APIView):
         wei_xin_api = WeiXinAPI()
         wx_info = wei_xin_api.user_info(current_user.openid_web)
 
+        activity_intro['country'] = u'新加坡'
         return Response(format_body(1, 'Success', {
             'intro': activity_intro,
             'ranking': activity_ranking,
@@ -126,8 +137,7 @@ class KanJiaIntro(APIView):
                 'is_subscribe': wx_info['subscribe'] if wx_info.has_key('subscribe') else 0,
                 'sharing_code': current_user.sharing_code,
                 'is_join': is_join
-            },
-            'country': u'新加坡'
+            }
         }))
 
 
@@ -175,6 +185,7 @@ class KanJiaDetail(APIView):
             user_id = self.get.user_id
         )
 
+        activity_intro['country'] = u'新加坡'
         return Response(format_body(1, 'Success', {
             'intro': activity_intro,
             'logs': activity_kan_jia_logs,
