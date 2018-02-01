@@ -100,8 +100,8 @@ class KanJiaKj(APIView):
 
         # 今天砍价的次数是否大于3次
         times_today = KanJiaLog.times_today(self.post.user_id)
-        # if times_today >= 3:
-        #     return Response(format_body(23, 'Fail', u'今天的砍价次数已用完，请明天再砍！'))
+        if times_today >= 3:
+            return Response(format_body(23, 'Fail', u'今天的砍价次数已用完，请明天再砍！'))
 
         money = KanJiaLog.kan_jia(owner.id, self.post.user_id, request.data['activity_id'])
 
@@ -129,7 +129,7 @@ class KanJiaIntro(APIView):
         wei_xin_api = WeiXinAPI()
         wx_info = wei_xin_api.user_info(current_user.openid_web)
 
-        activity_intro['country'] = u'中国'
+        activity_intro['country'] = u'新加坡'
         return Response(format_body(1, 'Success', {
             'intro': activity_intro,
             'ranking': activity_ranking,
@@ -185,7 +185,7 @@ class KanJiaDetail(APIView):
             user_id = self.get.user_id
         )
 
-        activity_intro['country'] = u'中国'
+        activity_intro['country'] = u'新加坡'
         return Response(format_body(1, 'Success', {
             'intro': activity_intro,
             'logs': activity_kan_jia_logs,
