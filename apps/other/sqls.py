@@ -61,7 +61,7 @@ GROUP BY
 sql_order_supplier_summary = """
 SELECT
 	sum(a.quantity) AS quantity,
-	CONCAT('$', CONVERT((SUM(a.quantity) * b.price),decimal)) AS m_amount,
+	CONCAT('$', CONVERT((SUM(a.quantity) * b.price),DECIMAL(6, 2))) AS m_amount,
     CONCAT(c.`name`,' $',b.price,' ',b.brief_dec) AS goods
 FROM
 	iuser_genericorder AS a
